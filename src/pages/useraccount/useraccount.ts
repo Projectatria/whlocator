@@ -30,6 +30,9 @@ export class UseraccountPage {
     public platform: Platform,
     public alert: AlertController,
     public storage: Storage) {
+    this.storage.get('name').then((val) => {
+      this.name = val;
+    });
     this.storage.get('userid').then((val) => {
       this.userid = val;
       this.api.get('table/user_role', { params: { filter: "id_user=" + "'" + this.userid + "'" } })
@@ -39,14 +42,11 @@ export class UseraccountPage {
           this.rolegroup = this.role[0].id_group;
           this.rolecab = this.role[0].id_cab;
           this.api.get('table/role', { params: { filter: "id_role=" + "'" + this.roleid + "'" } })
-          .subscribe(val => {
-            this.roleiddetail = val['data'];
-            this.rolenamedetail = this.roleiddetail[0].name;
-          });
+            .subscribe(val => {
+              this.roleiddetail = val['data'];
+              this.rolenamedetail = this.roleiddetail[0].name;
+            });
         });
-    });
-    this.storage.get('name').then((val) => {
-      this.name = val;
     });
   }
   ionViewCanEnter() {

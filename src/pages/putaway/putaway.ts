@@ -126,6 +126,9 @@ export class PutawayPage {
     this.put = "qcin"
     this.groupby = ""
     this.search = 'item_no';
+    this.storage.get('name').then((val) => {
+      this.name = val;
+    });
     this.storage.get('userid').then((val) => {
       this.userid = val;
       this.api.get('table/user_role', { params: { filter: "id_user=" + "'" + this.userid + "'" } })

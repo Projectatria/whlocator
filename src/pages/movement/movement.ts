@@ -51,6 +51,12 @@ export class MovementPage {
   totaldataputaway: any;
   private token: any;
   public loader: any;
+  public movementtempdetail = [];
+  public userid: any;
+  public name: any;
+  public role = [];
+  public roleid: any;
+  public rolecab: any;
 
   constructor(
     public navCtrl: NavController,
@@ -77,6 +83,20 @@ export class MovementPage {
     this.storage.get('token').then((val) => {
       this.token = val;
     });
+    this.storage.get('name').then((val) => {
+      this.name = val;
+    });
+    this.storage.get('userid').then((val) => {
+      this.userid = val;
+      this.api.get('table/user_role', { params: { filter: "id_user=" + "'" + this.userid + "'" } })
+        .subscribe(val => {
+          this.role = val['data']
+          this.roleid = this.role[0].id_group
+          this.rolecab = this.role[0].id_cab
+        })
+      this.getMovementTemp()
+      this.getMovementTempDetail()
+    });
   }
   ngAfterViewInit() {
     this.loader.dismiss();
@@ -100,7 +120,7 @@ export class MovementPage {
     let barcodeno = this.myForm.value.barcodeno
     var batchno = barcodeno.substring(0, 6);
     var itemno = barcodeno.substring(6, 14);
-    if (barcodeno == '') {
+    if (rackno == '') {
       let alert = this.alertCtrl.create({
         title: 'Error ',
         subTitle: 'Rack Number Must Be Fill',
@@ -153,7 +173,7 @@ export class MovementPage {
                       alert.present();
                     }
                     else {
-                      this.api.get('table/movement_temp', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" } })
+                      this.api.get('table/movement_temp', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "' AND pic=" + "'" + this.userid + "'" } })
                         .subscribe(val => {
                           this.getmovementlist = val['data'];
                           if (this.getmovementlist.length) {
@@ -197,6 +217,7 @@ export class MovementPage {
                                   "location_current_position": '',
                                   "status": 'OPEN',
                                   "datetime": datetime,
+                                  "pic": this.userid,
                                   "uuid": UUID.UUID()
                                 },
                                 { headers })
@@ -282,7 +303,7 @@ export class MovementPage {
     });
   }
   doSaveToMovement() {
-    this.api.get('table/movement_temp', { params: { limit: 30 } })
+    this.api.get('table/movement_temp', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" } })
       .subscribe(val => {
         this.getmovementlist = val['data'];
         this.api.get('table/location_master', { params: { limit: 30, filter: "location_alocation=" + "'" + this.myForm.value.rackno + "'" } })
@@ -327,7 +348,7 @@ export class MovementPage {
                   {
                     text: 'Save',
                     handler: () => {
-                      this.api.get('table/movement_temp', { params: { limit: 30 } })
+                      this.api.get('table/movement_temp', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" } })
                         .subscribe(val => {
                           this.getmovementlist = val['data'];
                           for (let i = 0; i < this.getmovementlist.length; i++) {
@@ -373,6 +394,7 @@ export class MovementPage {
                                         "location_current_position": this.myForm.value.rackno,
                                         "qty": this.getmovementlist[0].qty,
                                         "status": 'OPEN',
+                                        "pic": this.userid,
                                         "datetime": datetime,
                                         "uuid": UUID.UUID()
                                       },
@@ -382,7 +404,7 @@ export class MovementPage {
                                           .set("Content-Type", "application/json");
                                         this.api.delete("table/movement_temp", { params: { filter: "movementtemp_no=" + "'" + this.getmovementlist[0].movementtemp_no + "'" }, headers })
                                           .subscribe(val => {
-                                            this.api.get('table/movement_temp', { params: { limit: 30 } })
+                                            this.api.get('table/movement_temp', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" } })
                                               .subscribe(val => {
                                                 this.getmovementlist = val['data'];
                                                 let alert = this.alertCtrl.create({
@@ -448,6 +470,89 @@ export class MovementPage {
     });
     alert.present();
   }
+  doDeletePutawayListDetail(putemp) {
+    let alert = this.alertCtrl.create({
+      title: 'Confirm Delete',
+      message: 'Are you sure you want to delete  ' + putemp.item_no + ' ?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+
+          }
+        },
+        {
+          text: 'Delete',
+          handler: () => {
+            this.api.get('table/movement_temp', { params: { limit: 30, filter: "batch_no=" + "'" + putemp.batch_no + "'" + ' AND ' + "item_no=" + "'" + putemp.item_no + "' AND pic=" + "'" + this.userid + "'" } })
+              .subscribe(val => {
+                let movetemp = val['data']
+                if (movetemp.length == 0) {
+                  const headers = new HttpHeaders()
+                    .set("Content-Type", "application/json");
+                  this.getNextNoPUTemp().subscribe(val => {
+                    let nextno = val['nextno'];
+                    let datetime = moment().format('YYYY-MM-DD HH:mm');
+                    this.api.post("table/movement_temp",
+                      {
+                        "movementtemp_no": nextno,
+                        "receiving_no": putemp.receiving_no,
+                        "batch_no": putemp.batch_no,
+                        "item_no": putemp.item_no,
+                        "location_code": putemp.location,
+                        "location_previous_position": putemp.sub_location,
+                        "location_current_position": "",
+                        "qty": putemp.qty,
+                        "status": 'OPEN',
+                        "datetime": datetime,
+                        "pic": this.userid,
+                        "uuid": UUID.UUID()
+                      },
+                      { headers })
+                      .subscribe(val => {
+                        const headers = new HttpHeaders()
+                          .set("Content-Type", "application/json");
+                        this.api.delete("table/movement_temp_detail", { params: { filter: 'movementtemp_no=' + "'" + putemp.movementtemp_no + "'" }, headers })
+                          .subscribe(
+                            (val) => {
+                            });
+                        this.getMovementTemp();
+                        this.getMovementTempDetail();
+                      })
+                  });
+                }
+                else {
+                  const headers = new HttpHeaders()
+                    .set("Content-Type", "application/json");
+                  let datetime = moment().format('YYYY-MM-DD HH:mm');
+                  this.api.put("table/movement_temp",
+                    {
+                      "movementtemp_no": movetemp[0].movementtemp_no,
+                      "qty": parseInt(movetemp[0].qty) + parseInt(putemp.qty),
+                      "status": 'OPEN',
+                      "datetime": datetime,
+                      "pic": this.userid
+                    },
+                    { headers })
+                    .subscribe(val => {
+                      const headers = new HttpHeaders()
+                        .set("Content-Type", "application/json");
+                      this.api.delete("table/movement_temp_detail", { params: { filter: 'movementtemp_no=' + "'" + putemp.movementtemp_no + "'" }, headers })
+                        .subscribe(
+                          (val) => {
+                          });
+                      this.getMovementTemp();
+                      this.getMovementTempDetail();
+                    })
+                }
+              });
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
   doScanBarcodeItem() {
     var self = this
     Honeywell.barcodeReaderPressSoftwareTrigger(function () {
@@ -456,7 +561,7 @@ export class MovementPage {
         var barcodeno = data.barcodeData;
         var batchno = barcodeno.substring(0, 6);
         var itemno = barcodeno.substring(6, 14);
-        if (barcodeno == '') {
+        if (rackno == '') {
           let alert = self.alertCtrl.create({
             title: 'Error ',
             subTitle: 'Rack Number Must Be Fill',
@@ -511,7 +616,7 @@ export class MovementPage {
                           let rackno = self.myForm.value.rackno
                           var batchno = barcodeno.substring(0, 6);
                           var itemno = barcodeno.substring(6, 14);
-                          self.api.get('table/stock_balance', { params: { limit: 100, filter: "batch_no=" + "'" + batchno + "'" + " AND " + "item_no=" + "'" + itemno + "' AND sub_location=" + "'" + rackno + "'" } })
+                          self.api.get('table/movement_temp', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "' AND pic=" + "'" + self.userid + "'" } })
                             .subscribe(val => {
                               self.getmovementlist = val['data'];
                               if (self.getmovementlist.length) {
@@ -555,6 +660,7 @@ export class MovementPage {
                                       "qty": data.qty,
                                       "status": 'OPEN',
                                       "datetime": datetime,
+                                      "pic": self.userid,
                                       "uuid": UUID.UUID()
                                     },
                                     { headers })
@@ -599,6 +705,128 @@ export class MovementPage {
         press: true
       });
   }
+  doScanBarcodeItemDetail() {
+    var self = this
+    Honeywell.barcodeReaderPressSoftwareTrigger(function () {
+      Honeywell.onBarcodeEvent(function (data) {
+        var barcodeno = data.barcodeData;
+        var batchno = barcodeno.substring(0, 6);
+        var itemno = barcodeno.substring(6, 14);
+        self.api.get('table/movement_temp', { params: { limit: 100, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" + ' AND ' + "pic=" + "'" + self.userid + "'" } })
+          .subscribe(val => {
+            let putawaylist = val['data'];
+            if (putawaylist.length) {
+              let alert = self.alertCtrl.create({
+                title: 'Qty',
+                inputs: [
+                  {
+                    name: 'qty',
+                    placeholder: 'Qty'
+                  }
+                ],
+                buttons: [
+                  {
+                    text: 'Cancel',
+                    role: 'cancel',
+                    handler: data => {
+                    }
+                  },
+                  {
+                    text: 'OK',
+                    handler: data => {
+                      self.api.get('table/movement_temp_detail', { params: { limit: 30, filter: "pic=" + "'" + self.userid + "' AND batch_no=" + "'" + putawaylist[0].batch_no + "' AND item_no=" + "'" + putawaylist[0].item_no + "'" } })
+                        .subscribe(val => {
+                          let movetempdetail = val['data']
+                          if (movetempdetail.length == 0) {
+                            const headers = new HttpHeaders()
+                              .set("Content-Type", "application/json");
+                            self.getNextNoPUTempDetail().subscribe(val => {
+                              let nextno = val['nextno'];
+                              let datetime = moment().format('YYYY-MM-DD HH:mm');
+                              self.api.post("table/movement_temp_detail",
+                                {
+                                  "movementtemp_no": nextno,
+                                  "receiving_no": putawaylist[0].receiving_no,
+                                  "batch_no": putawaylist[0].batch_no,
+                                  "item_no": putawaylist[0].item_no,
+                                  "qty": data.qty,
+                                  "location_code": putawaylist[0].location,
+                                  "location_previous_position": putawaylist[0].sub_location,
+                                  "location_current_position": '',
+                                  "status": 'OPEN',
+                                  "datetime": datetime,
+                                  "pic": self.userid,
+                                  "uuid": UUID.UUID()
+                                },
+                                { headers })
+                                .subscribe(val => {
+                                  self.api.put("table/movement_temp",
+                                    {
+                                      "movementtemp_no": putawaylist[0].movementtemp_no,
+                                      "qty": putawaylist[0].qty - data.qty
+                                    },
+                                    { headers })
+                                    .subscribe(val => {
+                                      self.getMovementTemp()
+                                      self.getMovementTempDetail()
+                                      let alert = self.alertCtrl.create({
+                                        title: 'Sukses ',
+                                        subTitle: 'Add Item Sukses',
+                                        buttons: ['OK']
+                                      });
+                                      alert.present();
+                                    });
+                                });
+                            });
+                          }
+                          else {
+                            const headers = new HttpHeaders()
+                              .set("Content-Type", "application/json");
+                            let datetime = moment().format('YYYY-MM-DD HH:mm');
+                            self.api.put("table/movement_temp_detail",
+                              {
+                                "movementtemp_no": movetempdetail[0].movementtemp_no,
+                                "qty": movetempdetail[0].qty + data.qty,
+                                "datetime": datetime
+                              },
+                              { headers })
+                              .subscribe(val => {
+                                self.getMovementTemp()
+                                self.getMovementTempDetail()
+                                let alert = self.alertCtrl.create({
+                                  title: 'Sukses ',
+                                  subTitle: 'Add Item Sukses',
+                                  buttons: ['OK']
+                                });
+                                alert.present();
+                              });
+                          }
+                        });
+                    }
+                  }
+                ]
+              });
+              alert.present();
+            }
+            else {
+              let alert = self.alertCtrl.create({
+                title: 'Error ',
+                subTitle: 'Item Not Found',
+                buttons: ['OK']
+              });
+              alert.present();
+            }
+
+          });
+      }, function (reason) {
+        console.error(reason);
+      });
+    }, function (reason) {
+      console.error(reason);
+    }, {
+        press: true
+      });
+  }
   doScanBarcodeRack() {
     var self = this
     Honeywell.barcodeReaderPressSoftwareTrigger(function () {
@@ -615,9 +843,15 @@ export class MovementPage {
       });
   }
   getMovementTemp() {
-    this.api.get('table/movement_temp', { params: { limit: 30 } })
+    this.api.get('table/movement_temp', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" } })
       .subscribe(val => {
         this.movementtemp = val['data'];
+      });
+  }
+  getMovementTempDetail() {
+    this.api.get('table/movement_temp_detail', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" } })
+      .subscribe(val => {
+        this.movementtempdetail = val['data'];
       });
   }
   getNextNo() {
@@ -625,6 +859,9 @@ export class MovementPage {
   }
   getNextNoPUTemp() {
     return this.api.get('nextno/movement_temp/movementtemp_no')
+  }
+  getNextNoPUTempDetail() {
+    return this.api.get('nextno/movement_temp_detail/movementtemp_no')
   }
   getNextNoPU() {
     return this.api.get('nextno/movement/movement_no')

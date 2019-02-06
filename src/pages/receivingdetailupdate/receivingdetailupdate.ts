@@ -40,6 +40,7 @@ export class ReceivingdetailupdatePage {
   public role = [];
   public roleid: any;
   public rolecab: any;
+  public name: any;
 
   error_messages = {
     'docno': [
@@ -92,6 +93,9 @@ export class ReceivingdetailupdatePage {
     this.myForm.get('staging').setValue(this.staging);
     this.myForm.get('description').setValue(this.description);
     this.getPhotos();
+    this.storage.get('name').then((val) => {
+      this.name = val;
+    });
     this.storage.get('userid').then((val) => {
       this.userid = val;
       this.api.get('table/user_role', { params: { filter: "id_user=" + "'" + this.userid + "'" } })

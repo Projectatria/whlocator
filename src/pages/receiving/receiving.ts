@@ -26,8 +26,11 @@ export class ReceivingPage {
   private height: number;
   private token:any;
   public loader: any;
+  public userid: any;
   public name: any;
-  public rolecab = '';
+  public role = [];
+  public roleid: any;
+  public rolecab: any;
 
   constructor(
     public navCtrl: NavController,
@@ -58,6 +61,15 @@ export class ReceivingPage {
       this.height = platform.height();
       this.storage.get('name').then((val) => {
         this.name = val;
+      });
+      this.storage.get('userid').then((val) => {
+        this.userid = val;
+        this.api.get('table/user_role', { params: { filter: "id_user=" + "'" + this.userid + "'" } })
+          .subscribe(val => {
+            this.role = val['data']
+            this.roleid = this.role[0].id_group
+            this.rolecab = this.role[0].id_cab
+          })
       });
     });
   }

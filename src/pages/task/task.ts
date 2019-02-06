@@ -106,7 +106,8 @@ export class TaskPage {
       docno: rcv.doc_no,
       batchno: rcv.batch_no,
       locationcode: rcv.location_code,
-      expectedreceiptdate: rcv.expected_receipt_date
+      expectedreceiptdate: rcv.expected_receipt_date,
+      rolecab: this.rolecab
     });
   }
   getQC() {

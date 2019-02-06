@@ -21,6 +21,7 @@ export class MyApp {
   public role = [];
   private rolearea = '';
   private rolegroup = '';
+  public rolecab = '';
   public preparation = [];
   public receiving = [];
   public users = [];
@@ -106,6 +107,7 @@ export class MyApp {
             if (this.role.length != 0) {
               this.rolearea = this.role[0].id_area
               this.rolegroup = this.role[0].id_group
+              this.rolecab = this.role[0].id_cab
             }
           })
       });

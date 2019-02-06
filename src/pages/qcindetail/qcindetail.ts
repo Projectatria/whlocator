@@ -60,6 +60,7 @@ export class QcindetailPage {
   private nextnoqc = '';
   private token:any;
   public userid: any;
+  public name: any;
   public role = [];
   public roleid: any;
   public rolecab: any;
@@ -92,6 +93,9 @@ export class QcindetailPage {
     this.shippingmark = false;
     this.qc = "qcin"
     this.button = "qcin"
+    this.storage.get('name').then((val) => {
+      this.name = val;
+    });
     this.storage.get('userid').then((val) => {
       this.userid = val;
       this.api.get('table/user_role', { params: { filter: "id_user=" + "'" + this.userid + "'" } })

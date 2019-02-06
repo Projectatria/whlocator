@@ -39,7 +39,36 @@
   <ion-card>
     <div style="border-top:1px solid;border-color:#dedede;background:#ffffff;">
       <div padding style="font-weight:bold;">
-        Detail Item
+        Detail Item Ready To Rack
+      </div>
+      <ion-grid>
+        <ion-row>
+          <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+            <ion-row>
+              <ion-col>Batch No</ion-col>
+              <ion-col>Item No</ion-col>
+              <ion-col>Qty</ion-col>
+              <ion-col>Tools</ion-col>
+            </ion-row>
+          </ion-col>
+          <ion-col *ngFor="let movetemp of movementtempdetail" col-12 style="border-top:1px solid;border-color:#dedede;">
+            <ion-row>
+              <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{movetemp.batch_no}}</ion-col>
+              <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{movetemp.item_no}}</ion-col>
+              <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{movetemp.qty}}</ion-col>
+              <ion-col style="color:white;background:#ac0000;text-align:center;" (click)="doDeletePutawayListDetail(movetemp)">
+                <ion-icon name="md-close"></ion-icon>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </ion-card>
+  <ion-card>
+    <div style="border-top:1px solid;border-color:#dedede;background:#ffffff;">
+      <div padding style="font-weight:bold;">
+        Detail Item Staging
       </div>
       <ion-grid>
         <ion-row>
@@ -73,11 +102,15 @@
   <ion-fab-list side="top">
     <button ion-fab class="fab-list" color="greenlake" (click)="doScanBarcodeRack()">
       <ion-icon name="md-qr-scanner"></ion-icon>
+      <ion-label>Add Rack</ion-label>
     </button>
-  </ion-fab-list>
-  <ion-fab-list side="left">
     <button ion-fab class="fab-list" color="greenlake" (click)="doScanBarcodeItem()">
-      <ion-icon name="md-barcode"></ion-icon>
+      S
+      <ion-label>Add Item To Staging</ion-label>
+    </button>
+    <button ion-fab class="fab-list" color="greenlake" (click)="doScanBarcodeItemDetail()">
+      T
+      <ion-label>Add Item To Temp</ion-label>
     </button>
   </ion-fab-list>
 </ion-fab>
