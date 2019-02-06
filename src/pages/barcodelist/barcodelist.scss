@@ -1,0 +1,36 @@
+page-barcodelist {
+    .grid-container {
+        display: grid;
+        grid-template-columns: auto auto;
+        grid-gap: 1px;
+        background-color: #2196F3;
+        padding: 10px;
+      }
+      .grid-container>div {
+        background-color: rgba(255, 255, 255, 0.8);
+        text-align: center;
+        padding:20px 0;
+        font-size: 30px;
+      }
+      
+}
+@media print {
+    .header-menu {
+        display:none
+    }
+    .header-navbar {
+        display:none
+    }
+    .logo-search {
+        display:none
+    }
+    .side-title {
+        display:none
+    }
+    .scroll-content {
+        overflow-y: hidden;    
+    }
+    .content-barcode {
+        margin-top: -70px;
+    }
+  }

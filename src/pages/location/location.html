@@ -1,0 +1,46 @@
+<ion-header class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <div style="text-align:right;height:0px;">
+      <button ion-button clear style="color:#ffffff;background:transparent;font-size:25px;" (click)="closeLocation()">
+        <ion-icon name="md-close"></ion-icon>
+      </button>
+    </div>
+    <ion-title class="side-title">
+      <div class="content-search" style="width:100%;">
+        <ion-searchbar (ionInput)="getSearchPO($event)" placeholder="Search"></ion-searchbar>
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="content-location">
+  <ion-card>
+    <ion-card-header class="title-header-location">
+      <div class="fc-left">
+        <button class="btn-location-back" ion-button color="light">
+          <ion-icon name="ios-arrow-back"></ion-icon>
+        </button>
+      </div>
+      <div class="fc-right">
+        <button class="btn-location-forward" ion-button color="light">
+          <ion-icon name="ios-arrow-forward"></ion-icon>
+        </button>
+      </div>
+      <div class="fc-center">
+        <ion-select placeholder="Location Room">
+          <ion-option *ngFor="let locroom of location_room" value="{{locroom.location_room}}">Room {{locroom.location_room}}</ion-option>
+        </ion-select>
+      </div>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="grid-location">
+        <ion-grid>
+          <ion-row>
+            <ion-col *ngFor="let locarea of location_area" class="col-location" col-2>
+              <button ion-button clear full (click)="doSelectLoc()" color={{locarea.status}}>{{locarea.location_area}}</button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

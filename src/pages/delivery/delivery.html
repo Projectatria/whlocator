@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-navbar class="header-navbar">
+    <button ion-button menuToggle color="light">
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-buttons end>
+      <button ion-fab mini (click)="addDelivery()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="content-menu" no-padding>
+  <ion-searchbar (ionInput)="getSearchDelivery($event)" placeholder="Search Delivery No"></ion-searchbar>
+  <ion-list>
+    <ion-item *ngFor="let delivery of deliverys">
+      <ion-avatar item-start>
+        <img src="http://10.10.10.7/qctesting/img/{{delivery.state}}" alt="">
+      </ion-avatar>
+      <h2>Delivery No : {{delivery.delivery_no}}</h2>
+      <p>Invoice No : {{delivery.invoice_no}}</p>
+      <p>{{delivery.state}} |
+        <ion-note>{{delivery.delivery_date}}</ion-note>
+      </p>
+    </ion-item>
+  </ion-list>
+</ion-content>

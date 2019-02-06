@@ -1,0 +1,83 @@
+<ion-header id="myHeader" class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <button ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <div style="text-align:right;height:0px;">
+      <button ion-button clear style="color:#ffffff;background:transparent;font-size:25px;" (click)="doSaveToMovement()">
+        <ion-icon name="md-checkbox-outline"></ion-icon>
+      </button>
+    </div>
+    <ion-title class="side-title">
+      <div class="logo-atria">
+        <img src="assets/imgs/logoatriawhite.png" height="45" />
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="content-location">
+  <form [formGroup]="myForm">
+    <ion-card>
+      <ion-item no-lines>
+        <ion-label color="primary" stacked>Rack Destination</ion-label>
+        <ion-input style="border:0px;" formControlName="rackno" type="text" placeholder="Input Rack Number"></ion-input>
+      </ion-item>
+    </ion-card>
+    <ion-card>
+      <ion-item no-lines>
+        <ion-label color="primary" stacked>Barcode Number</ion-label>
+        <ion-input style="border:0px;" formControlName="barcodeno" type="text" placeholder="Input Barcode Number"></ion-input>
+        <button item-end ion-button clear color="greenlake" (click)="doOpenQty()">
+          <ion-icon name="md-add" style="font-size:20px;"></ion-icon>
+        </button>
+        <button *ngIf="" item-end ion-button clear color="greenlake">
+          <ion-icon name="md-sync" style="font-size:20px;"></ion-icon>
+        </button>
+      </ion-item>
+    </ion-card>
+  </form>
+  <ion-card>
+    <div style="border-top:1px solid;border-color:#dedede;background:#ffffff;">
+      <div padding style="font-weight:bold;">
+        Detail Item
+      </div>
+      <ion-grid>
+        <ion-row>
+          <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+            <ion-row>
+              <ion-col>Batch No</ion-col>
+              <ion-col>Item No</ion-col>
+              <ion-col>Qty</ion-col>
+              <ion-col>Tools</ion-col>
+            </ion-row>
+          </ion-col>
+          <ion-col *ngFor="let movetemp of movementtemp" col-12 style="border-top:1px solid;border-color:#dedede;">
+            <ion-row>
+              <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{movetemp.batch_no}}</ion-col>
+              <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{movetemp.item_no}}</ion-col>
+              <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{movetemp.qty}}</ion-col>
+              <ion-col style="color:white;background:#ac0000;text-align:center;" (click)="doDeletePutawayList(movetemp)">
+                <ion-icon name="md-close"></ion-icon>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </ion-card>
+</ion-content>
+<ion-fab class="fixed-div" bottom right>
+  <button ion-fab color="greenlake">
+    <ion-icon name="md-apps"></ion-icon>
+  </button>
+  <ion-fab-list side="top">
+    <button ion-fab class="fab-list" color="greenlake" (click)="doScanBarcodeRack()">
+      <ion-icon name="md-qr-scanner"></ion-icon>
+    </button>
+  </ion-fab-list>
+  <ion-fab-list side="left">
+    <button ion-fab class="fab-list" color="greenlake" (click)="doScanBarcodeItem()">
+      <ion-icon name="md-barcode"></ion-icon>
+    </button>
+  </ion-fab-list>
+</ion-fab>

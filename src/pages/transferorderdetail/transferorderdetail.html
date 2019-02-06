@@ -1,0 +1,206 @@
+<ion-header id="myHeader" class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <div *ngIf="!toggled" class="logo-search" style="text-align:right;height:0px;">
+      <button ion-button clear color="light" (click)="toggleSearch()">
+        <ion-icon name="md-search" style="font-size:25px;"></ion-icon>
+      </button>
+    </div>
+    <div *ngIf="toggled" style="text-align:right;height:0px;">
+      <button ion-button clear style="color:#ffffff;background:transparent;font-size:25px;" (click)="toggleSearch()">
+        <ion-icon name="md-close"></ion-icon>
+      </button>
+    </div>
+    <button *ngIf="!toggled" ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <ion-title class="side-title">
+      <div *ngIf="!toggled" class="logo-atria">
+        <img src="assets/imgs/logoatriawhite.png" height="45" />
+      </div>
+      <div *ngIf="toggled" class="content-search" style="width:100%;">
+        <ion-searchbar (ionInput)="getSearchTODetail($event)" placeholder="Search"></ion-searchbar>
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="content-menu" no-padding>
+  <ion-refresher (ionRefresh)="doRefreshTODetail($event)">
+    <ion-refresher-content>
+      pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-segment *ngIf="status == 'CLS1'" [(ngModel)]="detailto">
+    <ion-segment-button value="detailtoitem">
+      Detail Items TO
+    </ion-segment-button>
+    <ion-segment-button value="receivingsubmit">
+      Submit Receiving
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-segment *ngIf="status != 'CLS1'" [(ngModel)]="detailto">
+    <ion-segment-button value="detailtoitem">
+      Detail Items TO
+    </ion-segment-button>
+  </ion-segment>
+
+  <div [ngSwitch]="detailto">
+    <ion-list class="content-list-menu" *ngSwitchCase="'detailtoitem'">
+      <ion-row class="row-content">
+        <ion-col col-3 padding class="col-content">No TO</ion-col>
+        <ion-col col-2 padding class="col-content">No Item</ion-col>
+        <ion-col col-4 padding class="col-content">Description</ion-col>
+        <ion-col col-2 padding class="col-content">Qty</ion-col>
+        <ion-col col-1 padding class="col-content" *ngIf="status == 'CLS1'" >Receiving</ion-col>
+      </ion-row>
+      <ion-row class="row-content-list" *ngFor="let detailto of transferorderdetail">
+        <ion-col col-3 padding class="col-content">{{detailto.to_no}}</ion-col>
+        <ion-col col-2 padding class="col-content">{{detailto.item_no}}</ion-col>
+        <ion-col col-4 padding class="col-content">{{detailto.description}}</ion-col>
+        <ion-col col-2 padding class="col-content">{{detailto.qty}}</ion-col>
+        <ion-col col-1 padding class="col-content" *ngIf="status == 'CLS1'" (click)="doReceiving(detailto)">
+          <ion-icon name="md-open" style="font-size:30px;color:#217481"></ion-icon>
+        </ion-col>
+      </ion-row>
+    </ion-list>
+    <ion-list *ngSwitchCase="'receivingsubmit'">
+      <ion-slides>
+        <ion-slide *ngFor="let cek of receivingchecked">
+          <ion-card-header style="border:1px solid;border-color:#dedede;margin-bottom:1px;text-align:center;">
+            <!-- <ion-select [(ngModel)]="checked" style="margin-left:27.5%;">
+              <ion-option *ngFor="let cek of receivingchecked" value="{{cek.item_no}}">{{cek.item_no}}</ion-option>
+            </ion-select> -->
+            <h4>ITEM NO</h4>
+            {{cek.item_no}}
+          </ion-card-header>
+          <ion-card-content padding style="border:1px solid;border-color:#dedede;text-align:left;">
+            <ion-item>
+              <div>
+                Receiving Date
+              </div>
+              <div item-end>
+                {{cek.receipt_date}}
+              </div>
+            </ion-item>
+            <ion-item>
+              <div>
+                Order No
+              </div>
+              <div item-end>
+                {{cek.to_no}}
+              </div>
+            </ion-item>
+            <ion-item>
+              <div>
+                QTY
+              </div>
+              <div item-end>
+                {{cek.qty}}
+              </div>
+            </ion-item>
+            <ion-item>
+              <div>
+                QTY Receiving
+              </div>
+              <div item-end>
+                {{cek.qty_receiving}}
+              </div>
+            </ion-item>
+            <ion-item>
+              <div>
+                Difference
+              </div>
+              <div item-end>
+                {{selisihqty}}
+              </div>
+            </ion-item>
+            <ion-item>
+              <div>
+                Staging
+              </div>
+              <div item-end>
+                {{cek.staging}}
+              </div>
+            </ion-item>
+            <ion-buttons end>
+              <button ion-button color="greenlake" style="margin-top:20px;" (click)="doOpenStaging(cek)">Staging</button>
+              <button ion-button color="greenlake" style="margin-top:20px;" [disabled]="cek.staging == ''" (click)="doSubmitRCV(cek)">Submit</button>
+            </ion-buttons>
+          </ion-card-content>
+        </ion-slide>
+      </ion-slides>
+    </ion-list>
+  </div>
+  <ion-infinite-scroll (ionInfinite)="doInfiniteTODetail($event)">
+    <ion-infinite-scroll-content>
+      loadingSpinner="bubbles" loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="closeModal" (click)="doOffStaging()">&times;</span>
+      <form [formGroup]="myFormModal">
+        <ion-list no-lines>
+          <ion-item class="item-rc" style="border:0px;">
+            <ion-label floating>LOCATION</ion-label>
+            <ion-input type="text" formControlName="location"></ion-input>
+          </ion-item>
+        </ion-list>
+      </form>
+      <ion-buttons end>
+        <button ion-button color="greenlake" style="margin-top:20px;" (click)="doOpenLocation()">Location</button>
+        <button ion-button color="greenlake" style="margin-top:20px;" [disabled]="!myFormModal.valid" (click)="doSaveStaging()">Save</button>
+      </ion-buttons>
+    </div>
+  </div>
+</ion-content>
+
+<div id="myLocations" class="modal-location">
+  <div class="modal-content-location">
+    <ion-header class="header-menu">
+      <ion-navbar class="header-navbar" style="width:100%;">
+        <div style="text-align:right;height:0px;">
+          <button ion-button clear style="color:#ffffff;background:transparent;font-size:25px;" (click)="doOffLocations()">
+            <ion-icon name="md-close"></ion-icon>
+          </button>
+        </div>
+        <ion-title class="side-title">
+          <div class="content-search" style="width:100%;">
+            <ion-searchbar (ionInput)="getSearchLoc($event)" placeholder="Search"></ion-searchbar>
+          </div>
+        </ion-title>
+      </ion-navbar>
+    </ion-header>
+    <ion-content class="content-location">
+      <ion-card>
+        <ion-card-header class="title-header-location">
+          <div class="fc-center">
+            <ion-select placeholder="{{divisioncode}}" [(ngModel)]="divdesc" (ionChange)="doLocation()">
+              <ion-option *ngFor="let div of division" value="{{div.code}}" (ionSelect)="doSetLoc(div)">{{div.description}}</ion-option>
+            </ion-select>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="grid-location">
+            <ion-grid>
+              <ion-row>
+                <ion-col [ngClass]="{'col-disabled': (locmst.status != 'TRUE')}" padding *ngFor="let locmst of location_master" class="col-location"
+                  col-4 col-xl-2 (click)="doSelectLoc(locmst)">
+                  {{locmst.location_alocation}}
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>
+  </div>
+</div>
+
+<div [ngSwitch]="detailto">
+  <ion-fab class="fixed-div" bottom right *ngSwitchCase="'detailtoitem'">
+    <button ion-fab color="greenlake" (click)="doAddTODetail(detailto)">
+      <ion-icon name="md-add"></ion-icon>
+    </button>
+  </ion-fab>
+</div>

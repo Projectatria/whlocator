@@ -1,0 +1,280 @@
+<ion-header class="header-menu">
+  <ion-navbar class="header-navbar">
+    <div style="text-align:right;height:0px;">
+      <button ion-button clear color="light" (click)="doRefresh()">
+        <ion-icon name="md-sync" style="font-size:30px;"></ion-icon>
+      </button>
+    </div>
+    <button ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <ion-title class="side-title">
+      <img src="assets/imgs/logoatriawhite.png" height="45" />
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content style="background:#eeeeee;">
+  <div class="sidenav">
+    <a padding (click)="doPO()">
+      <ion-icon name="md-archive" style="font-size:20px;">&nbsp;&nbsp;&nbsp;Purchasing Order</ion-icon>
+    </a>
+    <a padding (click)="doReceiving()">
+      <ion-icon name="md-clipboard" style="font-size:20px;">&nbsp;&nbsp;&nbsp;Receiving</ion-icon>
+    </a>
+    <a padding (click)="doStagingin()">
+      <ion-icon name="md-paper-plane" style="font-size:20px;">&nbsp;&nbsp;&nbsp;Staging In</ion-icon>
+    </a>
+    <a padding (click)="doQcin()">
+      <ion-icon name="md-checkbox-outline" style="font-size:20px;">&nbsp;&nbsp;&nbsp;QC In</ion-icon>
+    </a>
+    <a padding (click)="doPutaway()">
+      <ion-icon name="md-cube" style="font-size:20px;">&nbsp;&nbsp;&nbsp;Put Away</ion-icon>
+    </a>
+    <a padding (click)="doPicking()">
+      <ion-icon name="md-paper" style="font-size:20px;">&nbsp;&nbsp;&nbsp;Picking</ion-icon>
+    </a>
+    <a padding (click)="doQcout()">
+      <ion-icon name="md-checkbox-outline" style="font-size:20px;">&nbsp;&nbsp;&nbsp;QC Out</ion-icon>
+    </a>
+    <a padding (click)="doStagingout()">
+      <ion-icon name="md-paper-plane" style="font-size:20px;">&nbsp;&nbsp;&nbsp;Staging Out</ion-icon>
+    </a>
+    <a padding (click)="doLoading()">
+      <ion-icon name="md-filing" style="font-size:20px;">&nbsp;&nbsp;&nbsp;Loading</ion-icon>
+    </a>
+  </div>
+  <div class="main">
+    <div id="po" style="display: none;">
+      <ion-card style="width:98%;" padding>
+        <div class="right" style="height:0px;margin-left:46%;margin-top:0px;border:1px solid;border-color:#dedede;right:0px;width:54%;">
+          <div class="header" padding style="background: #217481;text-align:center;">
+            <h5 style="font-size:15px;font-weight: bold;color:#ffffff;">Daftar Purchasing Order Selesai Disiapkan</h5>
+          </div>
+          <div class="body">
+            <ion-content style="padding-bottom:700px;border:1px solid;border-color:#eeeeee;">
+              <ion-item style="border-bottom: 1px solid;border-color:#eeeeee;margin-left:-15px;margin-top:-15px;width:111%;margin-bottom:15px;"
+                *ngFor="let POREC of PORECEIVING">
+                <ion-avatar item-start>
+                  <img src="assets/imgs/noimage.jpg" alt="">
+                </ion-avatar>
+                <div no-padding>
+                  <h2>No Order : {{POREC.order_no}}</h2>
+                  <ion-note>{{POREC.transfer_date}} | items : {{POREC.total_item}}</ion-note>
+                </div>
+                <ion-note style="margin-right:50px;" item-end>PIC : {{POREC.pic}}</ion-note>
+              </ion-item>
+            </ion-content>
+          </div>
+        </div>
+        <div class="left-top" style="left:0px;width:45%;margin-top:-2px;">
+          <ion-row>
+            <ion-col class="dash" col-6 style="margin-right:0px;background: #eeeeee;color:#217481;border-radius:2%;height:100px;font-weight: bold;">
+              <div style="text-align:center;">PO Akan Datang</div>
+              <div style="text-align:center;font-size:50px;">{{TOTALPOALL}}</div>
+            </ion-col>
+            <ion-col class="dash" col-6 style="background: #eeeeee;color:#217481;border-radius:2%;height:100px;font-weight: bold;">
+              <div style="text-align:center;">PO Datang Bulan Ini</div>
+              <div style="text-align:center;font-size:50px;">{{TOTALPOMONTH}}</div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col class="dash" col-6 style="margin-right:0px;background: #eb0303;border-radius:2%;color:#ffffff;height:100px;font-weight: bold;">
+              <div style="text-align:center;">PO Datang Hari Ini</div>
+              <div style="text-align:center;font-size:50px;">{{TOTALPODAY}}</div>
+            </ion-col>
+            <ion-col class="dash" col-6 style="background: #16bd00;border-radius:2%;color:#ffffff;height:100px;font-weight: bold;">
+              <div style="text-align:center;">PO Selesai Diterima</div>
+              <div style="text-align:center;font-size:50px;">{{TOTALPOFINISH}}</div>
+            </ion-col>
+          </ion-row>
+        </div>
+        <div class="left-bottom" style="margin-top:10px;border:1px solid;border-color:#dedede;left:0px;width:45%;">
+          <div class="header" padding style="background: #217481;">
+            <h5 style="font-size:15px;font-weight: bold;color:#ffffff;text-align: center;">Daftar Purchasing Order Sedang Disiapkan</h5>
+          </div>
+          <ion-content style="padding-bottom:490px;">
+            <ion-item style="border-bottom: 1px solid;border-color:#eeeeee;margin-left:-15px;margin-top:-15px;width:111%;margin-bottom:15px;"
+              *ngFor="let POPRE of POPREPARATION">
+              <ion-avatar item-start>
+                <img src="assets/imgs/noimage.jpg" alt="">
+              </ion-avatar>
+              <div no-padding>
+                <h2>No Order : {{POPRE.order_no}}</h2>
+                <ion-note>{{POPRE.transfer_date}} | items : {{POPRE.total_item}}</ion-note>
+              </div>
+              <ion-note style="margin-right:50px;" item-end>PIC : {{POPRE.pic}}</ion-note>
+            </ion-item>
+          </ion-content>
+        </div>
+      </ion-card>
+    </div>
+    <div id="receiving" style="display: none;">
+      <ion-card style="width:98%;" padding>
+        <div class="right" style="height:0px;margin-left:46%;margin-top:0px;border:1px solid;border-color:#dedede;right:0px;width:54%;">
+          <div class="header" padding style="background: #217481;text-align:center;">
+            <h5 style="font-size:15px;font-weight: bold;color:#ffffff;">Daftar Penerimaan Selesai Diterima</h5>
+          </div>
+          <div class="body">
+            <ion-content style="padding-bottom:700px;border:1px solid;border-color:#eeeeee;">
+              <ion-item style="border-bottom: 1px solid;border-color:#eeeeee;margin-left:-15px;margin-top:-15px;width:111%;margin-bottom:15px;"
+                *ngFor="let REC of RECEIVING">
+                <ion-avatar item-start>
+                  <img src="assets/imgs/noimage.jpg" alt="">
+                </ion-avatar>
+                <div no-padding>
+                  <h2>No Order : {{REC.order_no}}</h2>
+                  <ion-note>{{REC.transfer_date}} | Item No : {{REC.item_no}} | Qty : {{REC.qty}}</ion-note>
+                </div>
+                <ion-note style="margin-right:50px;" item-end>Batch No : {{REC.batch_no}}</ion-note>
+              </ion-item>
+            </ion-content>
+          </div>
+        </div>
+        <div class="left-top" style="left:0px;width:45%;margin-top:-2px;">
+          <ion-row>
+            <ion-col class="dash" col-6 style="margin-right:0px;background: #eeeeee;color:#217481;border-radius:2%;height:100px;font-weight: bold;">
+              <div style="text-align:center;">Penerimaan Siap Di Proses</div>
+              <div style="text-align:center;font-size:50px;">{{TOTALRECALL}}</div>
+            </ion-col>
+            <ion-col class="dash" col-6 style="background: #eeeeee;color:#217481;border-radius:2%;height:100px;font-weight: bold;">
+              <div style="text-align:center;">Penerimaan Bulan Ini</div>
+              <div style="text-align:center;font-size:50px;">{{TOTALRECMONTH}}</div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col class="dash" col-6 style="margin-right:0px;background: #eb0303;border-radius:2%;color:#ffffff;height:100px;font-weight: bold;">
+              <div style="text-align:center;">Penerimaan Hari Ini</div>
+              <div style="text-align:center;font-size:50px;">{{TOTALRECDAY}}</div>
+            </ion-col>
+            <ion-col class="dash" col-6 style="background: #16bd00;border-radius:2%;color:#ffffff;height:100px;font-weight: bold;">
+              <div style="text-align:center;">Penerimaan Selesai Diterima</div>
+              <div style="text-align:center;font-size:50px;">{{TOTALRECFINISH}}</div>
+            </ion-col>
+          </ion-row>
+        </div>
+        <div class="left-bottom" style="margin-top:10px;border:1px solid;border-color:#dedede;left:0px;width:45%;">
+          <div class="header" padding style="background: #217481;">
+            <h5 style="font-size:15px;font-weight: bold;color:#ffffff;text-align: center;">Daftar Penerimaan Sedang Di Proses</h5>
+          </div>
+          <ion-content style="padding-bottom:490px;">
+            <ion-item style="border-bottom: 1px solid;border-color:#eeeeee;margin-left:-15px;margin-top:-15px;width:111%;margin-bottom:15px;"
+              *ngFor="let RECPRE of RECPREPARATION">
+              <ion-avatar item-start>
+                <img src="assets/imgs/noimage.jpg" alt="">
+              </ion-avatar>
+              <div no-padding>
+                <h2>No Order : {{RECPRE.order_no}}</h2>
+                <ion-note>{{RECPRE.transfer_date}} | Item No : {{RECPRE.item_no}} | Qty : {{RECPRE.qty}}</ion-note>
+              </div>
+              <ion-note style="margin-right:50px;" item-end>Batch No : {{RECPRE.batch_no}}</ion-note>
+            </ion-item>
+          </ion-content>
+        </div>
+      </ion-card>
+    </div>
+    <div id="stagingin" style="display: none;">
+      <ion-card style="width:98%;" padding>
+        <div class="right" style="height:0px;margin-left:46%;margin-top:0px;border:1px solid;border-color:#dedede;right:0px;width:54%;">
+          <div class="header" padding style="background: #217481;text-align:center;">
+            <h5 style="font-size:15px;font-weight: bold;color:#ffffff;">Daftar Item Di Staging In</h5>
+          </div>
+          <div class="body">
+            <ion-content style="padding-bottom:700px;border:1px solid;border-color:#eeeeee;">
+              <ion-item style="border-bottom: 1px solid;border-color:#eeeeee;margin-left:-15px;margin-top:-15px;width:111%;margin-bottom:15px;"
+                *ngFor="let SI of STAGINGIN">
+                <ion-avatar item-start>
+                  <img src="assets/imgs/noimage.jpg" alt="">
+                </ion-avatar>
+                <div no-padding>
+                  <h2>No Order : {{SI.order_no}}</h2>
+                  <ion-note>{{SI.date_entry}} | Item No : {{SI.item_no}} | Qty : {{SI.qty}}</ion-note>
+                </div>
+                <ion-note style="margin-right:50px;" item-end>Batch No : {{SI.batch_no}}</ion-note>
+              </ion-item>
+            </ion-content>
+          </div>
+        </div>
+        <div class="left-top" style="left:0px;width:45%;margin-top:-2px;">
+          <ion-row>
+            <ion-col class="dash" col-6 style="margin-right:0px;background: #eeeeee;color:#217481;border-radius:2%;height:100px;font-weight: bold;">
+              <div style="text-align:center;">PO Di Staging In</div>
+              <div style="text-align:center;font-size:50px;">{{TOTALPOSTAGINGIN}}</div>
+            </ion-col>
+            <ion-col class="dash" col-6 style="background: #eeeeee;color:#217481;border-radius:2%;height:100px;font-weight: bold;">
+              <div style="text-align:center;">Item Di Staging In</div>
+              <div style="text-align:center;font-size:50px;">{{TOTALSTAGINGIN}}</div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col class="dash" col-6 style="margin-right:0px;background: #eb0303;border-radius:2%;color:#ffffff;height:100px;font-weight: bold;">
+              <div style="text-align:center;">Qty</div>
+              <div style="text-align:center;font-size:50px;">{{QTYSUM}}</div>
+            </ion-col>
+            <ion-col class="dash" col-6 style="background: #16bd00;border-radius:2%;color:#ffffff;height:100px;font-weight: bold;">
+              <div style="text-align:center;">Item Sudah Di Putaway</div>
+              <div style="text-align:center;font-size:50px;">{{TOTALSTAGINGINFINISH}}</div>
+            </ion-col>
+          </ion-row>
+        </div>
+        <div class="left-bottom" style="margin-top:10px;border:1px solid;border-color:#dedede;left:0px;width:45%;">
+          <div class="header" padding style="background: #217481;">
+            <h5 style="font-size:15px;font-weight: bold;color:#ffffff;text-align: center;">Daftar PO Di Staging In</h5>
+          </div>
+          <ion-content style="padding-bottom:490px;">
+            <ion-item style="border-bottom: 1px solid;border-color:#eeeeee;margin-left:-15px;margin-top:-15px;width:111%;margin-bottom:15px;"
+              *ngFor="let POSI of POSTAGINGIN">
+              <ion-avatar item-start>
+                <img src="assets/imgs/noimage.jpg" alt="">
+              </ion-avatar>
+              <div no-padding>
+                <h2>No Order : {{POSI.order_no}}</h2>
+              </div>
+            </ion-item>
+          </ion-content>
+        </div>
+      </ion-card>
+    </div>
+    <div id="qcin" style="display: none;">
+      <ion-list>
+        <ion-item>
+          Qc In
+        </ion-item>
+      </ion-list>
+    </div>
+    <div id="putaway" style="display: none;">
+      <ion-list>
+        <ion-item>
+          Putaway
+        </ion-item>
+      </ion-list>
+    </div>
+    <div id="picking" style="display: none;">
+      <ion-list>
+        <ion-item>
+          Picking
+        </ion-item>
+      </ion-list>
+    </div>
+    <div id="qcout" style="display: none;">
+      <ion-list>
+        <ion-item>
+          Qc Out
+        </ion-item>
+      </ion-list>
+    </div>
+    <div id="stagingout" style="display: none;">
+      <ion-list>
+        <ion-item>
+          Staging Out
+        </ion-item>
+      </ion-list>
+    </div>
+    <div id="loading" style="display: none;">
+      <ion-list>
+        <ion-item>
+          Loading
+        </ion-item>
+      </ion-list>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,74 @@
+<ion-header class="header-menu">
+  <ion-toolbar class="header-navbar">
+    <ion-title class="side-title">
+      <div class="close" *ngIf="itemsshow == false">
+        <button ion-button clear color="light" (click)="closeModal()">Close</button>
+      </div>
+      <div class="close" *ngIf="itemsshow == true">
+          <button ion-button clear color="light" (click)="doOffItems()">Close</button>
+        </div>
+      <div class="logo-atria">
+        <img src="assets/imgs/logoatriawhite.png" height="45" />
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content id="content" class="content-menu" padding>
+  <form [formGroup]="myForm">
+    <ion-item class="item-input" no-lines style="font-size:15px;">
+      <ion-label floating>TO No</ion-label>
+      <ion-input formControlName="tono" disabled="true" type="text"></ion-input>
+    </ion-item>
+    <ion-item class="item-input" no-lines style="font-size:15px;">
+      <ion-label floating>From Location</ion-label>
+      <ion-input formControlName="from" disabled="true" type="text"></ion-input>
+    </ion-item>
+    <ion-item class="item-input" no-lines style="font-size:15px;">
+      <ion-label floating>To Location</ion-label>
+      <ion-input formControlName="to" disabled="true" type="text"></ion-input>
+    </ion-item>
+    <ion-item class="item-input" no-lines style="font-size:15px;">
+      <ion-label floating>Transfer Date</ion-label>
+      <ion-input formControlName="transferdate" disabled="true" type="text"></ion-input>
+    </ion-item>
+    <ion-item class="item-input" style="font-size:15px;">
+      <ion-label floating>Item No</ion-label>
+      <ion-input formControlName="itemno" disabled="true" type="text"></ion-input>
+      <button ion-button item-end (click)="doOpenItems()">
+        <ion-icon name="md-open" color="bluedark"></ion-icon>
+      </button>
+    </ion-item>
+    <ion-item class="item-input" no-lines style="font-size:15px;">
+      <ion-label floating>Description</ion-label>
+      <ion-input formControlName="description" disabled="true"  type="text"></ion-input>
+    </ion-item>
+    <ion-item class="item-input" no-lines style="font-size:15px;">
+      <ion-label floating>QTY</ion-label>
+      <ion-input formControlName="qty" type="text"></ion-input>
+    </ion-item>
+    <ion-item class="item-input" style="font-size:15px;">
+      <ion-label floating>Unit</ion-label>
+      <ion-input formControlName="unit" disabled="true" type="text"></ion-input>
+    </ion-item>
+  </form>
+</ion-content>
+<ion-footer id="footer" style="background:#217481;">
+  <button ion-button full color="greenlake" [disabled]="!myForm.valid" (click)="insertTODetail()">
+    Insert
+  </button>
+</ion-footer>
+<div *ngIf="itemsshow == true" id="myModalItems" class="modal-items">
+  <ion-content padding class="modal-content-items">
+    <ion-searchbar placeholder="Search Items" (ionInput)="getSearch($event)"></ion-searchbar>
+    <ion-grid padding>
+      <ion-row class="row-content">
+        <ion-col padding class="col-content">Item No</ion-col>
+        <ion-col padding class="col-content">Description</ion-col>
+      </ion-row>
+      <ion-row *ngFor="let item of items" class="row-content-list" (click)="doSelectItems(item)">
+        <ion-col padding class="col-content">{{item.No_}}</ion-col>
+        <ion-col padding class="col-content">{{item.Description}}</ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-content>
+</div>

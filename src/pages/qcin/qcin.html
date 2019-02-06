@@ -1,0 +1,192 @@
+<ion-header id="myHeader" class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <button ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <div style="text-align:right;height:0px;">
+      <button class="btn-profile" ion-button clear style="color:#ffffff;background:transparent;font-size:18px;" (click)="doProfile()">
+        <ion-icon name="md-arrow-dropdown" style="margin-right:8px;"></ion-icon>
+        <h5 style="text-decoration: underline;">{{name}}</h5>
+      </button>
+    </div>
+    <ion-title class="side-title">
+      <div class="logo-atria">
+        <img src="assets/imgs/logoatriawhite.png" height="45" />
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="content-menu" no-padding>
+  <ion-segment [(ngModel)]="qc">
+    <ion-segment-button value="qcin">
+      List Staging In
+    </ion-segment-button>
+    <ion-segment-button value="myqc">
+      My QC
+    </ion-segment-button>
+    <ion-segment-button value="history">
+      History
+    </ion-segment-button>
+  </ion-segment>
+
+  <div [ngSwitch]="qc">
+    <ion-list class="content-list-menu" *ngSwitchCase="'qcin'">
+      <ion-refresher (ionRefresh)="doRefreshStaging($event)">
+        <ion-refresher-content>
+          pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+        </ion-refresher-content>
+      </ion-refresher>
+      <ion-card *ngFor="let staging of staging_in">
+        <ion-item (click)="doOpenQty(staging)">
+          <h3 style="font-weight:bold;padding-bottom:5px;">ITEM NO - {{staging.item_no}}</h3>
+          <p>Batch No : {{staging.batch_no}}</p>
+          <p>Qty : {{staging.qty_qc}}</p>
+          <ion-note item-end>Staging : {{staging.staging}}</ion-note>
+        </ion-item>
+        <!-- <ion-row class="cardfooter">
+          <ion-col style="border-top:1px solid;border-color:#dedede;background:#ffffff">
+            <p style="padding-left:10px;color:rgb(0, 0, 0);font-weight:bold;text-align:center;">{{qc.transfer_date}}</p>
+          </ion-col>
+        </ion-row> -->
+      </ion-card>
+      <!-- <ion-item class="content-data-item" *ngFor="let qc of quality_control">
+        <ion-avatar item-start>
+          <img src="assets/imgs/noimage.jpg" alt="">
+        </ion-avatar>
+        <div no-padding (click)="viewDetail(qc)">
+          <h2>No Order : {{qc.order_no}}</h2>
+          <ion-note>{{qc.posting_date}} | Items : {{qc.total_item}}</ion-note>
+        </div>
+      </ion-item> -->
+    </ion-list>
+    <ion-list class="content-list-menu" *ngSwitchCase="'myqc'">
+      <ion-refresher (ionRefresh)="doRefreshmyqc($event)">
+        <ion-refresher-content>
+          pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+        </ion-refresher-content>
+      </ion-refresher>
+      <ion-card *ngFor="let myqc of quality_control">
+        <ion-item (click)="doDetailQC(myqc)">
+          <h3 style="font-weight:bold;padding-bottom:5px;">ITEM NO - {{myqc.item_no}}</h3>
+          <p>Batch No : {{myqc.batch_no}}</p>
+          <p>Qty : {{myqc.qty}}</p>
+          <ion-note item-end>Staging : {{myqc.staging}}</ion-note>
+        </ion-item>
+        <div *ngIf="detailqc && myqc.item_no == qclist && myqc.batch_no == batchnolist" style="border-top:1px solid;border-color:#dedede;background:#ffffff;">
+          <div padding style="font-weight:bold;">
+            Inspection Result
+          </div>
+          <ion-grid>
+            <ion-row *ngIf="detailqc && myqc.item_no == qclist">
+              <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+                <ion-row>
+                  <ion-col>Date Start</ion-col>
+                  <ion-col>Start QC</ion-col>
+                  <ion-col>Date Finish</ion-col>
+                  <ion-col>Finish QC</ion-col>
+                  <ion-col>Status</ion-col>
+                </ion-row>
+              </ion-col>
+              <ion-col *ngFor="let result of qcresult" col-12 style="border-top:1px solid;border-color:#dedede;">
+                <ion-row (click)="getfoto(result);" *ngIf="detailqc && result.item_no == qclist">
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.date_start | date:'dd-MM-yy'}}</ion-col>
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.time_start}}</ion-col>
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.date_finish | date:'dd-MM-yy'}}</ion-col>
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.time_finish}}</ion-col>
+                  <ion-col *ngIf="result.qc_status == 'OPEN'" style="color:black">{{result.qc_status}}</ion-col>
+                  <ion-col *ngIf="result.qc_status == 'REJECT'" style="color:red">{{result.qc_status}}</ion-col>
+                  <ion-col *ngIf="result.qc_status == 'PASSED'" style="color:green">{{result.qc_status}}</ion-col>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-card>
+    </ion-list>
+    <ion-list *ngSwitchCase="'history'">
+    </ion-list>
+  </div>
+  <ion-infinite-scroll (ionInfinite)="doInfiniteStaging($event)">
+    <ion-infinite-scroll-content>
+      loadingSpinner="bubbles" loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
+
+<div id="myQCChecking" class="modal-checking">
+  <div class="modal-content-checking">
+    <ion-header class="header-menu">
+      <ion-navbar class="header-navbar" style="width:100%;">
+        <div style="text-align:right;height:0px;">
+          <button ion-button clear style="color:#ffffff;background:transparent;font-size:25px;" (click)="doOffChecking()">
+            <ion-icon name="md-close"></ion-icon>
+          </button>
+        </div>
+        <ion-title class="side-title">
+          <div class="logo-atria" style="margin-left:56px;">
+            <img src="assets/imgs/logoatriawhite.png" height="45" />
+          </div>
+        </ion-title>
+      </ion-navbar>
+    </ion-header>
+    <ion-content class="content-checking">
+      <ion-grid>
+        <ion-row>
+          <ion-col *ngFor="let foto of photos" col-4 style="padding:0px;margin-bottom:-4px;border:1px solid;border-color:#e3e4e6;">
+            <div class="container">
+              <img *ngIf="foto.img_src == ''" src="http://10.10.10.7/qctesting/img/noimage" style="width:100%;" />
+              <img *ngIf="foto.img_src != ''" src="{{foto.img_src}}" style="width:100%;" imageViewer />
+              <div *ngIf="(foto.img_src == '') || (foto.img_src != '' && qcstatus == 'REJECT')" class="centered" (click)="doCamera(foto)">
+                <ion-icon name="md-add" style="font-size:40px;font-weight:bold;color:#217481;"></ion-icon>
+              </div>
+              <div *ngIf="foto.img_src != '' && qcstatus == 'OPEN'" class="bottom-right" (click)="doHapus(foto)">
+                <ion-icon name="md-trash" style="font-size:25px;font-weight:bold;color:#ffffff;"></ion-icon>
+              </div>
+              <div class="bottom-left">{{foto.param_desc}}</div>
+              <div *ngIf="foto.img_src != ''" class="bottom">{{foto.description}}</div>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <div id="myBTNChecking" class="button-checking">
+        <button ion-button full color="greenlake" (click)="doPassedQC()">
+          <ion-icon name="md-checkbox-outline" style="font-size:35px;"></ion-icon>
+        </button>
+        <button ion-button full color="danger" (click)="doRejectQC()">
+          <ion-icon name="md-close" style="font-size:35px;"></ion-icon>
+        </button>
+      </div>
+    </ion-content>
+  </div>
+</div>
+
+<!-- <div id="button" [ngSwitch]="qc" *ngIf="!button">
+  <ion-fab *ngSwitchCase="'myqc'" class="fixed-div" bottom right>
+    <button ion-fab color="greenlake" (click)="doChecked()">
+      <ion-icon name="md-barcode"></ion-icon>
+    </button>
+  </ion-fab>
+</div>
+<div id="button" [ngSwitch]="qc" *ngIf="button">
+  <ion-fab *ngSwitchCase="'myqc'" class="fixed-div" bottom right>
+    <button ion-fab color="greenlake" (click)="doCamera()">
+      <ion-icon name="md-camera"></ion-icon>
+    </button>
+  </ion-fab>
+</div> -->
+<div id="foto" class="modal-foto">
+  <div class="container">
+    <img src="{{viewfoto}}" />
+    <div class="top-right">
+      <ion-icon name="md-close" style="font-size:25px;" (click)="doCloseViewPhoto()"></ion-icon>
+    </div>
+  </div>
+</div>
+<ion-footer id="myBTNChecking" class="button-checking">
+  <button ion-button full color="primary" (click)="doPassedQC()">
+    <ion-icon name="md-checkbox-outline" style="font-size:35px;"></ion-icon>
+  </button>
+  <button ion-button full color="danger" (click)="doRejectQC()">
+    <ion-icon name="md-close" style="font-size:35px;"></ion-icon>
+  </button>
+</ion-footer>

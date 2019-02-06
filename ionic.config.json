@@ -1,0 +1,7 @@
+{
+  "name": "whlocator",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}

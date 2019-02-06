@@ -1,0 +1,55 @@
+<ion-header class="header-menu">
+    <ion-navbar class="header-navbar">
+        <ion-title class="side-title">
+            <div class="close">
+              <button ion-button clear color="light" (click)="closeModal()">Close</button>
+            </div>
+            <div class="logo-atria">
+              <img src="assets/imgs/logoatriawhite.png" height="45" />
+            </div>
+          </ion-title>
+    </ion-navbar>
+  </ion-header>
+  <ion-content class="content-menu" padding>
+      <form [formGroup]="myForm">
+      <ion-item class="item-input" no-lines style="font-size:15px;">
+        <ion-label floating>Doc No</ion-label>
+        <ion-input disabled="true" formControlName="docno" type="text"></ion-input>
+      </ion-item>
+      <testing [messages]="error_messages.docno" [control]="myForm.get('docno')"></testing>
+      <ion-item class="item-input" no-lines style="font-size:15px;">
+        <ion-label floating>Order No</ion-label>
+        <ion-input disabled="true" formControlName="orderno" type="text"></ion-input>
+      </ion-item>
+      <testing [messages]="error_messages.orderno" [control]="myForm.get('orderno')"></testing>
+      <ion-item class="item-input" style="font-size:15px;">
+        <ion-label floating>Item No</ion-label>
+        <ion-select disabled="true" formControlName="itemno" >
+          <ion-option *ngFor="let item of items" value="{{item.item_no}}" (ionSelect)="onChange(item)">{{item.item_no}} {{item.description}}</ion-option>
+        </ion-select>
+      </ion-item>
+      <testing [messages]="error_messages.itemno" [control]="myForm.get('itemno')"></testing>
+      <ion-item class="item-input" no-lines style="font-size:15px;">
+          <ion-label floating>QTY</ion-label>
+          <ion-input disabled="true" formControlName="qty" type="text"></ion-input>
+        </ion-item>
+      <testing [messages]="error_messages.qty" [control]="myForm.get('qty')"></testing>
+      <ion-item class="item-input" no-lines style="font-size:15px;">
+          <ion-label floating>Receiving PIC</ion-label>
+          <ion-input formControlName="receivingpic" type="text"></ion-input>
+        </ion-item>
+      <testing [messages]="error_messages.receivingpic" [control]="myForm.get('receivingpic')"></testing>
+      <ion-item class="item-input" no-lines style="font-size:15px;">
+          <ion-label floating>Location Plan</ion-label>
+          <ion-input formControlName="locationplan" type="text"></ion-input>
+          <button ion-button clear item-end large (click)="showLocation()"><ion-icon name="md-search"></ion-icon></button>
+        </ion-item>
+      <testing [messages]="error_messages.locationplan" [control]="myForm.get('locationplan')"></testing>
+      </form>
+  </ion-content>
+  <ion-footer style="background:#217481;">
+      <button ion-button full color="greenlake" [disabled]="!myForm.valid" (click)="doUpdateReceiving()">
+        Update
+      </button>
+    </ion-footer>
+  

@@ -1,0 +1,64 @@
+<ion-header class="header-menu">
+  <ion-navbar class="header-navbar">
+    <button ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <ion-title class="side-title">
+      <img src="assets/imgs/logoatriawhite.png" height="45" />
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="content">
+  <ion-list>
+    <ion-item no-lines style="border-bottom:1px solid;border-color:#dedede;background:#217481;margin-top:3px;">
+      <div padding>
+        <h2 style="font-weight:bold;color:#ffffff;font-size:20px;">{{name}}</h2>
+        <ion-note style="color:#ffffff;">{{rolenamedetail}}</ion-note>
+      </div>
+    </ion-item>
+    <ion-item *ngIf="rolegroup == 'ADMIN'" no-lines style="border-bottom:1px solid;border-color:#dedede;" (click)="doDashboard()">
+      <ion-thumbnail padding item-left>
+        <ion-icon name="md-clipboard" style="font-size:50px;"></ion-icon>
+      </ion-thumbnail>
+      <div>
+        <h2>Dashboard Task</h2>
+      </div>
+      <button item-end clear ion-button>
+        <ion-icon name="ios-arrow-forward" style="font-size:30px;color:#217481;"></ion-icon>
+      </button>
+    </ion-item>
+    <ion-item *ngIf="rolegroup == 'ADMIN'" no-lines style="border-bottom:1px solid;border-color:#dedede;" (click)="doUsers()">
+      <ion-thumbnail padding item-left>
+        <ion-icon name="md-people" style="font-size:50px;"></ion-icon>
+      </ion-thumbnail>
+      <div>
+        <h2>List Users</h2>
+      </div>
+      <button item-end clear ion-button>
+        <ion-icon name="ios-arrow-forward" style="font-size:30px;color:#217481;"></ion-icon>
+      </button>
+    </ion-item>
+    <ion-item no-lines style="border-bottom:1px solid;border-color:#dedede;" (click)="doTask()">
+      <ion-thumbnail padding item-left>
+        <ion-icon name="md-calendar" style="font-size:50px;"></ion-icon>
+      </ion-thumbnail>
+      <div>
+        <h2>Task List</h2>
+      </div>
+      <button item-end clear ion-button>
+        <ion-icon name="ios-arrow-forward" style="font-size:30px;color:#217481;"></ion-icon>
+      </button>
+    </ion-item>
+    <ion-item no-lines style="border-bottom:1px solid;border-color:#dedede;" (click)="doLogout()">
+      <ion-thumbnail padding item-left style="text-align:center;">
+        <ion-icon name="md-log-out" style="font-size:50px;"></ion-icon>
+      </ion-thumbnail>
+      <div>
+        <h2>Log Out</h2>
+      </div>
+      <button item-end clear ion-button>
+        <ion-icon name="ios-arrow-forward" style="font-size:30px;color:#217481;"></ion-icon>
+      </button>
+    </ion-item>
+  </ion-list>
+</ion-content>

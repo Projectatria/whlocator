@@ -1,0 +1,61 @@
+<ion-header class="header-menu">
+  <ion-navbar class="header-navbar">
+    <button ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <div style="text-align:right;height:0px;">
+      <button class="btn-profile" ion-button clear style="color:#ffffff;background:transparent;font-size:18px;" (click)="doProfile()">
+        <ion-icon name="md-arrow-dropdown" style="margin-right:8px;"></ion-icon>
+        <h5 style="text-decoration: underline;">{{name}}</h5>
+      </button>
+    </div>
+    <ion-title class="side-title">
+      <img src="assets/imgs/logoatriawhite.png" height="45" />
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content padding class="content">
+  <!-- <div style="background:#dedede;color:#217481;text-align:center;font-weight: bold;font-size:15px;" padding>
+    Purchasing Order
+  </div> -->
+  <ion-grid>
+    <ion-row>
+      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'HO'" class="col" col-4 col-md-12 col-xl-3 (click)="doPreparationPO()">
+        <i class="fas fa-box imgfa"></i>
+        <h5 class="textfa">Purchasing Order</h5>
+      </ion-col>
+      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'HO'" class="col" col-8 col-md-12 col-xl-3 (click)="doReceiving()">
+        <i class="fas fa-clipboard-list imgfa"></i>
+        <h5 class="textfa">Receiving</h5>
+      </ion-col>
+      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-3 (click)="doPutaway()">
+        <i class="fas fa-pallet imgfa"></i>
+        <h5 class="textfa">Putaway</h5>
+      </ion-col>
+      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="col" col-8 col-md-12 col-xl-3 (click)="doMovement()">
+        <i class="fas fa-people-carry imgfa"></i>
+        <h5 class="textfa">Movement</h5>
+      </ion-col>
+      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="col" col-4 col-md-12 col-xl-4 (click)="doTransferOrder()">
+        <i class="fas fa-exchange-alt imgfa"></i>
+        <h5 class="textfa">Transfer Order</h5>
+      </ion-col>
+      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-8 (click)="doPicking()">
+        <i class="fas fa-dolly imgfa"></i>
+        <h5 class="textfa">Picking</h5>
+      </ion-col>
+      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-3 (click)="doQcIn()">
+        <i class="fas fa-calendar-check imgfa"></i>
+        <h5 class="textfa">QC In</h5>
+      </ion-col>
+      <ion-col padding *ngIf="rolearea == 'OUTBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-3 (click)="doQcOut()">
+        <i class="fas fa-calendar-check imgfa"></i>
+        <h5 class="textfa">QC Out</h5>
+      </ion-col>
+      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-9 (click)="doCekStock()">
+        <i class="fas fa-retweet imgfa"></i>
+        <h5 class="textfa">Cek Stock</h5>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

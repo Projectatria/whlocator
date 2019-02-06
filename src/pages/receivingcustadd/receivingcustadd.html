@@ -1,0 +1,54 @@
+<ion-content class="background">
+  <img class="logo" height="100" src="http://10.10.10.7/qctesting/img/logoatriawhite">
+  <ion-buttons end>
+      <button ion-button clear (click)="closeReceivingcustadd()">Cancel</button>
+    </ion-buttons>
+  <div class="form">
+    <form [formGroup]="myForm">
+      <ion-list>
+        <ion-item>
+          <ion-label stacked>Receiving Customer Number</ion-label>
+          <ion-input formControlName="receivingcust_no" type="text" [(ngModel)]="receivingcust_no"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.receivingcust_no" [control]="myForm.get('receivingcust_no')"></testing>
+        <ion-item>
+          <ion-label stacked>Invoice Number</ion-label>
+          <ion-input formControlName="invoice_no" type="text" [(ngModel)]="invoice_no"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.invoice_no" [control]="myForm.get('invoice_no')"></testing>
+        <ion-item>
+          <ion-label stacked>Receiving Date</ion-label>
+          <ion-input formControlName="receivingcust_date" type="date" [(ngModel)]="receivingcust_date"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.receivingcust_date" [control]="myForm.get('receivingcust_date')"></testing>
+        <ion-item>
+          <ion-label stacked>Receiving Time</ion-label>
+          <ion-input formControlName="receivingcust_time" type="time" [(ngModel)]="receivingcust_time"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.receivingcust_time" [control]="myForm.get('receivingcust_time')"></testing>
+        <ion-item>
+          <ion-label stacked>Receiver Name</ion-label>
+          <ion-input formControlName="receiver_name" type="text" [(ngModel)]="receiver_name"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.receiver_name" [control]="myForm.get('receiver_name')"></testing>
+        <ion-item>
+          <ion-label stacked>State</ion-label>
+          <ion-input formControlName="state" type="text" [(ngModel)]="state"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.state" [control]="myForm.get('state')"></testing>
+        <ion-item>
+          <ion-label stacked>Latitude</ion-label>
+          <ion-input formControlName="latitude" type="text" [(ngModel)]="latitude"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.latitude" [control]="myForm.get('latitude')"></testing>
+        <ion-item>
+          <ion-label stacked>Longitude</ion-label>
+          <ion-input formControlName="longitude" type="text" [(ngModel)]="longitude"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.longitude" [control]="myForm.get('longitude')"></testing>
+
+      </ion-list>
+      <button ion-button (click)="insertReceiving()" type="submit" block round>SAVE</button>
+    </form>
+  </div>
+</ion-content>

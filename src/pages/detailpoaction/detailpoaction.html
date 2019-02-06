@@ -1,0 +1,153 @@
+<ion-header id="myHeader" class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <div *ngIf="!toggled" class="logo-search" style="text-align:right;height:0px;">
+      <button ion-button clear color="light" (click)="toggleSearch()">
+        <ion-icon name="md-search" style="font-size:25px;"></ion-icon>
+      </button>
+    </div>
+    <div *ngIf="toggled" style="text-align:right;height:0px;">
+      <button ion-button clear style="color:#ffffff;background:transparent;font-size:25px;" (click)="toggleSearch()">
+        <ion-icon name="md-close"></ion-icon>
+      </button>
+    </div>
+    <button *ngIf="!toggled" ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <ion-title class="side-title">
+      <div *ngIf="!toggled" class="logo-atria">
+        <img src="assets/imgs/logoatriawhite.png" height="45" />
+      </div>
+      <div *ngIf="toggled" class="content-search" style="width:100%;">
+        <ion-searchbar (ionInput)="getSearchPO($event)" placeholder="Search"></ion-searchbar>
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="content-menu" no-padding>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content>
+      pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-segment [(ngModel)]="detailpo">
+    <ion-segment-button value="detailpoitem">
+      Detail Items PO
+    </ion-segment-button>
+    <!-- <ion-segment-button value="history">
+      History
+    </ion-segment-button> -->
+  </ion-segment>
+
+  <div [ngSwitch]="detailpo">
+    <!-- <div>
+      <ion-item no-lines class="toolbar-scroll">Showing {{totaldata}} entries</ion-item>
+    </div> -->
+    <ion-list class="content-list-menu" *ngSwitchCase="'detailpoitem'">
+      <div *ngFor="let detailpo of purchasing_order_detail">
+        <ion-item *ngIf="(userid == piclokasi && detailpo.status_location !='OK') || (userid == picbarcode && detailpo.status_barcode !='OK') || (userid == pic)" class="content-data-item">
+          <ion-avatar item-start>
+            <img src="assets/imgs/noimage.jpg" alt="">
+          </ion-avatar>
+          <div no-padding>
+            <h2>Item No : {{detailpo.item_no}}</h2>
+            <div style="color:#4a4a4a" *ngIf="userid != picbarcode">Location : {{detailpo.location}}</div>
+            <div style="color:#4a4a4a" *ngIf="userid == pic">Status Location : {{detailpo.status_location}}</div>
+            <div style="color:#4a4a4a" *ngIf="userid == pic">PIC Location : ({{piclokasi}})</div>
+            <div style="color:#4a4a4a" *ngIf="userid == pic">Status Barcode : {{detailpo.status_barcode}}</div>
+            <div style="color:#4a4a4a" *ngIf="userid == pic">PIC Barcode : ({{picbarcode}})</div>
+            <div style="color:#4a4a4a">Qty : {{detailpo.qty}} {{detailpo.unit}}</div>
+            <div style="color:#4a4a4a">Location : {{detailpo.location}}</div>
+            <br>
+          </div>
+          <button *ngIf="status == 'INP2' && userid == piclokasi && userid != picbarcode"
+            item-end ion-button clear color="greenlake" (click)="doOpenToTL(detailpo)">
+            <ion-icon name="md-open" style="font-size:30px;"></ion-icon>
+          </button>
+          <button *ngIf="status == 'INP2' && userid == picbarcode && userid != piclokasi"
+            item-end ion-button clear color="greenlake" (click)="doListBarcode(detailpo)">
+            <ion-icon name="md-barcode" style="font-size:30px;"></ion-icon>
+          </button>
+          <button *ngIf="status == 'INP2' && (userid != piclokasi || userid != picbarcode) && userid != pic"
+            item-end ion-button clear color="greenlake" (click)="doPostingRCV(detailpo)">
+            <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
+          </button>
+          <button *ngIf="status == 'INP2' && userid == piclokasi && userid == picbarcode" item-end ion-button clear
+            color="greenlake" (click)="doOpenOptions(detailpo)">
+            <ion-icon name="md-more" style="font-size:30px;"></ion-icon>
+          </button>
+        </ion-item>
+      </div>
+    </ion-list>
+    <ion-list *ngSwitchCase="'history'">
+      <ion-item>
+
+      </ion-item>
+    </ion-list>
+  </div>
+  <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+    <ion-infinite-scroll-content>
+      loadingSpinner="bubbles" loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="closeModal" (click)="doOffToTL()">&times;</span>
+      <form [formGroup]="myFormModal">
+        <ion-list no-lines>
+          <ion-item *ngIf="status == 'INP2'" class="item-rc" style="border:0px;">
+            <ion-label floating>LOCATION</ion-label>
+            <ion-input type="text" formControlName="location"></ion-input>
+          </ion-item>
+        </ion-list>
+      </form>
+      <ion-buttons end>
+        <button *ngIf="status == 'INP2'" ion-button color="greenlake" (click)="doOpenLocation();">Location</button>
+        <button ion-button color="greenlake" (click)="doSendToTL();">Save</button>
+      </ion-buttons>
+    </div>
+  </div>
+
+  <div id="myLocations" class="modal-location">
+    <div class="modal-content-location">
+      <ion-header class="header-menu">
+        <ion-navbar class="header-navbar" style="width:100%;">
+          <div style="text-align:right;height:0px;">
+            <button ion-button clear style="color:#ffffff;background:transparent;font-size:25px;" (click)="doOffLocations()">
+              <ion-icon name="md-close"></ion-icon>
+            </button>
+          </div>
+          <ion-title class="side-title">
+            <div class="content-search" style="width:100%;">
+              <ion-searchbar (ionInput)="getSearchPO($event)" placeholder="Search"></ion-searchbar>
+            </div>
+          </ion-title>
+        </ion-navbar>
+      </ion-header>
+      <ion-content class="content-location">
+        <ion-card>
+          <ion-card-header class="title-header-location">
+            <div class="fc-center">
+              <ion-select placeholder="{{divisioncode}}" [(ngModel)]="divdesc" (ionChange)="doLocation()">
+                <ion-option *ngFor="let div of division" value="{{div.code}}" (ionSelect)="doSetLoc(div)">{{div.description}}</ion-option>
+              </ion-select>
+            </div>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="grid-location">
+              <ion-grid>
+                <ion-row>
+                  <ion-col [ngClass]="{'col-disabled': (locmst.status != 'TRUE')}" padding *ngFor="let locmst of location_master" class="col-location"
+                    col-4 col-xl-2 (click)="doSelectLoc(locmst)">
+                    {{locmst.location_alocation}}
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-content>
+    </div>
+  </div>
+
+</ion-content>

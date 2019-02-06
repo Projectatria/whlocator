@@ -1,0 +1,59 @@
+<ion-header class="header-menu">
+  <ion-navbar class="header-navbar">
+    <ion-title class="side-title">
+      <img src="http://10.10.10.7/qctesting/img/logoatriawhite" height="45" />
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-slides class="content-slides-images" pager="true" style="border-bottom: 1px #dedede solid;">
+    <ion-slide *ngFor="let image of images">
+      <img src="{{image.url}}/500/500">
+    </ion-slide>
+  </ion-slides>
+  <div *ngFor="let item of items">
+    <div style="background:#dedede;">
+      <ion-item style="border-bottom: 1px #dedede solid;" no-lines>
+        <div class="text-description" style="text-align:center;padding-bottom:10px;">
+          {{item.description}}
+        </div>
+      </ion-item>
+      <ion-item style="border-bottom: 1px #dedede solid;margin-top:10px;" no-lines>
+        <ion-grid>
+          <ion-row>
+            <ion-col style="text-align:center;border-right:1px solid #dedede;background:#fff;color:#66c56c">
+              {{item.width}}
+              <br><br>
+              Width
+            </ion-col>
+            <ion-col style="text-align:center;border-right:1px solid #dedede;background:#fff;color:#66c56c">
+              {{item.height}}
+              <br><br>
+              Height
+            </ion-col>
+            <ion-col style="text-align:center;background:#fff;color:#66c56c">
+              {{item.weight_actual}}
+              <br><br>
+              Weight 
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+      <ion-item style="border-bottom: 1px #dedede solid;border-top: 1px #dedede solid;margin-top:10px;margin-bottom:10px;" no-lines>
+       <ion-grid>
+         <ion-row>
+          <ion-col style="text-align:center;background:#fff;color:#66c56c">
+             {{item.qty}}
+             <br><br>
+             QTY
+           </ion-col>
+         </ion-row>
+       </ion-grid>
+      </ion-item>
+    </div>
+  </div>
+</ion-content>
+<ion-footer>
+  <button ion-button block color="secondary">Putaway</button>
+</ion-footer>

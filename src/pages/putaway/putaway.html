@@ -1,0 +1,436 @@
+<ion-header id="myHeader" class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <button ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <div style="text-align:right;height:0px;">
+      <button class="btn-profile" ion-button clear style="color:#ffffff;background:transparent;font-size:18px;" (click)="doProfile()">
+        <ion-icon name="md-arrow-dropdown" style="margin-right:8px;"></ion-icon>
+        <h5 style="text-decoration: underline;">{{name}}</h5>
+      </button>
+    </div>
+    <ion-title class="side-title">
+      <div class="logo-atria">
+        <img src="assets/imgs/logoatriawhite.png" height="45" />
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="content-menu" no-padding>
+  <ion-segment [(ngModel)]="put">
+    <ion-segment-button value="qcin">
+      List Staging In
+    </ion-segment-button>
+    <ion-segment-button value="putaway">
+      List Putaway
+    </ion-segment-button>
+    <!-- <ion-segment-button value="history">
+      History
+    </ion-segment-button> -->
+  </ion-segment>
+
+  <div [ngSwitch]="put">
+    <ion-list class="content-list-menu" *ngSwitchCase="'qcin'">
+      <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content>
+          pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+        </ion-refresher-content>
+      </ion-refresher>
+      <ion-card *ngFor="let rcv of receiving">
+        <ion-item *ngIf="rcv.staging != 'RACK'" (click)="viewDetail(rcv)">
+          <h3 style="font-weight:bold;padding-bottom:5px;text-align:left;">ITEM NO - {{rcv.item_no}}</h3>
+          <p>Qty : {{rcv.qty_receiving}}</p>
+          <p>Staging : {{rcv.staging}}</p>
+          <p item-end>Batch No : {{rcv.batch_no}}</p>
+        </ion-item>
+        <div *ngIf="detailput && rcv.receiving_no == rcvlist" style="border-top:1px solid;border-color:#dedede;background:#ffffff;">
+          <div padding style="font-weight:bold;">
+            Detail Putaway
+          </div>
+          <ion-grid>
+            <ion-row>
+              <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+                <ion-row>
+                  <ion-col>Item No</ion-col>
+                  <ion-col>Qty</ion-col>
+                  <ion-col>Location</ion-col>
+                </ion-row>
+              </ion-col>
+              <ion-col *ngFor="let put of putaway" col-12 style="border-top:1px solid;border-color:#dedede;">
+                <ion-row (click)="doUpdatePutaway;">
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{put.item_no}}</ion-col>
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{put.qty}}</ion-col>
+                  <ion-col style="color:green">{{put.location_position}}</ion-col>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+        <ion-row *ngIf="rcv.staging != 'RACK'" class="cardfooter">
+          <ion-col style="border-top:1px solid;border-color:#dedede;background:#ffffff">
+            <button ion-button full button clear color="greenlake" (click)="doPutaway(rcv)">
+              <ion-icon name="md-open" style="font-size:30px;"></ion-icon>
+            </button>
+          </ion-col>
+        </ion-row>
+      </ion-card>
+    </ion-list>
+    <ion-list class="content-list-menu" *ngSwitchCase="'putaway'">
+      <ion-refresher (ionRefresh)="doRefreshputaway($event)">
+        <ion-refresher-content>
+          pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+        </ion-refresher-content>
+      </ion-refresher>
+      <div id="options" style="border:1px solid;border-color:#dedede;">
+        <ion-item>
+          <ion-label>Group By </ion-label>
+          <ion-select [(ngModel)]="groupby" (ionChange)="getSetGroupBy(groupby)">
+            <ion-option value="">All</ion-option>
+            <ion-option value="item_no">Items</ion-option>
+            <ion-option value="batch_no">Batch Number</ion-option>
+            <ion-option value="location_position">Locations</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item *ngIf="groupby == ''">
+          <ion-label>Search By </ion-label>
+          <ion-select [(ngModel)]="search">
+            <ion-option value="item_no">Items</ion-option>
+            <ion-option value="batch_no">Batch Number</ion-option>
+            <ion-option value="location_position">Locations</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item no-lines *ngIf="groupby == ''">
+          <ion-searchbar *ngIf="search == 'item_no' && groupby == ''" style="margin-top:-10px;margin-left:-10px;padding:0px;width:105%;"
+            (ionInput)="getSearchItems($event)" placeholder="Search Items"></ion-searchbar>
+          <ion-searchbar *ngIf="search == 'batch_no' && groupby == ''" style="margin-top:-10px;margin-left:-10px;padding:0px;width:105%;"
+            (ionInput)="getSearchbatch($event)" placeholder="Search Batch Number"></ion-searchbar>
+          <ion-searchbar *ngIf="search == 'location_position' && groupby == ''" style="margin-top:-10px;margin-left:-10px;padding:0px;width:105%;"
+            (ionInput)="getSearchlocations($event)" placeholder="Search Locations"></ion-searchbar>
+        </ion-item>
+        <ion-item no-lines *ngIf="groupby != ''">
+          <ion-searchbar *ngIf="groupby == 'item_no'" style="margin-top:-10px;margin-left:-10px;padding:0px;width:105%;" (ionInput)="getSearchGroupItems($event)"
+            placeholder="Search Items"></ion-searchbar>
+          <ion-searchbar *ngIf="groupby == 'batch_no'" style="margin-top:-10px;margin-left:-10px;padding:0px;width:105%;" (ionInput)="getSearchGroupbatch($event)"
+            placeholder="Search Batch Number"></ion-searchbar>
+          <ion-searchbar *ngIf="groupby == 'location_position'" style="margin-top:-10px;margin-left:-10px;padding:0px;width:105%;"
+            (ionInput)="getSearchGrouplocations($event)" placeholder="Search Locations"></ion-searchbar>
+        </ion-item>
+      </div>
+      <div *ngIf="groupby == ''" style="background:#ffffff;">
+        <ion-grid>
+          <ion-row>
+            <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+              <ion-row>
+                <ion-col class="col-select" (click)="doSortPUT('location_position')" style="padding-left:10px;">Location
+                  <ion-icon *ngIf="filter == 'location_position' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                  <ion-icon *ngIf="filter == 'location_position' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                </ion-col>
+                <ion-col class="col-select" (click)="doSortPUT('item_no')">Item No
+                  <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                  <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                </ion-col>
+                <ion-col class="col-select" (click)="doSortPUT('qty')">Qty
+                  <ion-icon *ngIf="filter == 'qty' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                  <ion-icon *ngIf="filter == 'qty' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                </ion-col>
+                <ion-col class="col-select" (click)="doSortPUT('batch_no')">Batch No
+                  <ion-icon *ngIf="filter == 'batch_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                  <ion-icon *ngIf="filter == 'batch_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                </ion-col>
+              </ion-row>
+            </ion-col>
+            <ion-col *ngFor="let listpu of listputaway" col-12 style="border-top:1px solid;border-color:#dedede;">
+              <ion-row>
+                <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede;padding-left:10px;">{{listpu.location_position}}</ion-col>
+                <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpu.item_no}}</ion-col>
+                <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpu.qty}}</ion-col>
+                <ion-col style="color:black">{{listpu.batch_no}}</ion-col>
+              </ion-row>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+      <div *ngIf="groupby != ''">
+        <ion-card *ngFor="let listpu of listputaway">
+          <ion-item *ngIf="groupby == 'item_no'" (click)="getDetailGroupByItems(listpu)">
+            Item No : {{listpu.item_no}}
+            <ion-note style="color:red" item-end>{{listpu.qtysum}}</ion-note>
+          </ion-item>
+          <div *ngIf="detailputlist && listpu.item_no == itemnolist" style="background:#ffffff;">
+            <ion-grid>
+              <ion-row>
+                <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+                  <ion-row>
+                    <ion-col (click)="doSortPUTDetail('location_position',listpu)">Location
+                      <ion-icon *ngIf="filter == 'location_position' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'location_position' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPUTDetail('item_no',listpu)">Item No
+                      <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPUTDetail('qty',listpu)">Qty
+                      <ion-icon *ngIf="filter == 'qty' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'qty' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPUTDetail('batch_no',listpu)">Batch No
+                      <ion-icon *ngIf="filter == 'batch_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'batch_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                  </ion-row>
+                </ion-col>
+                <ion-col *ngFor="let listpudetail of listputawaydetail" col-12 style="border-top:1px solid;border-color:#dedede;">
+                  <ion-row>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpudetail.location_position}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpudetail.item_no}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpudetail.qty}}</ion-col>
+                    <ion-col style="color:black">{{listpudetail.batch_no}}</ion-col>
+                  </ion-row>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+          <ion-item *ngIf="groupby == 'location_position'" (click)="getDetailGroupByLocation(listpu)">
+            Location : {{listpu.location_position}}
+            <ion-note style="color:red" item-end>{{listpu.qtysum}}</ion-note>
+          </ion-item>
+          <div *ngIf="detailputlist && listpu.location_position == locationlist" style="background:#ffffff;">
+            <ion-grid>
+              <ion-row>
+                <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+                  <ion-row>
+                    <ion-col (click)="doSortPUTDetail('location_position',listpu)">Location
+                      <ion-icon *ngIf="filter == 'location_position' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'location_position' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPUTDetail('item_no',listpu)">Item No
+                      <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPUTDetail('qty',listpu)">Qty
+                      <ion-icon *ngIf="filter == 'qty' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'qty' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPUTDetail('batch_no',listpu)">Batch No
+                      <ion-icon *ngIf="filter == 'batch_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'batch_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                  </ion-row>
+                </ion-col>
+                <ion-col *ngFor="let listpudetail of listputawaydetail" col-12 style="border-top:1px solid;border-color:#dedede;">
+                  <ion-row>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpudetail.location_position}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpudetail.item_no}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpudetail.qty}}</ion-col>
+                    <ion-col style="color:black">{{listpudetail.batch_no}}</ion-col>
+                  </ion-row>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+          <ion-item *ngIf="groupby == 'batch_no'" (click)="getDetailGroupByBatchno(listpu)">
+            Batch No : {{listpu.batch_no}}
+            <ion-note style="color:red" item-end>{{listpu.qtysum}}</ion-note>
+          </ion-item>
+          <div *ngIf="detailputlist && listpu.batch_no == batchnolist" style="background:#ffffff;">
+            <ion-grid>
+              <ion-row>
+                <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+                  <ion-row>
+                    <ion-col (click)="doSortPUTDetail('location_position',listpu)">Location
+                      <ion-icon *ngIf="filter == 'location_position' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'location_position' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPUTDetail('item_no',listpu)">Item No
+                      <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPUTDetail('qty',listpu)">Qty
+                      <ion-icon *ngIf="filter == 'qty' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'qty' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPUTDetail('batch_no',listpu)">Batch No
+                      <ion-icon *ngIf="filter == 'batch_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'batch_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                  </ion-row>
+                </ion-col>
+                <ion-col *ngFor="let listpudetail of listputawaydetail" col-12 style="border-top:1px solid;border-color:#dedede;">
+                  <ion-row>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpudetail.location_position}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpudetail.item_no}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpudetail.qty}}</ion-col>
+                    <ion-col style="color:black">{{listpudetail.batch_no}}</ion-col>
+                  </ion-row>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+        </ion-card>
+      </div>
+    </ion-list>
+    <ion-list *ngSwitchCase="'history'">
+      <ion-item>
+
+      </ion-item>
+    </ion-list>
+  </div>
+  <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+    <ion-infinite-scroll-content>
+      loadingSpinner="bubbles" loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="closeModal" (click)="doOffPutaway()">&times;</span>
+      <form [formGroup]="myFormModal">
+        <ion-list no-lines>
+          <ion-item class="item-rc" style="border:0px;">
+            <ion-label floating>Location</ion-label>
+            <ion-input type="text" formControlName="location"></ion-input>
+          </ion-item>
+          <ion-item class="item-rc" style="border:0px;">
+            <ion-label floating>Qty</ion-label>
+            <ion-input type="text" formControlName="qty"></ion-input>
+          </ion-item>
+        </ion-list>
+      </form>
+      <ion-buttons end>
+        <button ion-button color="greenlake" style="margin-top:20px;" (click)="doOpenLocation()">Location</button>
+        <button ion-button color="greenlake" style="margin-top:20px;" [disabled]="!myFormModal.valid" (click)="doSavePutaway(rcv)">Save</button>
+      </ion-buttons>
+    </div>
+  </div>
+
+</ion-content>
+
+<div id="myLocations" class="modal-location">
+  <div class="modal-content-location">
+    <ion-header class="header-menu">
+      <ion-navbar class="header-navbar" style="width:100%;">
+        <div style="text-align:right;height:0px;">
+          <button ion-button clear style="color:#ffffff;background:transparent;font-size:25px;" (click)="doOffLocations()">
+            <ion-icon name="md-close"></ion-icon>
+          </button>
+        </div>
+        <ion-title class="side-title">
+          <div class="content-search" style="width:100%;">
+            <ion-searchbar (ionInput)="getSearchLoc($event)" placeholder="Search"></ion-searchbar>
+          </div>
+        </ion-title>
+      </ion-navbar>
+    </ion-header>
+    <ion-content class="content-location">
+      <ion-card>
+        <ion-card-header class="title-header-location">
+          <div class="fc-center">
+            <ion-select placeholder="{{divisioncode}}" [(ngModel)]="divdesc" (ionChange)="doLocation()">
+              <ion-option *ngFor="let div of division" value="{{div.code}}" (ionSelect)="doSetLoc(div)">{{div.description}}</ion-option>
+            </ion-select>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="grid-location">
+            <ion-grid>
+              <ion-row>
+                <ion-col [ngClass]="{'col-disabled': (locmst.status != 'TRUE')}" padding *ngFor="let locmst of location_master" class="col-location"
+                  col-4 col-xl-2 (click)="doSelectLoc(locmst)">
+                  {{locmst.location_alocation}}
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>
+  </div>
+</div>
+<div id="myListPutaway" class="modal-location">
+  <div class="modal-content-location">
+    <ion-header id="myHeader" class="header-menu">
+      <ion-navbar class="header-navbar" style="width:100%;">
+        <div style="text-align:right;height:0px;">
+          <button ion-button clear style="color:#ffffff;background:transparent;font-size:25px;" (click)="doSaveToPutaway()">
+            <ion-icon name="md-checkbox-outline"></ion-icon>
+          </button>
+        </div>
+        <ion-title class="side-title">
+          <div style="text-align:left;">
+            <img src="assets/imgs/logoatriawhite.png" height="45" />
+          </div>
+        </ion-title>
+      </ion-navbar>
+    </ion-header>
+    <ion-content class="content-location">
+      <form [formGroup]="myForm">
+        <ion-card>
+          <ion-item no-lines>
+            <ion-label color="primary" stacked>Rack Destination</ion-label>
+            <ion-input style="border:0px;" formControlName="rackno" type="text" placeholder="Input Rack Number"></ion-input>
+          </ion-item>
+        </ion-card>
+        <ion-card>
+          <ion-item no-lines>
+            <ion-label color="primary" stacked>Barcode Number</ion-label>
+            <ion-input style="border:0px;" formControlName="barcodeno" type="text" placeholder="Input Barcode Number"></ion-input>
+            <button item-end ion-button clear color="greenlake" (click)="doOpenQty()">
+              <ion-icon name="md-add" style="font-size:20px;"></ion-icon>
+            </button>
+            <button *ngIf="" item-end ion-button clear color="greenlake">
+              <ion-icon name="md-sync" style="font-size:20px;"></ion-icon>
+            </button>
+          </ion-item>
+        </ion-card>
+      </form>
+      <ion-card>
+        <div style="border-top:1px solid;border-color:#dedede;background:#ffffff;">
+          <div padding style="font-weight:bold;">
+            Detail Item
+          </div>
+          <ion-grid>
+            <ion-row>
+              <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+                <ion-row>
+                  <ion-col>Batch No</ion-col>
+                  <ion-col>Item No</ion-col>
+                  <ion-col>Variant</ion-col>
+                  <ion-col>Qty</ion-col>
+                  <ion-col>Tools</ion-col>
+                </ion-row>
+              </ion-col>
+              <ion-col *ngFor="let putemp of putawaytemp" col-12 style="border-top:1px solid;border-color:#dedede;">
+                <ion-row>
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{putemp.batch_no}}</ion-col>
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{putemp.item_no}}</ion-col>
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{putemp.variant_no}}</ion-col>
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{putemp.qty}}</ion-col>
+                  <ion-col style="color:white;background:#ac0000;text-align:center;" (click)="doDeletePutawayList(putemp)">
+                    <ion-icon name="md-close"></ion-icon>
+                  </ion-col>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-card>
+    </ion-content>
+  </div>
+</div>
+<div [ngSwitch]="put">
+  <ion-fab *ngSwitchCase="'qcin'" class="fixed-div" bottom right>
+    <button ion-fab color="greenlake" (click)="doOpenListPutaway()">
+      <ion-icon name="md-apps"></ion-icon>
+    </button>
+    <ion-fab-list side="top">
+      <button ion-fab class="fab-list" color="greenlake" (click)="doScanBarcodeRack()">
+        <ion-icon name="md-qr-scanner"></ion-icon>
+      </button>
+    </ion-fab-list>
+    <ion-fab-list side="left">
+      <button ion-fab class="fab-list" color="greenlake" (click)="doScanBarcodeItem()">
+        <ion-icon name="md-barcode"></ion-icon>
+      </button>
+    </ion-fab-list>
+  </ion-fab>
+</div>

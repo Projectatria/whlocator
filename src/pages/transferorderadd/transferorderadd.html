@@ -1,0 +1,53 @@
+<ion-header class="header-menu">
+  <ion-navbar class="header-navbar">
+    <ion-title class="side-title">
+      <div class="close">
+        <button ion-button clear color="light" (click)="closeModal()">Close</button>
+      </div>
+      <div class="logo-atria">
+        <img src="assets/imgs/logoatriawhite.png" height="45" />
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="content-menu" padding>
+  <form [formGroup]="myForm">
+    <!-- <ion-item class="item-input" style="font-size:15px;">
+      <ion-label floating>Tipe TO</ion-label>
+      <ion-select formControlName="tipe" (ionChange)="doGetOrderNo()">
+        <ion-option value="TO">Transfer Order</ion-option>
+        <ion-option value="TD">Transfer Display</ion-option>
+      </ion-select>
+    </ion-item> -->
+    <ion-item class="item-input" style="font-size:15px;">
+      <ion-label floating>From</ion-label>
+      <ion-select formControlName="from">
+        <ion-option *ngFor="let loc of location" value="{{loc.Code}}">{{loc.Code}} {{loc.Name}}</ion-option>
+      </ion-select>
+    </ion-item>
+    <ion-item class="item-input" style="font-size:15px;">
+      <ion-label floating>TO</ion-label>
+      <ion-select formControlName="to" disabled>
+        <ion-option *ngFor="let loc of location" value="{{loc.Code}}">{{loc.Code}} {{loc.Name}}</ion-option>
+      </ion-select>
+    </ion-item>
+    <ion-item class="item-input" no-lines style="font-size:15px;">
+      <ion-label floating>Order No</ion-label>
+      <ion-input formControlName="orderno" disabled type="text"></ion-input>
+    </ion-item>
+    <ion-item class="item-input" style="font-size:15px;">
+      <ion-label floating>Transfer Date</ion-label>
+      <ion-datetime formControlName="transferdate" displayFormat="DD MMMM YYYY" min="2018" max="2020-10-31" [(ngModel)]="myDate"></ion-datetime>
+    </ion-item>
+    <ion-item class="item-input" style="font-size:15px">
+      <ion-label floating>Description</ion-label>
+      <ion-textarea formControlName="description" disabled type="textarea"></ion-textarea>
+    </ion-item>
+    <!-- <testing [messages]="error_messages.locationcode" [control]="myForm.get('locationcode')"></testing> -->
+  </form>
+</ion-content>
+<ion-footer style="background:#217481;">
+  <button ion-button full color="greenlake" [disabled]="!myForm.valid" (click)="insertTO()">
+    Save
+  </button>
+</ion-footer>

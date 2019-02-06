@@ -1,0 +1,434 @@
+<ion-header class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <button *ngIf="!toggled" ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <div style="text-align:right;height:0px;">
+      <button class="btn-profile" ion-button clear style="color:#ffffff;background:transparent;font-size:18px;" (click)="doProfile()">
+        <ion-icon name="md-arrow-dropdown" style="margin-right:8px;"></ion-icon>
+        <h5 style="text-decoration: underline;">{{name}}</h5>
+      </button>
+    </div>
+    <ion-title class="side-title">
+      <div *ngIf="!toggled" class="logo-atria">
+        <img src="assets/imgs/logoatriawhite.png" height="45" />
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="content-menu" no-padding>
+  <ion-segment *ngIf="roleid == 'ADMIN'" [(ngModel)]="po">
+    <!--<ion-segment-button value="purchasingorder">
+      Purchasing Order
+    </ion-segment-button>-->
+    <ion-segment-button value="infopo">
+      Schedule PO
+    </ion-segment-button>
+    <!-- <ion-segment-button value="history">
+      History
+    </ion-segment-button> -->
+  </ion-segment>
+  <ion-segment *ngIf="roleid != 'ADMIN'" [(ngModel)]="po">
+    <ion-segment-button value="preparation">
+      Preparation
+    </ion-segment-button>
+    <!-- <ion-segment-button value="history">
+      History
+    </ion-segment-button> -->
+  </ion-segment>
+
+  <div [ngSwitch]="po">
+
+    <!--<ion-list class="content-list-menu" *ngSwitchCase="'purchasingorder'">
+      <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content>
+          pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+        </ion-refresher-content>
+      </ion-refresher>
+      <div *ngIf="width < 900" class="android-content">
+        <div>
+          <ion-item no-lines class="toolbar-scroll">Showing {{totaldata}} entries</ion-item>
+        </div>
+        <ion-item class="content-data-item" *ngFor="let po of ponav">
+          <ion-avatar item-start>
+            <img src="assets/imgs/noimage.jpg" alt="">
+          </ion-avatar>
+          <div no-padding (click)="viewDetail(po)">
+            <h2>No Order : {{po.No_}}</h2>
+            <ion-note>{{po["Order Date"] | date:"dd MMMM yyyy"}}</ion-note>
+          </div>
+          <button item-end ion-button clear color="greenlake" (click)="doOpenOptions(po)">
+            <ion-icon name="md-more" style="font-size:30px;"></ion-icon>
+          </button>
+        </ion-item>
+      </div>
+      <div *ngIf="width >= 900" class="pc-content">
+        <ion-grid>
+          <ion-item no-lines style="margin-left:-1%;width:101%;border-bottom:1px solid;border-color:#dedede;">
+            <ion-label style="margin-left:1%;">DATE :</ion-label>
+            <ion-input style="border:0px;" type="date" [(ngModel)]="datearrivalPO" (ionChange)="selectdatePO(datearrivalPO)"></ion-input>
+          </ion-item>
+          <div class="content-search" style="width:100%;">
+            <ion-searchbar (ionInput)="getSearchPO($event)" placeholder="Search PO Number"></ion-searchbar>
+          </div>
+          <ion-row class="row-content">
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortPO('order_no')">Order No
+              <ion-icon *ngIf="filter == 'order_no' && sortPO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'order_no' && sortPO == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortPO('batch_no')">Batch No
+              <ion-icon *ngIf="filter == 'doc_no' && sortPO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'doc_no' && sortPO == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2>Vendor Status
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortPO('vendor_no')">Vendor No
+              <ion-icon *ngIf="filter == 'total_item' && sortPO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'total_item' && sortPO == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortPO('expected_receipt_date')">Estimated Time Of Arrival
+              <ion-icon *ngIf="filter == 'transfer_date' && sortPO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'transfer_date' && sortPO == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2>Options</ion-col>
+          </ion-row>
+          <ion-row class="row-content-list" *ngFor="let po of purchasing_order">
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetail(po)">
+              {{po.No_}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetail(po)">
+              {{po["Order Date"] | date:"ddMMyy"}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetail(po)">
+              {{po["Gen_ Bus_ Posting Group"]}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetail(po)">
+              {{po["Buy-from Vendor No_"]}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetail(po)">
+              {{po["Order Date"] | date:"dd MMMM yyyy"}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2>
+              <button ion-button clear color="greenlake" (click)="doUpdatePO(po)">
+                <ion-icon name="md-pricetag" style="font-size:30px;"></ion-icon>
+              </button>
+              <button ion-button clear color="greenlake" (click)="doDeletePO(po)">
+                <ion-icon name="md-trash" style="font-size:30px;"></ion-icon>
+              </button>
+              <button ion-button clear color="greenlake" (click)="doPostingPO(po)">
+                <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+      <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+        <ion-infinite-scroll-content>
+          loadingSpinner="bubbles" loadingText="Loading more data...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </ion-list>-->
+
+    <ion-list class="content-list-menu" *ngSwitchCase="'infopo'">
+      <ion-refresher (ionRefresh)="doRefreshInfoPO($event)">
+        <ion-refresher-content>
+          pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+        </ion-refresher-content>
+      </ion-refresher>
+      <div *ngIf="width < 900" class="android-content">
+        <!-- <div>
+          <ion-item no-lines class="toolbar-scroll">Showing {{totaldatainfopo}} entries</ion-item>
+        </div> -->
+        <ion-item class="content-data-item" *ngFor="let info of infopo">
+          <ion-avatar item-start>
+            <img src="assets/imgs/noimage.jpg" alt="">
+          </ion-avatar>
+          <div no-padding (click)="viewDetailInfoPO(info)">
+            <h2>PO No : {{info.No_}}</h2>
+            <p>{{info["Gen_ Bus_ Posting Group"]}}</p>
+            <ion-note>{{info["Order Date"] | date:"dd MMMM yyyy"}}</ion-note>
+          </div>
+          <button *ngIf="info.Status == 1" item-end ion-button clear color="greenlake" (click)="doOpenToPIC(info)">
+            <ion-icon name="md-open" style="font-size:30px;"></ion-icon>
+          </button>
+          <button *ngIf="info.Status == 1" item-end ion-button clear color="greenlake" (click)="doPostingInfoPO(info)">
+            <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
+          </button>
+        </ion-item>
+      </div>
+      <div *ngIf="width >= 900" class="pc-content">
+        <ion-grid>
+          <ion-item no-lines style="margin-left:-1%;width:101%;border-bottom:1px solid;border-color:#dedede;">
+            <ion-label style="margin-left:1%;">DATE :</ion-label>
+            <ion-input style="border:0px;" type="date" [(ngModel)]="datearrivalInfoPO" (ionChange)="selectdateInfoPO(datearrivalInfoPO)"></ion-input>
+          </ion-item>
+          <div class="content-search" style="width:100%;">
+            <ion-searchbar (ionInput)="getSearchInfoPO($event)" placeholder="Search PO Number"></ion-searchbar>
+          </div>
+          <ion-row class="row-content">
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortInfoPO('order_no')">Order No
+              <ion-icon *ngIf="filter == 'order_no' && sortInfoPO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'order_no' && sortInfoPO == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortInfoPO('batch_no')">Batch No
+              <ion-icon *ngIf="filter == 'doc_no' && sortInfoPO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'doc_no' && sortInfoPO == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortInfoPO('vendor_no')">Vendor No
+              <ion-icon *ngIf="filter == 'total_item' && sortInfoPO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'total_item' && sortInfoPO == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortInfoPO('expected_receipt_date')">Estimated Time Of Arrival
+              <ion-icon *ngIf="filter == 'transfer_date' && sortInfoPO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'transfer_date' && sortInfoPO == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortInfoPO('status')">Status
+              <ion-icon *ngIf="filter == 'status' && sortInfoPO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'status' && sortInfoPO == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2>Options
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-xl-2 style="padding-top:15px;">
+              <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchOrderNo($event.target.value)" (keyup)="getSearchOrderNo($event.target.value)"></ion-input>
+            </ion-col>
+            <ion-col col-xl-2 style="padding-top:15px;">
+              <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchBatchNo($event.target.value)" (keyup)="getSearchBatchNo($event.target.value)"></ion-input>
+            </ion-col>
+            <ion-col col-xl-2 style="padding-top:15px;">
+              <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchVendorNo($event.target.value)" (keyup)="getSearchVendorNo($event.target.value)"></ion-input>
+            </ion-col>
+            <ion-col col-xl-2 style="padding-top:15px;">
+              <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchEstimated($event.target.value)" (keyup)="getSearchEstimated($event.target.value)"></ion-input>
+            </ion-col>
+            <ion-col col-xl-2 style="padding-top:15px;">
+              <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchStatus($event.target.value)" (keyup)="getSearchStatus($event.target.value)"></ion-input>
+            </ion-col>
+          </ion-row>
+          <ion-row class="row-content-list" *ngFor="let info of infopo">
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailInfoPO(info)">
+              {{info.No_}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailInfoPO(info)">
+             {{info.batchno}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailInfoPO(info)">
+              {{info["Buy-from Vendor No_"]}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailInfoPO(info)">
+              {{info["Order Date"] | date:"dd MMMM yyyy"}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailInfoPO(info)">
+              {{info.Status}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2>
+              <button *ngIf="info.Status == 1" item-end ion-button clear color="greenlake" (click)="doOpenToPIC(info)">
+                <ion-icon name="md-open" style="font-size:30px;"></ion-icon>
+              </button>
+              <button *ngIf="info.Status == 1" item-end ion-button clear color="greenlake" (click)="doPostingInfoPO(info)">
+                <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+      <ion-grid>
+        <ion-row>
+          <ion-col col-4>
+
+          </ion-col>
+          <ion-col col-4 style="text-align: center;">
+            <ion-col>
+              <button ion-button (click)="doPrevious()" [disabled]="pagination == 1" color="greenlake">
+                <i class="fas fa-angle-left"></i>
+              </button>
+            </ion-col>
+            <ion-col>
+              <button ion-button color="greenlake">
+                {{pagination}}
+              </button>
+            </ion-col>
+            <ion-col>
+              <button ion-button (click)="doNext()" color="greenlake" [disabled]="halamaninfopo < 0">
+                <i class="fas fa-angle-right"></i>
+              </button>
+            </ion-col>
+          </ion-col>
+          <ion-col col-4>
+
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <!-- <ion-infinite-scroll (ionInfinite)="doInfiniteInfoPO($event)">
+        <ion-infinite-scroll-content>
+          loadingSpinner="bubbles" loadingText="Loading more data...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll> -->
+    </ion-list>
+
+    <ion-list class="content-list-menu" *ngSwitchCase="'preparation'">
+      <ion-refresher (ionRefresh)="doRefreshPrepare($event)">
+        <ion-refresher-content>
+          pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+        </ion-refresher-content>
+      </ion-refresher>
+      <div *ngIf="width < 900" class="android-content">
+        <!-- <div>
+          <ion-item no-lines class="toolbar-scroll">Showing {{totaldatapreparation}} entries</ion-item>
+        </div> -->
+        <ion-item class="content-data-item" *ngFor="let prepare of preparation">
+          <ion-avatar item-start>
+            <img src="assets/imgs/noimage.jpg" alt="">
+          </ion-avatar>
+          <div no-padding (click)="viewDetailPrepare(prepare)">
+            <h2>No Order : {{prepare.order_no}}</h2>
+            <div style="color:#4a4a4a;">{{prepare.expected_receipt_date | date: "dd MMMM yyyy"}}</div>
+            <div style="color:#4a4a4a;">Status Location: {{prepare.status_location}}</div>
+            <div style="color:#4a4a4a;">Status Barcode: {{prepare.staus_barcode}}</div>
+          </div>
+          <button [disabled]="prepare.status_send_pic_lokasi == 'OK' && prepare.status_send_pic_barcode == 'OK'" *ngIf="prepare.pic == userid"
+            item-end ion-button clear color="greenlake" (click)="doOpenToPICPrepare(prepare)">
+            <ion-icon name="md-open" style="font-size:30px;"></ion-icon>
+          </button>
+          <button [disabled]="((prepare.status_send_pic_lokasi == 'OK' && prepare.status_send_pic_barcode == 'OK') || (!prepare.pic_lokasi && !prepare.pic_barcode))"
+            *ngIf="prepare.pic == userid" item-end ion-button clear color="greenlake" (click)="doSendPrepare(prepare)">
+            <ion-icon name="md-send" style="font-size:30px;"></ion-icon>
+          </button>
+        </ion-item>
+      </div>
+      <div *ngIf="width >= 900" class="pc-content">
+        <ion-grid>
+          <ion-item no-lines style="margin-left:-1%;width:101%;border-bottom:1px solid;border-color:#dedede;">
+            <ion-label style="margin-left:1%;">DATE :</ion-label>
+            <ion-input style="border:0px;" type="date" [(ngModel)]="datearrivalPrepare" (ionChange)="selectdatePrepare(datearrivalPrepare)"></ion-input>
+          </ion-item>
+          <div class="content-search" style="width:100%;">
+            <ion-searchbar (ionInput)="getSearchPrepare($event)" placeholder="Search PO Number"></ion-searchbar>
+          </div>
+          <ion-row class="row-content">
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortPrepare('order_no')">Order No
+              <ion-icon *ngIf="filter == 'order_no' && sortPrepare == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'order_no' && sortPrepare == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortPrepare('batch_no')">Batch No
+              <ion-icon *ngIf="filter == 'doc_no' && sortPrepare == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'doc_no' && sortPrepare == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortPrepare('vendor_no')">Vendor No
+              <ion-icon *ngIf="filter == 'total_item' && sortPrepare == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'total_item' && sortPrepare == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortPrepare('expected_receipt_date')">Estimated Time Of Arrival
+              <ion-icon *ngIf="filter == 'transfer_date' && sortPrepare == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'transfer_date' && sortPrepare == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortPrepare('status')">Status
+              <ion-icon *ngIf="filter == 'status' && sortPrepare == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'status' && sortPrepare == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2>Options</ion-col>
+          </ion-row>
+          <ion-row class="row-content-list" *ngFor="let prepare of preparation">
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailPrepare(prepare)">
+              {{prepare.order_no}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailPrepare(prepare)">
+              {{prepare.batch_no}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailPrepare(prepare)">
+              {{prepare.vendor_no}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailPrepare(prepare)">
+              {{prepare.expected_receipt_date | date: "dd MMMM yyyy"}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailPrepare(prepare)">
+              {{prepare.status}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2>
+              <button *ngIf="prepare.pic == userid" item-end ion-button clear color="greenlake" (click)="doOpenToPICPrepare(prepare)">
+                <ion-icon name="md-open" style="font-size:30px;"></ion-icon>
+              </button>
+              <button [disabled]="((prepare.status_send_pic_lokasi == 'OK' && prepare.status_send_pic_barcode == 'OK') || (!prepare.pic_lokasi && !prepare.pic_barcode))"
+                *ngIf="prepare.pic == userid" item-end ion-button clear color="greenlake" (click)="doSendPrepare(prepare)">
+                <ion-icon name="md-send" style="font-size:30px;"></ion-icon>
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+      <ion-infinite-scroll (ionInfinite)="doInfiniteAction($event)">
+        <ion-infinite-scroll-content>
+          loadingSpinner="bubbles" loadingText="Loading more data...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </ion-list>
+
+    <ion-list *ngSwitchCase="'history'">
+      <ion-item>
+
+      </ion-item>
+    </ion-list>
+
+  </div>
+  <div id="myModalPic" class="modal">
+    <div class="modal-content">
+      <span class="closeModal" (click)="doOffToPIC()">&times;</span>
+      <form [formGroup]="myFormModal">
+        <ion-list no-lines>
+          <ion-item class="item-rcv" style="border-bottom:1px solid;border-color:#dedede;">
+            <ion-label floating>PIC</ion-label>
+            <ion-select formControlName="pic">
+              <ion-option *ngFor="let user of users" value="{{user.id_user}}" (ionSelect)="onChange(user)">{{user.id_user}} {{user.name}} {{user.id_role}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-list>
+      </form>
+      <ion-buttons end>
+        <button ion-button color="greenlake" (click)="doSendToPic();">Save</button>
+      </ion-buttons>
+    </div>
+  </div>
+  <div id="myModalPicPrepare" class="modal">
+    <div class="modal-content">
+      <span class="closeModal" (click)="doOffToPICPrepare()">&times;</span>
+      <form [formGroup]="myFormModalPrepare">
+        <ion-list no-lines>
+          <ion-item class="item-rcv" style="border-bottom:1px solid;border-color:#dedede;">
+            <ion-label floating>PIC LOKASI</ion-label>
+            <ion-select [disabled]="statussendlocation == 'OK'" formControlName="piclokasi">
+              <ion-option *ngFor="let user of users" value="{{user.id_user}}" (ionSelect)="onChange(user)">{{user.id_user}} {{user.name}}</ion-option>
+            </ion-select>
+          </ion-item>
+          <ion-item class="item-rcv" style="border-bottom:1px solid;border-color:#dedede;">
+            <ion-label floating>PIC BARCODE</ion-label>
+            <ion-select [disabled]="statussendbarcode == 'OK'" formControlName="picbarcode">
+              <ion-option *ngFor="let user of users" value="{{user.id_user}}" (ionSelect)="onChange(user)">{{user.id_user}} {{user.name}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-list>
+      </form>
+      <ion-buttons end>
+        <button ion-button color="greenlake" (click)="doSendToPicPrepare();">Save</button>
+      </ion-buttons>
+    </div>
+  </div>
+</ion-content>
+<!--<div [ngSwitch]="po">
+  <ion-fab *ngSwitchCase="'purchasingorder'" class="fixed-div" bottom right>
+    <button ion-fab color="greenlake">
+      <ion-icon name="md-apps"></ion-icon>
+    </button>
+    <ion-fab-list side="top">
+      <button ion-fab class="fab-list" color="primary" (click)="doAddPO()">
+        <ion-icon name="md-add"></ion-icon>
+      </button>
+      <button ion-fab class="fab-list" color="secondary">
+        <ion-icon name="md-download"></ion-icon>
+      </button>
+      <button ion-fab class="fab-list" color="danger" (click)="chooseFile()">
+        <ion-icon name="md-cloud-upload"></ion-icon>
+      </button>
+    </ion-fab-list>
+  </ion-fab>
+</div>-->

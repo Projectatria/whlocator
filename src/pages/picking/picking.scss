@@ -1,0 +1,53 @@
+page-picking {
+    .header-menu {
+        padding: 0px;
+        height: 70px;
+    }
+    .header-navbar {
+
+    }
+    .header-title-menu {
+       text-align: left;
+       font-size: 17px;
+       font-family: "Roboto", "Helvetica Neue", sans-serif;
+       color: #ffffff;
+   }
+   .content-body-menu {
+
+   }
+   .button-outline-md-greenlake {
+    border-color: #dedede;
+    color: #2c7b87;
+    background-color: transparent;
+    }
+    .closeModal {
+        color: #dedede;
+        float: right;
+        font-size: 20px;
+        font-weight: bold;
+    }
+    
+    .closeModal:hover,
+    .closeModal:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .row-content-list {
+        background: transparent;
+        color: #000000;
+    }
+    .row-content-list:hover {
+        background: #b7c400;
+        color: #000000;
+        cursor: pointer;
+    }
+    .col-content {
+        background:transparent;
+        color:#000000;
+        border:0px;
+        text-align:left;
+    }
+    .col-select {
+    }
+}

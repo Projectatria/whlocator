@@ -1,0 +1,15 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Detail Status</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+<ion-list>
+  <ion-item *ngFor="let item of items">
+    <h2>Invoice No : {{item.invoice_no}}</h2>
+    <p>Status : {{item.status}}</p>
+    <ion-note>{{item.status_date}}</ion-note>
+  </ion-item>
+</ion-list>
+</ion-content>

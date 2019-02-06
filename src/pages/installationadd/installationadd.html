@@ -1,0 +1,49 @@
+<ion-content class="background">
+  <img class="logo" height="100" src="http://10.10.10.7/qctesting/img/logoatriawhite">
+  <ion-buttons end>
+      <button ion-button clear (click)="closeInstallationadd()">Cancel</button>
+    </ion-buttons>
+  <div class="form">
+    <form [formGroup]="myForm">
+      <ion-list>
+        <ion-item>
+          <ion-label stacked>Installation Number</ion-label>
+          <ion-input formControlName="installation_no" type="text" [(ngModel)]="installation_no"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.installation_no" [control]="myForm.get('installation_no')"></testing>
+        <ion-item>
+          <ion-label stacked>Installation Date</ion-label>
+          <ion-input formControlName="installation_date" type="date" [(ngModel)]="installation_date"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.installation_date" [control]="myForm.get('installation_date')"></testing>
+        <ion-item>
+          <ion-label stacked>Installation Time</ion-label>
+          <ion-input formControlName="installation_time" type="time" [(ngModel)]="installation_time"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.installation_time" [control]="myForm.get('installation_time')"></testing>
+        <ion-item>
+          <ion-label stacked>State</ion-label>
+          <ion-input formControlName="state" type="text" [(ngModel)]="state"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.state" [control]="myForm.get('state')"></testing>
+        <ion-item>
+          <ion-label stacked>Installer Name</ion-label>
+          <ion-input formControlName="staff_name" type="text" [(ngModel)]="staff_name"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.staff_name" [control]="myForm.get('staff_name')"></testing>
+        <ion-item>
+          <ion-label stacked>Latitude</ion-label>
+          <ion-input formControlName="latitude" type="text" [(ngModel)]="latitude"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.latitude" [control]="myForm.get('latitude')"></testing>
+        <ion-item>
+          <ion-label stacked>Longitude</ion-label>
+          <ion-input formControlName="longitude" type="text" [(ngModel)]="longitude"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.longitude" [control]="myForm.get('longitude')"></testing>
+        
+      </ion-list>
+      <button ion-button (click)="insertInstallation()" type="submit" block round>SAVE</button>
+    </form>
+  </div>
+</ion-content>

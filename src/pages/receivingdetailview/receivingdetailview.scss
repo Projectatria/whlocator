@@ -1,0 +1,28 @@
+page-receivingdetailview {
+
+    .header-title-menu {
+        text-align: left;
+        font-size: 17px;
+        font-family: "Roboto", "Helvetica Neue", sans-serif;
+        color: #ffffff;
+    }
+    .title-header-location {
+        text-align: center;
+    }
+     .close {
+         text-align: left;
+         color: #ffffff;
+         height: 0px;
+     }
+     .logo-atria {
+        text-align: center;
+        margin-left: 50px;
+     }
+     .content-slides-images{
+        height: 50%;
+        width: 100%;
+    }
+    .text-input[disabled] {
+        opacity: .9;
+    }
+}

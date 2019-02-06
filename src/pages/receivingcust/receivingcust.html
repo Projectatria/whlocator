@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-navbar class="header-navbar">
+    <button ion-button menuToggle color="light">
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-buttons end>
+      <button ion-fab mini (click)="addReceiving()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+  <!-- <ion-navbar>
+    <ion-title>
+      Receiving Customer
+    </ion-title>
+    <ion-buttons end>
+        <button ion-fab mini (click)="addReceiving()">
+          <ion-icon name="add"></ion-icon>
+        </button>
+    </ion-buttons>
+  </ion-navbar> -->
+</ion-header>
+
+<ion-content class="content-menu" no-padding>
+  <ion-searchbar (ionInput)="getSearchReceivingcust($event)" placeholder="Search Receiving Customer No"></ion-searchbar>
+  <ion-list>
+    <ion-item *ngFor="let receivingcust of receivingcusts">
+      <ion-avatar item-start>
+        <img src="http://10.10.10.7/qctesting/img/{{receivingcust.state}}" alt="">
+      </ion-avatar>
+      <h2>Receiving Customer No : {{receivingcust.receivingcust_no}}</h2>
+      <p>Invoice No : {{receivingcust.invoice_no}}</p>
+      <p>{{receivingcust.state}} |
+        <ion-note>{{receivingcust.receivingcust_time}}</ion-note>
+      </p>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row wrap>
+      <ion-col col-3 *ngFor="let item of items">
+        <div class="title">
+          Receiving Number: {{item.receivingcust_no}}
+          <br> Invoice Number: {{item.invoice_no}}
+          <br> Receiving Date: {{item.receivingcust_date}}
+          <br> Receiving Time: {{item.receivingcust_time}}
+          <br> Receiver Name: {{item.receiver_name}}
+          <br> Latitude: {{item.latitude}}
+          <br> Longitude: {{item.longitude}}
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

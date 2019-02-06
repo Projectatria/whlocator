@@ -1,0 +1,167 @@
+<ion-header id="myHeader" class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <div *ngIf="!toggled" class="logo-search" style="text-align:right;height:0px;">
+      <button ion-button clear color="light" (click)="toggleSearch()">
+        <ion-icon name="md-search" style="font-size:35px;"></ion-icon>
+      </button>
+    </div>
+    <div *ngIf="toggled" style="text-align:right;height:0px;">
+      <button ion-button clear style="color:#ffffff;background:transparent;font-size:25px;" (click)="toggleSearch()">
+        <ion-icon name="md-close"></ion-icon>
+      </button>
+    </div>
+    <button *ngIf="!toggled" ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <ion-title class="side-title">
+      <div *ngIf="!toggled" class="logo-atria">
+        <img src="assets/imgs/logoatriawhite.png" height="45" />
+      </div>
+      <div *ngIf="toggled" class="content-search" style="width:100%;">
+        <ion-searchbar (ionInput)="getSearchQCDetail($event)" placeholder="Search"></ion-searchbar>
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="content-menu" no-padding>
+  <ion-segment [(ngModel)]="qc">
+    <ion-segment-button value="qcin">
+      QC Checks
+    </ion-segment-button>
+    <ion-segment-button value="history">
+      History
+    </ion-segment-button>
+  </ion-segment>
+
+  <div [ngSwitch]="qc">
+    <ion-list class="content-list-menu" *ngSwitchCase="'qcin'">
+      <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content>
+          pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+        </ion-refresher-content>
+      </ion-refresher>
+      <ion-card *ngFor="let qc of quality_control">
+        <ion-item (click)="doDetailQC(qc)">
+          <h3 style="font-weight:bold;padding-bottom:5px;">ITEM NO - {{qc.item_no}}</h3>
+          <p>Order No: {{qc.order_no}}</p>
+          <p>Receiving No: {{qc.receiving_no}}</p>
+          <p>Qty: {{qc.qty}} | Qty Checked: {{qc.qty_checked}}</p>
+          <ion-note item-end>{{qc.batch_no}}</ion-note>
+        </ion-item>
+        <div *ngIf="detailqc && qc.item_no == qclist" style="border-top:1px solid;border-color:#dedede;background:#ffffff;">
+          <div padding style="font-weight:bold;">
+            Inspection Result
+          </div>
+          <ion-grid>
+            <ion-row *ngIf="detailqc && qc.item_no == qclist">
+              <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+                <ion-row>
+                  <ion-col>Date Inspection</ion-col>
+                  <ion-col>Time Inspection</ion-col>
+                  <ion-col>PIC Inspection</ion-col>
+                  <ion-col>Status</ion-col>
+                </ion-row>
+              </ion-col>
+              <ion-col *ngFor="let result of qcresult" col-12 style="border-top:1px solid;border-color:#dedede;">
+                <ion-row (click)="doUpdateChecked(result);" *ngIf="detailqc && result.item_no == qclist">
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.date_finish}}</ion-col>
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.time_finish}}</ion-col>
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.qc_pic}}</ion-col>
+                  <ion-col style="color:green">{{result.qc_status}}</ion-col>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+        <ion-row class="cardfooter">
+          <ion-col style="border-top:1px solid;border-color:#dedede;background:#ffffff">
+            <p style="padding-left:10px;color:rgb(0, 0, 0);font-weight:bold;">{{qc.qc_status}}</p>
+          </ion-col>
+        </ion-row>
+      </ion-card>
+    </ion-list>
+    <ion-list *ngSwitchCase="'history'">
+      <ion-item>
+
+      </ion-item>
+    </ion-list>
+  </div>
+  <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+    <ion-infinite-scroll-content>
+      loadingSpinner="bubbles" loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
+
+<div id="myQCChecking" class="modal-checking">
+  <div class="modal-content-checking">
+    <ion-header class="header-menu">
+      <ion-navbar class="header-navbar" style="width:100%;">
+        <div style="text-align:right;height:0px;">
+          <button ion-button clear style="color:#ffffff;background:transparent;font-size:25px;" (click)="doOffChecking()">
+            <ion-icon name="md-close"></ion-icon>
+          </button>
+        </div>
+        <ion-title class="side-title">
+          <div class="logo-atria" style="margin-left:56px;">
+            <img src="assets/imgs/logoatriawhite.png" height="45" />
+          </div>
+        </ion-title>
+      </ion-navbar>
+    </ion-header>
+    <ion-content class="content-checking">
+      <ion-list *ngFor="let qcparam of qcparameter" radio-group [(ngModel)]="detailcheckingqc">
+        <ion-card style="background:#ffffff;">
+          <ion-card-header style="color:#000000;text-align:left;" (click)="doOpenContent(qcparam,noqcresult,uuidresult)">
+            <ion-item style="height:0px;">
+              <ion-icon item-start name="{{qcparam.icon}}" style="font-size:50px;color:#217481;"></ion-icon>
+              {{qcparam.qc_param_desc}}
+              <ion-icon *ngIf="qcparam.qc_result_desc == ''" item-end name="md-close-circle" style="font-size:25px;color:#ca021d;"></ion-icon>
+              <ion-icon *ngIf="qcparam.qc_result_desc != ''" item-end name="md-checkmark" style="font-size:25px;color:#2fc900;"></ion-icon>
+            </ion-item>
+          </ion-card-header>
+          <ion-card-content *ngIf="functionality && qcparam.qc_param_desc == param" style="border-top:1px solid;border-color:#dedede;padding-top:10px;">
+            <ion-slides *ngIf="photos.length" pager="true">
+              <ion-slide *ngFor="let foto of photos" style="text-align:center;">
+                <img src="{{foto.img_src}}" style="width:100%;" />
+              </ion-slide>
+            </ion-slides>
+            <ion-slides *ngIf="photos.length == 0" pager="true">
+              <ion-slide style="text-align:center;">
+                <img src="http://10.10.10.7/qctesting/img/noimage" style="width:100%;" />
+              </ion-slide>
+            </ion-slides>
+            <ion-list style="padding-top:10px;">
+              <ion-item style="border-top:1px solid;border-color:#dedede;text-align:center;">
+                <button ion-button clear (click)="doCamera(qcparam)">
+                  <ion-icon name="md-camera" style="color:#217481;font-size:30px;"></ion-icon>
+                </button>
+              </ion-item>
+              <ion-item style="border-top:1px solid;border-color:#dedede;">
+                <ion-label floating>Detail Inspection</ion-label>
+                <ion-textarea [(ngModel)]="detailinspection"></ion-textarea>
+              </ion-item>
+              <ion-buttons style="text-align:center;">
+                <button ion-button color="greenlake" (click)="doSaveQCDesc(qcparam)">SAVE</button>
+              </ion-buttons>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+        <ion-footer style="position:fixed;">
+          <ion-buttons>
+            <button ion-button color="greenlake" style="width:48%;" (click)="doPassed(qcparam)">PASSED</button>
+            <button ion-button color="danger" style="width:48%;" (click)="doReject(qcparam)">REJECT</button>
+          </ion-buttons>
+        </ion-footer>
+      </ion-list>
+    </ion-content>
+  </div>
+</div>
+
+<div [ngSwitch]="button">
+  <ion-fab *ngSwitchCase="'qcin'" class="fixed-div" bottom right>
+    <button ion-fab color="greenlake" (click)="doChecked()">
+      <ion-icon name="md-barcode"></ion-icon>
+    </button>
+  </ion-fab>
+</div>

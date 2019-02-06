@@ -1,0 +1,7 @@
+<div>
+    <div *ngFor="let msg of messages">
+      <div *ngIf="control.hasError(msg.type) && (control.dirty || control.touched)" >
+        <p class="error">{{msg.message}}</p>
+      </div>
+    </div>
+  </div>

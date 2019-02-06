@@ -1,0 +1,37 @@
+page-transferorderdetailadd {
+    .content-menu {
+        background: #ffffff;
+    }
+    .item-input {
+        background: #ffffff;
+        color: #000000;
+    }
+    .close {
+        text-align: left;
+        color: #ffffff;
+        height: 0px;
+    }
+    .logo-atria {
+       text-align: center;
+       margin-left: 50px;
+    }
+    .modal-items {
+        display: block; /* Hidden by default */
+        position: absolute; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: #fefefe;
+    }
+    
+    /* Modal Content/Box */
+    .modal-content-items {
+        background-color: #fefefe;
+        width: 100%; /* Could be more or less, depending on screen size */
+        height: 100%;
+        margin-top:70px;
+    }
+ }

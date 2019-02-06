@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-navbar class="header-navbar">
+    <button ion-button menuToggle color="light">
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-buttons end>
+      <button ion-fab mini (click)="addTruck()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="content-menu" no-padding>
+  <ion-searchbar (ionInput)="getSearchTruck($event)" placeholder="Search Truck No"></ion-searchbar>
+  <ion-list>
+    <ion-item *ngFor="let truck of trucks">
+      <ion-avatar item-start>
+        <img src="http://10.10.10.7/qctesting/img/{{truck.state}}" alt="">
+      </ion-avatar>
+      <h2>Truck No : {{truck.truck_no}}</h2>
+      <p>Driver Name : {{truck.staff_name}}</p>
+      <p>{{truck.state}} |
+        <ion-note>{{truck.posting_date}}</ion-note>
+      </p>
+    </ion-item>
+  </ion-list>
+</ion-content>

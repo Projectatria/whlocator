@@ -1,0 +1,320 @@
+<ion-header class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <button *ngIf="!toggled" ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <div style="text-align:right;height:0px;">
+      <button class="btn-profile" ion-button clear style="color:#ffffff;background:transparent;font-size:18px;" (click)="doProfile()">
+        <ion-icon name="md-arrow-dropdown" style="margin-right:8px;"></ion-icon>
+        <h5 style="text-decoration: underline;">{{name}}</h5>
+      </button>
+    </div>
+    <ion-title class="side-title">
+      <div *ngIf="!toggled" class="logo-atria">
+        <img src="assets/imgs/logoatriawhite.png" height="45" />
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="content-menu" no-padding>
+  <ion-segment *ngIf="roleid != 'ADMIN'" [(ngModel)]="to">
+    <ion-segment-button value="transferorder">
+      TO Request
+    </ion-segment-button>
+    <ion-segment-button value="transferorderlist">
+      List TO Request
+    </ion-segment-button>
+    <ion-segment-button value="transferorderreceiving">
+      TO Receiving
+    </ion-segment-button>
+  </ion-segment>
+
+  <div [ngSwitch]="to">
+    <ion-list class="content-list-menu" *ngSwitchCase="'transferorder'">
+      <ion-refresher (ionRefresh)="doRefreshTO($event)">
+        <ion-refresher-content>
+          pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+        </ion-refresher-content>
+      </ion-refresher>
+      <div *ngIf="width < 900" class="android-content">
+        <ion-item class="content-data-item" *ngFor="let to of transferorder">
+          <ion-avatar item-start>
+            <img src="assets/imgs/noimage.jpg" alt="">
+          </ion-avatar>
+          <div no-padding (click)="viewDetailTO(to)">
+            <h2>TO No : {{to.to_no}}</h2>
+            <p>Lokasi Tujuan: {{to.location_code}}</p>
+            <p>Description: {{to.description}}</p>
+            <ion-note>{{to.transfer_date}}</ion-note>
+            <ion-note>{{to.status}}</ion-note>
+          </div>
+          <button item-end ion-button clear color="greenlake" (click)="doPostingTO(to)">
+            <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
+          </button>
+        </ion-item>
+      </div>
+      <div *ngIf="width >= 900" class="pc-content">
+        <ion-grid>
+          <ion-item no-lines style="margin-left:-1%;width:101%;border-bottom:1px solid;border-color:#dedede;">
+            <ion-label style="margin-left:1%;">DATE :</ion-label>
+            <ion-input style="border:0px;" type="date" [(ngModel)]="datearrivalTO" (ionChange)="selectdateTO(datearrivalTO)"></ion-input>
+          </ion-item>
+          <div class="content-search" style="width:100%;">
+            <ion-searchbar (ionInput)="getSearchTO($event)" placeholder="Search TO Number"></ion-searchbar>
+          </div>
+          <ion-row class="row-content">
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortTO('to_no')">TO No
+              <ion-icon *ngIf="filter == 'to_no' && sortTO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'to_no' && sortTO == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1 (click)="doSortTO('location_current_code')">Lokasi Tujuan
+              <ion-icon *ngIf="filter == 'location_code' && sortTO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'location_code' && sortTO == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-4>Description
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1 (click)="doSortTO('expected_receipt_date')">Transfer Date
+              <ion-icon *ngIf="filter == 'transfer_date' && sortTO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'transfer_date' && sortTO == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortTO('status')">Status
+              <ion-icon *ngIf="filter == 'status' && sortTO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'status' && sortTO == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2>Options
+            </ion-col>
+          </ion-row>
+          <ion-row class="row-content-list" *ngFor="let to of transferorder">
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailTO(to)">
+              {{to.to_no}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1 (click)="viewDetailTO(to)">
+              {{to.location_code}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-4 (click)="viewDetailTO(to)">
+              {{to.description}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1 (click)="viewDetailTO(to)">
+              {{to.transfer_date}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailTO(to)">
+              {{to.status}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2>
+              <button item-end ion-button clear color="greenlake" (click)="doPostingTO(to)">
+                <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+      <ion-infinite-scroll (ionInfinite)="doInfiniteTO($event)">
+        <ion-infinite-scroll-content>
+          loadingSpinner="bubbles" loadingText="Loading more data...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </ion-list>
+    <ion-list class="content-list-menu" *ngSwitchCase="'transferorderlist'">
+      <ion-refresher (ionRefresh)="doRefreshTOList($event)">
+        <ion-refresher-content>
+          pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+        </ion-refresher-content>
+      </ion-refresher>
+      <div *ngIf="width < 900" class="android-content">
+        <ion-item class="content-data-item" *ngFor="let tolist of transferorderlist">
+          <ion-avatar item-start>
+            <img src="assets/imgs/noimage.jpg" alt="">
+          </ion-avatar>
+          <div no-padding (click)="viewDetailTOList(tolist)">
+            <h2>TO No : {{tolist.to_no}}</h2>
+            <p>Lokasi Tujuan: {{tolist.location_code}}</p>
+            <p>Description: {{tolist.description}}</p>
+            <ion-note>{{tolist.transfer_date}}</ion-note>
+            <ion-note>{{tolist.status}}</ion-note>
+          </div>
+          <button item-end ion-button clear color="greenlake" (click)="doPostingTOList(tolist)">
+            <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
+          </button>
+        </ion-item>
+      </div>
+      <div *ngIf="width >= 900" class="pc-content">
+        <ion-grid>
+          <ion-item no-lines style="margin-left:-1%;width:101%;border-bottom:1px solid;border-color:#dedede;">
+            <ion-label style="margin-left:1%;">DATE :</ion-label>
+            <ion-input style="border:0px;" type="date" [(ngModel)]="datearrivalTOList" (ionChange)="selectdateTOList(datearrivalTO)"></ion-input>
+          </ion-item>
+          <div class="content-search" style="width:100%;">
+            <ion-searchbar (ionInput)="getSearchTOList($event)" placeholder="Search TO Number"></ion-searchbar>
+          </div>
+          <ion-row class="row-content">
+            <ion-col padding class="col-content" col-xl-1 (click)="doSortTOList('to_no')">TO No
+              <ion-icon *ngIf="filter == 'to_no' && sortTOList == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'to_no' && sortTOList == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1 (click)="doSortTOList('location_current_code')">Lokasi Tujuan
+              <ion-icon *ngIf="filter == 'location_code' && sortTOList == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'location_code' && sortTOList == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-4>Description
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1 (click)="doSortTOList('expected_receipt_date')">Transfer Date
+              <ion-icon *ngIf="filter == 'transfer_date' && sortTOList == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'transfer_date' && sortTOList == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortTOList('status')">Status
+              <ion-icon *ngIf="filter == 'status' && sortTOList == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'status' && sortTOList == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1>Options
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2>Picking
+            </ion-col>
+          </ion-row>
+          <ion-row class="row-content-list" *ngFor="let tolist of transferorderlist">
+            <ion-col padding class="col-content" col-xl-1 (click)="viewDetailTOList(tolist)">
+              {{tolist.to_no}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1 (click)="viewDetailTOList(tolist)">
+              {{tolist.to_location}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-4 (click)="viewDetailTOList(tolist)">
+              {{tolist.description}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1 (click)="viewDetailTOList(tolist)">
+              {{tolist.transfer_date}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailTOList(tolist)">
+              {{tolist.status}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1>
+              <button item-end ion-button clear color="greenlake" (click)="doPostingTOList(tolist)">
+                <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
+              </button>
+            </ion-col>
+            
+            <ion-col col-xl-1 *ngIf="tolist.status == 'INPG'" (click)="doOpenToPIC(tolist)" padding class="col-content">
+                <ion-icon name="md-open" style="font-size:30px;color:#217481"></ion-icon>
+              </ion-col>
+              <ion-col col-xl-1 *ngIf="tolist.status == 'INPG'" (click)="doSendNotificationPic(tolist)" padding class="col-content">
+                <ion-icon name="md-send" style="font-size:30px;color:#217481"></ion-icon>
+              </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+      <ion-infinite-scroll (ionInfinite)="doInfiniteTOList($event)">
+        <ion-infinite-scroll-content>
+          loadingSpinner="bubbles" loadingText="Loading more data...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </ion-list>
+    <ion-list class="content-list-menu" *ngSwitchCase="'transferorderreceiving'">
+      <ion-refresher (ionRefresh)="doRefreshTOReceiving($event)">
+        <ion-refresher-content>
+          pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+        </ion-refresher-content>
+      </ion-refresher>
+      <div *ngIf="width < 900" class="android-content">
+        <ion-item class="content-data-item" *ngFor="let tolist of transferorderreceiving">
+          <ion-avatar item-start>
+            <img src="assets/imgs/noimage.jpg" alt="">
+          </ion-avatar>
+          <div no-padding (click)="viewDetailTOReceiving(tolist)">
+            <h2>TO No : {{tolist.to_no}}</h2>
+            <p>Lokasi Tujuan: {{tolist.location_code}}</p>
+            <p>Description: {{tolist.description}}</p>
+            <ion-note>{{tolist.transfer_date}}</ion-note>
+            <ion-note>{{tolist.status}}</ion-note>
+          </div>
+          <button item-end ion-button clear color="greenlake" (click)="doPostingTOReceiving(tolist)">
+            <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
+          </button>
+        </ion-item>
+      </div>
+      <div *ngIf="width >= 900" class="pc-content">
+        <ion-grid>
+          <ion-item no-lines style="margin-left:-1%;width:101%;border-bottom:1px solid;border-color:#dedede;">
+            <ion-label style="margin-left:1%;">DATE :</ion-label>
+            <ion-input style="border:0px;" type="date" [(ngModel)]="datearrivalTOReceiving" (ionChange)="selectdateTOReceiving(datearrivalTOReceiving)"></ion-input>
+          </ion-item>
+          <div class="content-search" style="width:100%;">
+            <ion-searchbar (ionInput)="getSearchTOReceiving($event)" placeholder="Search TO Number"></ion-searchbar>
+          </div>
+          <ion-row class="row-content">
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortTOList('to_no')">TO No
+              <ion-icon *ngIf="filter == 'to_no' && sortTOList == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'to_no' && sortTOList == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1 (click)="doSortTOList('location_current_code')">Lokasi Tujuan
+              <ion-icon *ngIf="filter == 'location_code' && sortTOList == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'location_code' && sortTOList == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-4>Description
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1 (click)="doSortTOList('expected_receipt_date')">Transfer Date
+              <ion-icon *ngIf="filter == 'transfer_date' && sortTOList == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'transfer_date' && sortTOList == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="doSortTOList('status')">Status
+              <ion-icon *ngIf="filter == 'status' && sortTOList == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+              <ion-icon *ngIf="filter == 'status' && sortTOList == 'DESC'" name="md-arrow-dropup"></ion-icon>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2>Options
+            </ion-col>
+          </ion-row>
+          <ion-row class="row-content-list" *ngFor="let tolist of transferorderreceiving">
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailTOReceiving(tolist)">
+              {{tolist.to_no}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1 (click)="viewDetailTOReceiving(tolist)">
+              {{tolist.to_location}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-4 (click)="viewDetailTOReceiving(tolist)">
+              {{tolist.description}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1 (click)="viewDetailTOReceiving(tolist)">
+              {{tolist.transfer_date}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailTOReceiving(tolist)">
+              {{tolist.status}}
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-2>
+              <button item-end ion-button clear color="greenlake" (click)="doPostingTOReceiving(tolist)">
+                <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+      <ion-infinite-scroll (ionInfinite)="doInfiniteTOReceiving($event)">
+        <ion-infinite-scroll-content>
+          loadingSpinner="bubbles" loadingText="Loading more data...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </ion-list>
+  </div>
+  <div id="myModalPic" class="modal">
+    <div class="modal-content">
+      <span class="closeModal" (click)="doOffToPIC()">&times;</span>
+      <form [formGroup]="myFormModalPic">
+        <ion-list no-lines>
+          <ion-item class="item-rcv" style="border-bottom:1px solid;border-color:#dedede;">
+            <ion-label floating>PIC</ion-label>
+            <ion-select formControlName="pic">
+              <ion-option *ngFor="let user of users" value="{{user.id_user}}" (ionSelect)="onChange(user)">{{user.id_user}} {{user.name}} {{user.id_role}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-list>
+      </form>
+      <ion-buttons end>
+        <button ion-button color="greenlake" (click)="doSendToPic();">Send</button>
+      </ion-buttons>
+    </div>
+  </div>
+</ion-content>
+<div [ngSwitch]="to">
+  <ion-fab *ngSwitchCase="'transferorder'" class="fixed-div" bottom right>
+    <button ion-fab color="greenlake" (click)="doAddTO()">
+      <ion-icon name="md-add"></ion-icon>
+    </button>
+  </ion-fab>
+</div>

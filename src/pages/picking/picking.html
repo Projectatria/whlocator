@@ -1,0 +1,305 @@
+<ion-header id="myHeader" class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <button ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <div style="text-align:right;height:0px;">
+      <button class="btn-profile" ion-button clear style="color:#ffffff;background:transparent;font-size:18px;" (click)="doProfile()">
+        <ion-icon name="md-arrow-dropdown" style="margin-right:8px;"></ion-icon>
+        <h5 style="text-decoration: underline;">{{name}}</h5>
+      </button>
+    </div>
+    <ion-title class="side-title">
+      <div class="logo-atria">
+        <img src="assets/imgs/logoatriawhite.png" height="45" />
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="content-menu" no-padding>
+  <ion-segment *ngIf="rolegroup != 'STAFF'" [(ngModel)]="pick">
+    <ion-segment-button value="listpicking">
+      List Picking
+    </ion-segment-button>
+    <ion-segment-button value="picking">
+      Picking
+    </ion-segment-button>
+    <!-- <ion-segment-button value="history">
+      History
+    </ion-segment-button> -->
+  </ion-segment>
+  <ion-segment *ngIf="rolegroup == 'STAFF'" [(ngModel)]="pick">
+    <ion-segment-button value="picking">
+      Picking
+    </ion-segment-button>
+    <!-- <ion-segment-button value="history">
+      History
+    </ion-segment-button> -->
+  </ion-segment>
+
+  <div [ngSwitch]="pick">
+    <ion-list class="content-list-menu" *ngSwitchCase="'listpicking'">
+      <ion-refresher (ionRefresh)="doRefreshpicking($event)">
+        <ion-refresher-content>
+          pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+        </ion-refresher-content>
+      </ion-refresher>
+      <div id="options" style="border:1px solid;border-color:#dedede;">
+        <!-- <ion-item>
+          <ion-label>Group By </ion-label>
+          <ion-select [(ngModel)]="groupby" (ionChange)="getSetGroupBy(groupby)">
+            <ion-option value="">All</ion-option>
+            <ion-option value="invoice_no">Invoice</ion-option>
+            <ion-option value="item_no">Items</ion-option>
+            <ion-option value="room">Room</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item *ngIf="groupby == ''">
+          <ion-label>Search By </ion-label>
+          <ion-select [(ngModel)]="search">
+            <ion-option value="invoice_no">Invoice</ion-option>
+            <ion-option value="item_no">Items</ion-option>
+            <ion-option value="room">Room</ion-option>
+          </ion-select>
+        </ion-item> 
+        <ion-item no-lines *ngIf="groupby == ''">
+          <ion-searchbar *ngIf="search == 'invoice_no' && groupby == ''" style="margin-top:-10px;margin-left:-10px;padding:0px;width:105%;"
+            (ionInput)="getSearchInvoice($event)" placeholder="Search Invoice"></ion-searchbar>
+          <ion-searchbar *ngIf="search == 'item_no' && groupby == ''" style="margin-top:-10px;margin-left:-10px;padding:0px;width:105%;"
+            (ionInput)="getSearchItems($event)" placeholder="Search Items"></ion-searchbar>
+          <ion-searchbar *ngIf="search == 'room' && groupby == ''" style="margin-top:-10px;margin-left:-10px;padding:0px;width:105%;"
+            (ionInput)="getSearchRoom($event)" placeholder="Search Room"></ion-searchbar>
+        </ion-item> -->
+        <ion-item no-lines>
+          <ion-searchbar style="margin-top:-10px;margin-left:-10px;padding:0px;width:105%;" (ionInput)="getSearchGroupInvoice($event)"
+            placeholder="Search Invoice"></ion-searchbar>
+        </ion-item>
+      </div>
+      <div style="background:#ffffff;">
+        <ion-grid>
+          <ion-row>
+            <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+              <ion-row style="border-bottom:1px solid;border-color:#dedede;">
+                <ion-col col-2 class="col-select" (click)="doSortPICK('Receipt No_')" style="padding-left:10px;">Receipt No
+                  <ion-icon *ngIf="filter == 'invoice_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                  <ion-icon *ngIf="filter == 'invoice_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                </ion-col>
+                <ion-col col-2 class="col-select" (click)="doSortPICK('Receipt Date')">Receipt Date
+                  <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                  <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                </ion-col>
+                <ion-col col-2 class="col-select" (click)="doSortPICK('Expected Receipt Date')">Expected Receipt Date
+                  <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                  <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                </ion-col>
+                <ion-col col-1 class="col-select" (click)="doSortPICK('Store No_')">Store No
+                  <ion-icon *ngIf="filter == 'qty' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                  <ion-icon *ngIf="filter == 'qty' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                </ion-col>
+                <ion-col col-2 class="col-select" (click)="doSortPICK('SO No_')">So No
+                  <ion-icon *ngIf="filter == 'room' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                  <ion-icon *ngIf="filter == 'room' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                </ion-col>
+                <ion-col col-1 class="col-select" (click)="doSortPICK('SO No_')">PIC
+                </ion-col>
+                <ion-col col-1 class="col-select" (click)="doSortPICK('SO No_')">SEND
+                </ion-col>
+                <ion-col col-1 class="col-select" (click)="doSortPICK('SO No_')">PRINT
+                </ion-col>
+              </ion-row>
+            </ion-col>
+            <ion-col *ngFor="let listpick of listpicking" col-12>
+              <ion-row class="row-content-list">
+                <ion-col col-2 padding class="col-content" (click)="viewDetail(listpick)">{{listpick["Receipt No_"]}}</ion-col>
+                <ion-col col-2 padding class="col-content" (click)="viewDetail(listpick)">{{listpick["Receipt Date"] | date: 'dd-MM-yyyy'}}</ion-col>
+                <ion-col col-2 padding class="col-content" (click)="viewDetail(listpick)">{{listpick["Expected Receipt Date"] | date: 'dd-MM-yyyy'}}</ion-col>
+                <ion-col col-1 padding class="col-content" (click)="viewDetail(listpick)">{{listpick["Store No_"]}}</ion-col>
+                <ion-col col-2 padding class="col-content" (click)="viewDetail(listpick)">{{listpick["SO No_"]}}</ion-col>
+                <ion-col col-1 padding class="col-content" (click)="doOpenToPIC(listpick)">
+                  <ion-icon name="md-open" style="font-size:30px;color:#217481"></ion-icon>
+                </ion-col>
+                <ion-col col-1 padding class="col-content" (click)="doSendNotificationPic(listpick)">
+                  <ion-icon name="md-send" style="font-size:30px;color:#217481"></ion-icon>
+                </ion-col>
+                <ion-col col-1 padding class="col-content" (click)="doPrint(listpick)">
+                  <ion-icon name="md-print" style="font-size:30px;color:#217481"></ion-icon>
+                </ion-col>
+              </ion-row>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+      <!-- <div *ngIf="groupby != ''">
+        <ion-card *ngFor="let listpick of listpicking">
+          <ion-item *ngIf="groupby == 'invoice_no'" (click)="getDetailGroupByInvoice(listpick)">
+            Invoice : {{listpick.invoice_no}}
+            <ion-note style="color:red" item-end>{{listpick.qtysum}}</ion-note>
+          </ion-item>
+          <div *ngIf="detailpicklist && listpick.invoice_no == invoicelist" style="background:#ffffff;">
+            <ion-grid>
+              <ion-row>
+                <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+                  <ion-row>
+                    <ion-col (click)="doSortPICKDetail('invoice_no',listpick)">Invoice
+                      <ion-icon *ngIf="filter == 'invoice_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'invoice_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPICKDetail('item_no',listpick)">Item No
+                      <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPICKDetail('qty',listpick)">Qty
+                      <ion-icon *ngIf="filter == 'qty' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'qty' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPICKDetail('room',listpick)">Room
+                      <ion-icon *ngIf="filter == 'room' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'room' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                  </ion-row>
+                </ion-col>
+                <ion-col *ngFor="let listpickdetail of listpickingdetail" col-12 style="border-top:1px solid;border-color:#dedede;">
+                  <ion-row>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpickdetail.invoice_no}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpickdetail.item_no}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpickdetail.qty}}</ion-col>
+                    <ion-col style="color:black">{{listpickdetail.room}}</ion-col>
+                  </ion-row>
+                </ion-col>
+                <button style="margin-top:10px;" ion-button color="greenlake" block outline (click)="doOpenToPIC()">SEND</button>
+              </ion-row>
+            </ion-grid>
+          </div>
+          <ion-item *ngIf="groupby == 'item_no'" (click)="getDetailGroupByItems(listpick)">
+            Item No : {{listpick.item_no}}
+            <ion-note style="color:red" item-end>{{listpick.qtysum}}</ion-note>
+          </ion-item>
+          <div *ngIf="detailpicklist && listpick.item_no == itemnolist" style="background:#ffffff;">
+            <ion-grid>
+              <ion-row>
+                <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+                  <ion-row>
+                    <ion-col (click)="doSortPICKDetail('invoice_no',listpick)">Invoice
+                      <ion-icon *ngIf="filter == 'invoice_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'invoice_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPICKDetail('item_no',listpick)">Item No
+                      <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPICKDetail('qty',listpick)">Qty
+                      <ion-icon *ngIf="filter == 'qty' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'qty' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPICKDetail('room',listpick)">Room
+                      <ion-icon *ngIf="filter == 'room' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'room' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                  </ion-row>
+                </ion-col>
+                <ion-col *ngFor="let listpickdetail of listpickingdetail" col-12 style="border-top:1px solid;border-color:#dedede;">
+                  <ion-row>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpickdetail.invoice_no}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpickdetail.item_no}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpickdetail.qty}}</ion-col>
+                    <ion-col style="color:black">{{listpickdetail.room}}</ion-col>
+                  </ion-row>
+                </ion-col>
+                <button style="margin-top:10px;" ion-button color="greenlake" block outline (click)="doOpenToPIC()">SEND</button>
+              </ion-row>
+            </ion-grid>
+          </div>
+          <ion-item *ngIf="groupby == 'room'" (click)="getDetailGroupByRoom(listpick)">
+            Room : {{listpick.room}}
+            <ion-note style="color:red" item-end>{{listpick.qtysum}}</ion-note>
+          </ion-item>
+          <div *ngIf="detailpicklist && listpick.room == roomlist" style="background:#ffffff;">
+            <ion-grid>
+              <ion-row>
+                <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+                  <ion-row>
+                    <ion-col (click)="doSortPICKDetail('invoice_no',listpick)">Invoice
+                      <ion-icon *ngIf="filter == 'invoice_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'invoice_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPICKDetail('item_no',listpick)">Item No
+                      <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPICKDetail('qty',listpick)">Qty
+                      <ion-icon *ngIf="filter == 'qty' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'qty' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                    <ion-col (click)="doSortPICKDetail('room',listpick)">Room
+                      <ion-icon *ngIf="filter == 'room' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
+                      <ion-icon *ngIf="filter == 'room' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
+                    </ion-col>
+                  </ion-row>
+                </ion-col>
+                <ion-col *ngFor="let listpickdetail of listpickingdetail" col-12 style="border-top:1px solid;border-color:#dedede;">
+                  <ion-row>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpickdetail.invoice_no}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpickdetail.item_no}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{listpickdetail.qty}}</ion-col>
+                    <ion-col style="color:black">{{listpickdetail.room}}</ion-col>
+                  </ion-row>
+                </ion-col>
+                <button style="margin-top:10px;" ion-button color="greenlake" block outline (click)="doOpenToPIC()">SEND</button>
+              </ion-row>
+            </ion-grid>
+          </div>
+        </ion-card>
+      </div> -->
+    </ion-list>
+    <ion-list *ngSwitchCase="'picking'">
+      <ion-refresher (ionRefresh)="doRefreshpickingDetail($event)">
+        <ion-refresher-content>
+          pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+        </ion-refresher-content>
+      </ion-refresher>
+      <div *ngFor="let listpickdetail of listpickingdetail">
+        <ion-item *ngIf="roleid == 'ADMIN' || roleid =='TL' || userid == listpickdetail.pic" class="content-data-item" (click)="viewDetailPicking(listpickdetail)">
+          <ion-avatar item-start>
+            <img src="assets/imgs/noimage.jpg" alt="">
+          </ion-avatar>
+          <div no-padding>
+            <h2>
+              <b>Receipt No : {{listpickdetail.receipt_no}}</b>
+            </h2>
+            <p>Receipt Date : {{listpickdetail.receipt_date | date: "dd-MM-yyyy"}}</p>
+            <p>So No : {{listpickdetail.so_no}}</p>
+            <ion-note *ngIf="roleid == 'ADMIN' || roleid == 'TL'">Pic : {{listpickdetail.pic}}</ion-note>
+          </div>
+        </ion-item>
+      </div>
+    </ion-list>
+    <ion-list *ngSwitchCase="'history'">
+      <ion-item>
+
+      </ion-item>
+    </ion-list>
+  </div>
+  <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+    <ion-infinite-scroll-content>
+      loadingSpinner="bubbles" loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+  <div id="myModalPic" class="modal">
+    <div class="modal-content">
+      <span class="closeModal" (click)="doOffToPIC()">&times;</span>
+      <form [formGroup]="myFormModal">
+        <ion-list no-lines>
+          <ion-item class="item-rcv" style="border-bottom:1px solid;border-color:#dedede;">
+            <ion-label floating>PIC</ion-label>
+            <ion-select formControlName="pic">
+              <ion-option *ngFor="let user of users" value="{{user.id_user}}" (ionSelect)="onChange(user)">{{user.id_user}} {{user.name}} {{user.id_role}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-list>
+      </form>
+      <ion-buttons end>
+        <button ion-button color="greenlake" (click)="doSendToPic();">Send</button>
+      </ion-buttons>
+    </div>
+  </div>
+</ion-content>

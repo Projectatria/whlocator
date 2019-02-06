@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>map</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <input id="pac-input1" class="controls" type="text" placeholder="Latitude" [(ngModel)]="latitude">
+  <input id="pac-input1" class="controls" type="text" placeholder="Longitude" [(ngModel)]="longitude">
+  <input id="pac-input2" class="controls" type="text" placeholder="Address" [(ngModel)]="address">
+  <br>
+  <button ion-button (click)="calculateAndDisplayRoute()">Get Direction</button>
+  <button ion-button (click)="getMyLocation()">My Location</button>
+  <button ion-button (click)="pickLocation()">Pick Location</button>
+  <div #map id="map"></div>
+</ion-content>

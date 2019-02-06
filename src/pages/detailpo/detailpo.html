@@ -1,0 +1,91 @@
+<ion-header class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <div *ngIf="!toggled" class="logo-search" style="text-align:right;height:0px;">
+      <button ion-button clear color="light" (click)="toggleSearch()">
+        <ion-icon name="md-search" style="font-size:25px;"></ion-icon>
+      </button>
+    </div>
+    <div *ngIf="toggled" style="text-align:right;height:0px;">
+      <button ion-button clear style="color:#ffffff;background:transparent;font-size:25px;" (click)="toggleSearch()">
+        <ion-icon name="md-close"></ion-icon>
+      </button>
+    </div>
+    <button *ngIf="!toggled" ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <ion-title class="side-title">
+      <div *ngIf="!toggled" class="logo-atria">
+        <img src="assets/imgs/logoatriawhite.png" height="45" />
+      </div>
+      <div *ngIf="toggled" class="content-search" style="width:100%;">
+        <ion-searchbar (ionInput)="getSearchPO($event)" placeholder="Search"></ion-searchbar>
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="content-menu" no-padding>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content>
+      pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-segment [(ngModel)]="detailpo">
+    <ion-segment-button value="detailpoitem">
+      Detail Items PO
+    </ion-segment-button>
+    <ion-segment-button value="history">
+      History
+    </ion-segment-button>
+  </ion-segment>
+
+  <div [ngSwitch]="detailpo">
+    <div>
+      <ion-item no-lines class="toolbar-scroll">Showing {{totaldata}} entries</ion-item>
+    </div>
+    <ion-list class="content-list-menu" *ngSwitchCase="'detailpoitem'">
+      <ion-item class="content-data-item" *ngFor="let detailpo of purchasing_order_detail">
+        <ion-avatar item-start>
+          <img src="assets/imgs/noimage.jpg" alt="">
+        </ion-avatar>
+        <div no-padding>
+          <h2>No Item : {{detailpo.No_}}</h2>
+          <ion-note>Qty : {{detailpo.Quantity}}</ion-note><br/>
+        </div>
+        <!--<button item-end ion-button clear color="greenlake" (click)="doUpdatePODetail(detailpo)">
+          <ion-icon name="md-open" style="font-size:30px;"></ion-icon>
+        </button>
+        <button item-end ion-button clear color="greenlake" (click)="doDeletePODetail(detailpo)">
+          <ion-icon name="md-trash" style="font-size:30px;"></ion-icon>
+        </button>-->
+      </ion-item>
+    </ion-list>
+    <ion-list *ngSwitchCase="'history'">
+      <ion-item>
+
+      </ion-item>
+    </ion-list>
+  </div>
+  <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+    <ion-infinite-scroll-content>
+      loadingSpinner="bubbles" loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
+<div [ngSwitch]="detailpo">
+  <ion-fab class="fixed-div" bottom right *ngSwitchCase="'detailpoitem'">
+    <button ion-fab color="greenlake">
+      <ion-icon name="md-apps"></ion-icon>
+    </button>
+    <ion-fab-list side="top">
+      <button ion-fab color="primary" (click)="doAddPODetail(docno,orderno,batchno,locationcode,transferdate,totalitem,poid,totaldata)">
+        <ion-icon name="md-add"></ion-icon>
+      </button>
+      <button ion-fab color="secondary">
+        <ion-icon name="md-download"></ion-icon>
+      </button>
+      <button ion-fab color="danger">
+        <ion-icon name="md-cloud-upload"></ion-icon>
+      </button>
+    </ion-fab-list>
+  </ion-fab>
+</div>

@@ -1,0 +1,60 @@
+page-location {
+
+    .header-title-menu {
+       text-align: left;
+       font-size: 17px;
+       font-family: "Roboto", "Helvetica Neue", sans-serif;
+       color: #ffffff;
+   }
+   .content-body-menu {
+
+   }
+   .col-location {
+       background: #ffffff;
+       border: 1px solid;
+       border-color: #ececec;
+       text-align: justify;
+       text-align-last: center;
+   }
+   .fc-left {
+       text-align: left;
+       height: 0px;
+   }
+   .fc-center {
+       text-align: center;     
+       font-weight: bold;
+       font-size: 20px;
+       padding-top: -100px;
+   }    
+   .fc-right {
+       text-align: right;     
+       height: 10px;
+   }
+   .btn-location-back {  
+       background: linear-gradient(150deg, #d4d4d4, #ffffff);  
+       font-weight: bold;
+       font-size: 15px;
+       border-radius: 10%;
+   }
+   .btn-location-forward {
+       background: linear-gradient(150deg, #d4d4d4, #ffffff); 
+       font-weight: bold;
+       font-size: 15px;
+       border-radius: 10%;
+   }
+   .title-header-location {
+       text-align: center;
+   }
+   ion-select {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: -webkit-inline-box;
+    overflow: hidden;
+    max-width: 80%;
+    }
+    .close {
+        text-align: left;
+        color: #ffffff;
+    }
+}

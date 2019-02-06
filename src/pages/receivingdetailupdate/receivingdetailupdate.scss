@@ -1,0 +1,38 @@
+page-receivingdetailupdate {
+    .header-title-menu {
+        text-align: left;
+        font-size: 17px;
+        font-family: "Roboto", "Helvetica Neue", sans-serif;
+        color: #ffffff;
+    }
+    .title-header-location {
+        text-align: center;
+    }
+     .close {
+         text-align: left;
+         color: #ffffff;
+         height: 0px;
+     }
+     .logo-atria {
+        text-align: center;
+        margin-left: 50px;
+     }
+
+     .item-rcv {
+         background: #ffffff;
+         color: #000000;
+         border: 1px solid;
+         border-color: #217481;
+     }
+     .take-photo {
+        border-top:1px solid #dedede;
+        border-bottom:1px solid #dedede;
+     }
+     .deleteIcon {
+         background: #217481;
+         color: #ffffff;
+         text-align: center;
+         font-size: 20px;
+         height: 2  0px;
+     }
+}

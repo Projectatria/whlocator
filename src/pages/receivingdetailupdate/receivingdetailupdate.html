@@ -1,0 +1,60 @@
+<ion-header class="header-menu">
+    <ion-navbar class="header-navbar" style="width:100%;">
+      <div *ngIf="!toggled" class="logo-search" style="text-align:right;height:0px;">
+        <button ion-button clear color="light" (click)="getCamera()">
+          <ion-icon name="md-camera" style="font-size:35px;"></ion-icon>
+        </button>
+      </div>
+      <button ion-button clear color="light" (click)="closeModal()">
+        Close
+      </button>
+      <ion-title class="side-title">
+      </ion-title>
+    </ion-navbar>
+  </ion-header>
+<ion-content>
+  <form [formGroup]="myForm">
+    <ion-list no-lines padding>
+      <ion-item class="item-rcv">
+        <ion-label floating>Order No</ion-label>
+        <ion-input formControlName="orderno" type="text" disabled="true"></ion-input>
+      </ion-item>
+      <ion-item class="item-rcv">
+        <ion-label floating>Item No</ion-label>
+        <ion-input formControlName="itemno" type="text" disabled="true"></ion-input>
+      </ion-item>
+      <ion-item class="item-rcv">
+        <ion-label floating>Qty</ion-label>
+        <ion-input formControlName="qty" type="text" disabled="true"></ion-input>
+      </ion-item>
+      <ion-item class="item-rcv">
+          <ion-label floating>Qty Receiving</ion-label>
+          <ion-input formControlName="qtyreceiving" type="text"></ion-input>
+        </ion-item>
+      <ion-item class="item-rcv">
+        <ion-label floating>Staging</ion-label>
+        <ion-input formControlName="staging" type="text"></ion-input>
+      </ion-item>
+      <testing [messages]="error_messages.staging" [control]="myForm.get('staging')"></testing>
+      <ion-item class="item-rcv">
+        <ion-label floating>Description</ion-label>
+        <ion-textarea formControlName="description" type="textarea"></ion-textarea>
+      </ion-item>
+    </ion-list>
+  </form>
+  <ion-grid padding>
+    <ion-row>
+      <ion-col col-3 *ngFor="let photo of photos" style="padding:1px;">
+        <img src={{photo.img_src}} />
+        <button ion-button full class="deleteIcon" no-lines (click)="deletePhoto(photo)">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+<ion-footer style="background:#217481;">
+  <button ion-button full color="greenlake" (click)="doSave()">
+    Save
+  </button>
+</ion-footer>

@@ -1,0 +1,43 @@
+<ion-content class="background">
+  <img class="logo" height="100" src="http://10.10.10.7/qctesting/img/logoatriawhite">
+  <ion-buttons end>
+      <button ion-button clear (click)="closeTruckadd()">Cancel</button>
+    </ion-buttons>
+  <div class="form">
+    <form [formGroup]="myForm">
+      <ion-list>
+        <ion-item>
+          <ion-label stacked>Truck Number</ion-label>
+          <ion-input formControlName="truck_no" type="text" [(ngModel)]="truck_no"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.truck_no" [control]="myForm.get('truck_no')"></testing>
+        <ion-item>
+          <ion-label stacked>Driver Name</ion-label>
+          <ion-input formControlName="staff_name" type="text" [(ngModel)]="staff_name"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.staff_name" [control]="myForm.get('staff_name')"></testing>
+        <ion-item>
+          <ion-label stacked>State</ion-label>
+          <ion-input formControlName="state" type="text" [(ngModel)]="state"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.state" [control]="myForm.get('state')"></testing>
+        <ion-item>
+          <ion-label stacked>Posting Date</ion-label>
+          <ion-input formControlName="posting_date" type="date" [(ngModel)]="posting_date"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.posting_date" [control]="myForm.get('posting_date')"></testing>
+        <ion-item>
+          <ion-label stacked>Latitude</ion-label>
+          <ion-input formControlName="latitude" type="text" [(ngModel)]="latitude"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.latitude" [control]="myForm.get('latitude')"></testing>
+        <ion-item>
+          <ion-label stacked>Longitude</ion-label>
+          <ion-input formControlName="longitude" type="text" [(ngModel)]="longitude"></ion-input>
+        </ion-item>
+        <testing [messages]="error_messages.longitude" [control]="myForm.get('longitude')"></testing>
+      </ion-list>
+      <button ion-button (click)="insertTruck()" type="submit" block round>SAVE</button>
+    </form>
+  </div>
+</ion-content>

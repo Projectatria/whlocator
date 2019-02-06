@@ -1,0 +1,63 @@
+<ion-header class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <button ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <div style="text-align:right;height:0px;">
+      <button class="btn-profile" ion-button clear style="color:#ffffff;background:transparent;font-size:18px;" (click)="doProfile()">
+        <ion-icon name="md-arrow-dropdown" style="margin-right:8px;"></ion-icon>
+        <h5 style="text-decoration: underline;">{{name}}</h5>
+      </button>
+    </div>
+    <ion-title class="side-title">
+      <div class="logo-atria">
+        <img src="assets/imgs/logoatriawhite.png" height="45" />
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="content-menu" no-padding>
+  <ion-segment [(ngModel)]="rcv">
+    <ion-segment-button value="receiving">
+      Receiving
+    </ion-segment-button>
+    <!-- <ion-segment-button value="history">
+      History
+    </ion-segment-button> -->
+  </ion-segment>
+
+  <div [ngSwitch]="rcv">
+    
+    <ion-list class="content-list-menu" *ngSwitchCase="'receiving'">
+      <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content>
+          pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+        </ion-refresher-content>
+      </ion-refresher>
+      <div>
+        <ion-item no-lines class="toolbar-scroll">Showing {{totaldata}} entries</ion-item>
+      </div>
+      <ion-item class="content-data-item" *ngFor="let po of purchasing_order" (click)="viewDetail(po)">
+        <ion-avatar item-start>
+          <img src="assets/imgs/noimage.jpg" alt="">
+        </ion-avatar>
+        <div no-padding>
+          <h2>PO No : {{po.order_no}}</h2>
+          <div style="color:#4a4a4a;">Expected Receiving Date : {{po.expected_receipt_date | date: "dd-MM-yyyy"}}</div>
+        </div>
+      </ion-item>
+      <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+        <ion-infinite-scroll-content>
+          loadingSpinner="bubbles" loadingText="Loading more data...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </ion-list>
+
+    <ion-list *ngSwitchCase="'history'">
+      <ion-item>
+
+      </ion-item>
+    </ion-list>
+
+  </div>
+</ion-content>

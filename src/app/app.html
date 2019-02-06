@@ -1,0 +1,85 @@
+<!--  our side menu  -->
+<ion-menu [content]="content">
+  <ion-header class="side-header-logo">
+    <ion-navbar class="header-navbar">
+      <button ion-button menuToggle color="light">
+        <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+      </button>
+      <ion-title class="side-title">
+        <img src="assets/imgs/logoatriawhite.png" height="45" />
+      </ion-title>
+    </ion-navbar>
+  </ion-header>
+  <ion-content class="side-content">
+    <ion-list>
+      <ion-item class="side-header-list">
+        <ion-list class="side-list">
+          <button class="btn-side-menu" ion-item (click)="doHome()" menuClose>
+            <i class="fas fa-home"> Home</i>
+          </button>
+        </ion-list>
+        <ion-card-header class="side-header-list">
+          IN
+        </ion-card-header>
+        <ion-list class="side-list">
+          <button *ngIf="rolearea == 'INBOUND' || rolearea == 'HO'" class="btn-side-menu" ion-item (click)="open('PurchasingorderPage')" menuClose>
+            <i class="fas fa-box imgfa"></i>
+            Purchasing Order
+          </button>
+          <button *ngIf="rolearea == 'INBOUND' || rolearea == 'HO'" class="btn-side-menu" ion-item (click)="open('ReceivingPage')" menuClose>
+            <i class="fas fa-clipboard-list imgfa"></i>
+            &nbsp;Receiving
+          </button>
+          <button *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="btn-side-menu" ion-item (click)="open('QcinPage')" menuClose>
+            <i class="fas fa-calendar-check imgfa"></i>
+            QC In
+          </button>
+          <button *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="btn-side-menu" ion-item (click)="open('PutawayPage')" menuClose>
+            <i class="fas fa-pallet imgfa"></i>
+            Putaway
+          </button>
+        </ion-list>
+      </ion-item>
+      <ion-item *ngIf="rolearea == 'INBOUND' || rolearea == 'OUTBOUND' || rolearea == 'HO'" class="side-header-list">
+        <ion-card-header class="side-header-list">
+          OUT
+        </ion-card-header>
+        <ion-list class="side-list">
+          <button *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="btn-side-menu" ion-item (click)="open('MovementPage')" menuClose>
+            <i class="fas fa-people-carry imgfa"></i>
+            Movement
+          </button>
+          <button *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="btn-side-menu" ion-item (click)="open('TransferorderPage')" menuClose>
+            <i class="fas fa-exchange-alt imgfa"></i>
+            Transfer Order
+          </button>
+          <button *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="btn-side-menu" ion-item (click)="open('PickingPage')" menuClose>
+            <i class="fas fa-dolly imgfa"></i>
+            Picking
+          </button>
+          <button *ngIf="rolearea == 'OUTBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="btn-side-menu" ion-item (click)="open('QcoutPage')" menuClose>
+            <i class="fas fa-calendar-check imgfa"></i>
+            QC Out
+          </button>
+        </ion-list>
+      </ion-item>
+      <!-- <ion-item class="side-header-list">
+        <ion-card-header class="side-header-list">
+          History
+        </ion-card-header>
+      </ion-item> -->
+      <ion-item class="side-header-list">
+        <!-- <ion-card-header class="side-header-list">
+          Report
+        </ion-card-header> -->
+        <ion-list class="side-list">
+          <button class="btn-side-menu" ion-item (click)="doLogout()" menuClose>
+            <i class="fas fa-sign-out-alt"> Logout</i>
+          </button>
+        </ion-list>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+<!-- the main content -->
+<ion-nav [root]="rootPage" main #content></ion-nav>
