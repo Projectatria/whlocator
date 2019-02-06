@@ -80,6 +80,10 @@ export class PutawayPage {
   public loader: any;
   public name: any;
   public nextnostockbalance: any;
+  public userid: any;
+  public role = [];
+  public roleid: any;
+  public rolecab: any;
 
   constructor(
     public navCtrl: NavController,
@@ -122,6 +126,15 @@ export class PutawayPage {
     this.put = "qcin"
     this.groupby = ""
     this.search = 'item_no';
+    this.storage.get('userid').then((val) => {
+      this.userid = val;
+      this.api.get('table/user_role', { params: { filter: "id_user=" + "'" + this.userid + "'" } })
+        .subscribe(val => {
+          this.role = val['data']
+          this.roleid = this.role[0].id_group
+          this.rolecab = this.role[0].id_cab
+        })
+    });
   }
   ngAfterViewInit() {
     this.loader.dismiss();
@@ -404,7 +417,7 @@ export class PutawayPage {
                             "putawaylisttemp_no": this.getputawaylist[0].putawaylisttemp_no,
                             "qty": parseInt(this.getputawaylist[0].qty) + parseInt(data.qty),
                             "date": date,
-                            "pic": '12345'
+                            "pic": this.userid
                           },
                           { headers })
                           .subscribe(val => {
@@ -440,7 +453,7 @@ export class PutawayPage {
                               "qty_receiving": this.receivingputawaylist[0].qty_receiving,
                               "unit": this.receivingputawaylist[0].unit,
                               "flag": '',
-                              "pic": '12345',
+                              "pic": this.userid,
                               "status": 'OPEN',
                               "chronology_no": '',
                               "uuid": UUID.UUID()
@@ -506,7 +519,7 @@ export class PutawayPage {
                     "qty_receiving": this.getputawaylist[0].qty_receiving,
                     "unit": this.getputawaylist[0].unit,
                     "flag": '',
-                    "pic": '',
+                    "pic": this.userid,
                     "status": 'OPEN',
                     "chronology_no": '',
                     "uuid": UUID.UUID()
@@ -978,7 +991,7 @@ export class PutawayPage {
                         "qty_receiving": this.qty,
                         "unit": this.unit,
                         "flag": '',
-                        "pic": '',
+                        "pic": this.userid,
                         "status": 'OPEN',
                         "chronology_no": '',
                         "uuid": UUID.UUID()
@@ -1240,7 +1253,7 @@ export class PutawayPage {
                                 "putawaylisttemp_no": self.getputawaylist[0].putawaylisttemp_no,
                                 "qty": parseInt(self.getputawaylist[0].qty) + parseInt(data.qty),
                                 "date": date,
-                                "pic": '12345'
+                                "pic": this.userid
                               },
                               { headers })
                               .subscribe(val => {
@@ -1276,7 +1289,7 @@ export class PutawayPage {
                                   "qty_receiving": self.receivingputawaylist[0].qty_receiving,
                                   "unit": self.receivingputawaylist[0].unit,
                                   "flag": '',
-                                  "pic": '12345',
+                                  "pic": this.userid,
                                   "status": 'OPEN',
                                   "chronology_no": '',
                                   "uuid": UUID.UUID()

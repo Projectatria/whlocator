@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { QcinPage } from './qcin';
+import { IonicImageViewerModule } from 'ionic-img-viewer';
 
 @NgModule({
   declarations: [
@@ -8,6 +9,7 @@ import { QcinPage } from './qcin';
   ],
   imports: [
     IonicPageModule.forChild(QcinPage),
+    IonicImageViewerModule
   ],
 })
 export class QcinPageModule {}

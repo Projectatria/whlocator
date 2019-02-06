@@ -36,6 +36,10 @@ export class ReceivingdetailupdatePage {
   imageURI: string = '';
   imageFileName: string = '';
   private token:any;
+  public userid: any;
+  public role = [];
+  public roleid: any;
+  public rolecab: any;
 
   error_messages = {
     'docno': [
@@ -88,6 +92,15 @@ export class ReceivingdetailupdatePage {
     this.myForm.get('staging').setValue(this.staging);
     this.myForm.get('description').setValue(this.description);
     this.getPhotos();
+    this.storage.get('userid').then((val) => {
+      this.userid = val;
+      this.api.get('table/user_role', { params: { filter: "id_user=" + "'" + this.userid + "'" } })
+        .subscribe(val => {
+          this.role = val['data']
+          this.roleid = this.role[0].id_group
+          this.rolecab = this.role[0].id_cab
+        })
+    });
   }
   ionViewCanEnter() {
     this.storage.get('token').then((val) => {
@@ -240,7 +253,7 @@ export class ReceivingdetailupdatePage {
         "receiving_description": this.myForm.value.description,
         "staging": this.myForm.value.staging,
         "qty_receiving" : this.myForm.value.qtyreceiving,
-        "receiving_pic": 'Aji'
+        "receiving_pic": this.userid
       },
       { headers })
       .subscribe(

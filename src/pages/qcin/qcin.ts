@@ -10,6 +10,7 @@ import { Camera, CameraOptions } from '@ionic-native/camera';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 import { BarcodeScanner, BarcodeScannerOptions } from "@ionic-native/barcode-scanner";;
 import { Storage } from '@ionic/storage';
+import { ImageViewerController } from 'ionic-img-viewer';
 
 declare var cordova;
 declare var window;
@@ -61,6 +62,9 @@ export class QcinPage {
   public rolecab: any;
   public quality_control_clsd = [];
   public quality_control_rejected = [];
+  public itemno: any;
+  public qcstatus: any;
+
 
   constructor(
     public navCtrl: NavController,
@@ -249,7 +253,7 @@ export class QcinPage {
         .set("Content-Type", "application/json");
       this.api.post("table/qc_in_result",
         {
-          "qc_result_no":nextnoqcresult,
+          "qc_result_no": nextnoqcresult,
           "qc_no": nextnoqc,
           "batch_no": staging.batch_no,
           "item_no": staging.item_no,
@@ -479,8 +483,8 @@ export class QcinPage {
                                 "date_finish": date,
                                 "time_start": time,
                                 "time_finish": time,
-                                "qc_pic": 'AJI',
-                                "qty_receiving": 25,
+                                "qc_pic": this.userid,
+                                "qty_receiving": self.qcinbarcode[0].qty,
                                 "unit": self.qcinbarcode[0].unit,
                                 "qc_status": "OPEN",
                                 "qc_description": "",
@@ -519,6 +523,45 @@ export class QcinPage {
     }, {
         press: true
       });
+  }
+  doHapus(foto) {
+    let alert = this.alertCtrl.create({
+      title: 'Confirm Delete',
+      message: 'Yakin ingin menghapus foto ini?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+          }
+        },
+        {
+          text: 'Hapus',
+          handler: () => {
+            const headers = new HttpHeaders()
+              .set("Content-Type", "application/json");
+
+            this.api.put("table/link_image",
+              {
+                "no": foto.no,
+                "img_src": '',
+                "file_name": '',
+              },
+              { headers })
+              .subscribe(
+                (val) => {
+                  this.presentToast("Image deleted successfully");
+                  this.photos = [];
+                  this.api.get("table/link_image", { params: { limit: 100, filter: 'parent=' + "'" + this.uuidqcresult + "'", sort: "param" + " ASC " } }).subscribe(val => {
+                    this.photos = val['data'];
+                    this.totalphoto = val['count'];
+                  });
+                });
+          }
+        }
+      ]
+    });
+    alert.present();
   }
   doOffChecking() {
     document.getElementById("myQCChecking").style.display = "none";
@@ -569,7 +612,7 @@ export class QcinPage {
         "param": '0' + ib,
         "param_desc": 'Lainnya ' + ia,
         "parent": resultuuid,
-        "table_name": "qc_in_result",
+        "table_name": "Qc_in_result",
         "img_src": '',
         "file_name": '',
         "description": '',
@@ -612,6 +655,8 @@ export class QcinPage {
         this.uuidqcresult = result.uuid;
         this.qcnoresult = result.qc_result_no;
         this.qcno = result.qc_no;
+        this.itemno = result.item_no;
+        this.qcstatus = result.qc_status
         if (result.qc_status != 'PASSED') {
           document.getElementById("myQCChecking").style.display = "block";
           document.getElementById("myBTNChecking").style.display = "block";
@@ -630,199 +675,7 @@ export class QcinPage {
       });
   }
   getfoto(result) {
-    if (result.time_start == '00:00:00') {
-      let alert = this.alertCtrl.create({
-        title: 'Confirm Start',
-        message: 'Do you want to QC Now?',
-        buttons: [
-          {
-            text: 'Cancel',
-            role: 'cancel',
-            handler: () => {
-            }
-          },
-          {
-            text: 'Start',
-            handler: () => {
-              let loader = this.loadingCtrl.create({
-                // cssClass: 'transparent',
-                content: 'Loading...'
-              });
-              loader.present()
-              let datetime = moment().format('YYYY-MM-DD HH:mm:ss');
-              const headersa = new HttpHeaders()
-                .set("Content-Type", "application/json");
-
-              this.api.post("table/link_image",
-                {
-                  "no": UUID.UUID(),
-                  "param": '001',
-                  "param_desc": 'Tampak Kiri',
-                  "parent": result.uuid,
-                  "table_name": "Qc_in_result",
-                  "img_src": '',
-                  "file_name": '',
-                  "description": '',
-                  "latitude": "",
-                  "longitude": "",
-                  "location_code": '',
-                  "upload_date": datetime,
-                  "upload_by": ""
-                },
-                { headersa })
-                .subscribe(
-                  (val) => {
-                    this.api.post("table/link_image",
-                      {
-                        "no": UUID.UUID(),
-                        "param": '002',
-                        "param_desc": 'Tampak Kanan',
-                        "parent": result.uuid,
-                        "table_name": "Qc_in_result",
-                        "img_src": '',
-                        "file_name": '',
-                        "description": '',
-                        "latitude": "",
-                        "longitude": "",
-                        "location_code": '',
-                        "upload_date": datetime,
-                        "upload_by": ""
-                      },
-                      { headersa })
-                      .subscribe(
-                        (val) => {
-                          this.api.post("table/link_image",
-                            {
-                              "no": UUID.UUID(),
-                              "param": '003',
-                              "param_desc": 'Tampak Atas',
-                              "parent": result.uuid,
-                              "table_name": "Qc_in_result",
-                              "img_src": '',
-                              "file_name": '',
-                              "description": '',
-                              "latitude": "",
-                              "longitude": "",
-                              "location_code": '',
-                              "upload_date": datetime,
-                              "upload_by": ""
-                            },
-                            { headersa })
-                            .subscribe(
-                              (val) => {
-                                this.api.post("table/link_image",
-                                  {
-                                    "no": UUID.UUID(),
-                                    "param": '004',
-                                    "param_desc": 'Tampak Bawah',
-                                    "parent": result.uuid,
-                                    "table_name": "Qc_in_result",
-                                    "img_src": '',
-                                    "file_name": '',
-                                    "description": '',
-                                    "latitude": "",
-                                    "longitude": "",
-                                    "location_code": '',
-                                    "upload_date": datetime,
-                                    "upload_by": ""
-                                  },
-                                  { headersa })
-                                  .subscribe(
-                                    (val) => {
-                                      for (let i = 0; i < 50; i++) {
-                                        let resultuuid = result.uuid
-                                        this.doInsertLinkImage(resultuuid, i)
-                                      }
-                                      this.updateFoto(result)
-                                      this.getFoto(result)
-                                      loader.dismiss();
-                                    }, err => {
-                                      this.api.post("table/link_image",
-                                        {
-                                          "no": UUID.UUID(),
-                                          "param": '004',
-                                          "param_desc": 'Tampak Bawah',
-                                          "parent": result.uuid,
-                                          "table_name": "Qc_in_result",
-                                          "img_src": '',
-                                          "file_name": '',
-                                          "description": '',
-                                          "latitude": "",
-                                          "longitude": "",
-                                          "location_code": '',
-                                          "upload_date": datetime,
-                                          "upload_by": ""
-                                        },
-                                        { headersa })
-                                        .subscribe()
-                                    });
-                              }, err => {
-                                this.api.post("table/link_image",
-                                  {
-                                    "no": UUID.UUID(),
-                                    "param": '003',
-                                    "param_desc": 'Tampak Atas',
-                                    "parent": result.uuid,
-                                    "table_name": "Qc_in_result",
-                                    "img_src": '',
-                                    "file_name": '',
-                                    "description": '',
-                                    "latitude": "",
-                                    "longitude": "",
-                                    "location_code": '',
-                                    "upload_date": datetime,
-                                    "upload_by": ""
-                                  },
-                                  { headersa })
-                                  .subscribe()
-                              });
-                        }, err => {
-                          this.api.post("table/link_image",
-                            {
-                              "no": UUID.UUID(),
-                              "param": '002',
-                              "param_desc": 'Tampak Kanan',
-                              "parent": result.uuid,
-                              "table_name": "Qc_in_result",
-                              "img_src": '',
-                              "file_name": '',
-                              "description": '',
-                              "latitude": "",
-                              "longitude": "",
-                              "location_code": '',
-                              "upload_date": datetime,
-                              "upload_by": ""
-                            },
-                            { headersa })
-                            .subscribe()
-                        });
-                  }, err => {
-                    this.api.post("table/link_image",
-                      {
-                        "no": UUID.UUID(),
-                        "param": '001',
-                        "param_desc": 'Tampak Kiri',
-                        "parent": result.uuid,
-                        "table_name": "Qc_in_result",
-                        "img_src": '',
-                        "file_name": '',
-                        "description": '',
-                        "latitude": "",
-                        "longitude": "",
-                        "location_code": '',
-                        "upload_date": datetime,
-                        "upload_by": ""
-                      },
-                      { headersa })
-                      .subscribe()
-                  });
-            }
-          }
-        ]
-      });
-      alert.present();
-    }
-    else {
+    if (this.roleid == 'ADMIN') {
       this.api.get("table/link_image", { params: { limit: 100, filter: 'parent=' + "'" + result.uuid + "'", sort: "param" + " ASC " } })
         .subscribe(val => {
           this.photos = val['data'];
@@ -830,20 +683,228 @@ export class QcinPage {
           this.uuidqcresult = result.uuid;
           this.qcnoresult = result.qc_result_no;
           this.qcno = result.qc_no;
-          if (result.qc_status != 'PASSED') {
-            document.getElementById("myQCChecking").style.display = "block";
-            document.getElementById("myBTNChecking").style.display = "block";
-            // document.getElementById("button").style.display = "block";
-            document.getElementById("myHeader").style.display = "none";
-            this.button = true;
-          }
-          else {
-            document.getElementById("myQCChecking").style.display = "block";
-            document.getElementById("myBTNChecking").style.display = "none";
-            // document.getElementById("button").style.display = "none";
-            document.getElementById("myHeader").style.display = "none";
-          }
+          this.itemno = result.item_no;
+          this.qcstatus = result.qc_status
         });
+    }
+    else {
+      if (result.time_start == '00:00:00') {
+        let alert = this.alertCtrl.create({
+          title: 'Confirm Start',
+          message: 'Do you want to QC Now?',
+          buttons: [
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              handler: () => {
+              }
+            },
+            {
+              text: 'Start',
+              handler: () => {
+                let loader = this.loadingCtrl.create({
+                  // cssClass: 'transparent',
+                  content: 'Loading...'
+                });
+                loader.present()
+                let datetime = moment().format('YYYY-MM-DD HH:mm:ss');
+                const headersa = new HttpHeaders()
+                  .set("Content-Type", "application/json");
+
+                this.api.post("table/link_image",
+                  {
+                    "no": UUID.UUID(),
+                    "param": '001',
+                    "param_desc": 'Tampak Kiri',
+                    "parent": result.uuid,
+                    "table_name": "Qc_in_result",
+                    "img_src": '',
+                    "file_name": '',
+                    "description": '',
+                    "latitude": "",
+                    "longitude": "",
+                    "location_code": '',
+                    "upload_date": datetime,
+                    "upload_by": ""
+                  },
+                  { headersa })
+                  .subscribe(
+                    (val) => {
+                      this.api.post("table/link_image",
+                        {
+                          "no": UUID.UUID(),
+                          "param": '002',
+                          "param_desc": 'Tampak Kanan',
+                          "parent": result.uuid,
+                          "table_name": "Qc_in_result",
+                          "img_src": '',
+                          "file_name": '',
+                          "description": '',
+                          "latitude": "",
+                          "longitude": "",
+                          "location_code": '',
+                          "upload_date": datetime,
+                          "upload_by": ""
+                        },
+                        { headersa })
+                        .subscribe(
+                          (val) => {
+                            this.api.post("table/link_image",
+                              {
+                                "no": UUID.UUID(),
+                                "param": '003',
+                                "param_desc": 'Tampak Atas',
+                                "parent": result.uuid,
+                                "table_name": "Qc_in_result",
+                                "img_src": '',
+                                "file_name": '',
+                                "description": '',
+                                "latitude": "",
+                                "longitude": "",
+                                "location_code": '',
+                                "upload_date": datetime,
+                                "upload_by": ""
+                              },
+                              { headersa })
+                              .subscribe(
+                                (val) => {
+                                  this.api.post("table/link_image",
+                                    {
+                                      "no": UUID.UUID(),
+                                      "param": '004',
+                                      "param_desc": 'Tampak Bawah',
+                                      "parent": result.uuid,
+                                      "table_name": "Qc_in_result",
+                                      "img_src": '',
+                                      "file_name": '',
+                                      "description": '',
+                                      "latitude": "",
+                                      "longitude": "",
+                                      "location_code": '',
+                                      "upload_date": datetime,
+                                      "upload_by": ""
+                                    },
+                                    { headersa })
+                                    .subscribe(
+                                      (val) => {
+                                        for (let i = 0; i < 50; i++) {
+                                          let resultuuid = result.uuid
+                                          this.doInsertLinkImage(resultuuid, i)
+                                        }
+                                        this.updateFoto(result)
+                                        this.getFoto(result)
+                                        loader.dismiss();
+                                      }, err => {
+                                        this.api.post("table/link_image",
+                                          {
+                                            "no": UUID.UUID(),
+                                            "param": '004',
+                                            "param_desc": 'Tampak Bawah',
+                                            "parent": result.uuid,
+                                            "table_name": "Qc_in_result",
+                                            "img_src": '',
+                                            "file_name": '',
+                                            "description": '',
+                                            "latitude": "",
+                                            "longitude": "",
+                                            "location_code": '',
+                                            "upload_date": datetime,
+                                            "upload_by": ""
+                                          },
+                                          { headersa })
+                                          .subscribe()
+                                      });
+                                }, err => {
+                                  this.api.post("table/link_image",
+                                    {
+                                      "no": UUID.UUID(),
+                                      "param": '003',
+                                      "param_desc": 'Tampak Atas',
+                                      "parent": result.uuid,
+                                      "table_name": "Qc_in_result",
+                                      "img_src": '',
+                                      "file_name": '',
+                                      "description": '',
+                                      "latitude": "",
+                                      "longitude": "",
+                                      "location_code": '',
+                                      "upload_date": datetime,
+                                      "upload_by": ""
+                                    },
+                                    { headersa })
+                                    .subscribe()
+                                });
+                          }, err => {
+                            this.api.post("table/link_image",
+                              {
+                                "no": UUID.UUID(),
+                                "param": '002',
+                                "param_desc": 'Tampak Kanan',
+                                "parent": result.uuid,
+                                "table_name": "Qc_in_result",
+                                "img_src": '',
+                                "file_name": '',
+                                "description": '',
+                                "latitude": "",
+                                "longitude": "",
+                                "location_code": '',
+                                "upload_date": datetime,
+                                "upload_by": ""
+                              },
+                              { headersa })
+                              .subscribe()
+                          });
+                    }, err => {
+                      this.api.post("table/link_image",
+                        {
+                          "no": UUID.UUID(),
+                          "param": '001',
+                          "param_desc": 'Tampak Kiri',
+                          "parent": result.uuid,
+                          "table_name": "Qc_in_result",
+                          "img_src": '',
+                          "file_name": '',
+                          "description": '',
+                          "latitude": "",
+                          "longitude": "",
+                          "location_code": '',
+                          "upload_date": datetime,
+                          "upload_by": ""
+                        },
+                        { headersa })
+                        .subscribe()
+                    });
+              }
+            }
+          ]
+        });
+        alert.present();
+      }
+      else {
+        this.api.get("table/link_image", { params: { limit: 100, filter: 'parent=' + "'" + result.uuid + "'", sort: "param" + " ASC " } })
+          .subscribe(val => {
+            this.photos = val['data'];
+            this.totalphoto = val['count'];
+            this.uuidqcresult = result.uuid;
+            this.qcnoresult = result.qc_result_no;
+            this.qcno = result.qc_no;
+            this.itemno = result.item_no;
+            this.qcstatus = result.qc_status
+            if (result.qc_status != 'PASSED') {
+              document.getElementById("myQCChecking").style.display = "block";
+              document.getElementById("myBTNChecking").style.display = "block";
+              // document.getElementById("button").style.display = "block";
+              document.getElementById("myHeader").style.display = "none";
+              this.button = true;
+            }
+            else {
+              document.getElementById("myQCChecking").style.display = "block";
+              document.getElementById("myBTNChecking").style.display = "none";
+              // document.getElementById("button").style.display = "none";
+              document.getElementById("myHeader").style.display = "none";
+            }
+          });
+      }
     }
   }
   doViewPhoto(foto) {
@@ -853,140 +914,95 @@ export class QcinPage {
   doCloseViewPhoto() {
     document.getElementById("foto").style.display = "none";
   }
-  doCamera() {
+  doCamera(foto) {
     this.api.get("table/configuration_picture").subscribe(val => {
       let configuration = val['data'];
-      let options: CameraOptions = {
-        quality: configuration[0].camera_quality,
-        destinationType: this.camera.DestinationType.FILE_URI
-      }
-      options.sourceType = this.camera.PictureSourceType.CAMERA
+      console.log(configuration)
+      if (this.qcstatus != 'PASSED') {
+        let options: CameraOptions = {
+          quality: configuration[0].camera_quality,
+          destinationType: this.camera.DestinationType.FILE_URI
+        }
+        options.sourceType = this.camera.PictureSourceType.CAMERA
 
-      this.camera.getPicture(options).then((imageData) => {
-        let alert = this.alertCtrl.create({
-          title: 'Description',
-          inputs: [
-            {
-              name: 'description',
-              placeholder: 'Description'
-            }
-          ],
-          buttons: [
-            {
-              text: 'SAVE',
-              handler: datadesc => {
-                this.imageURI = imageData;
-                this.imageFileName = this.imageURI;
-                if (this.imageURI == '') return;
-                let loader = this.loadingCtrl.create({
-                  content: "Uploading..."
-                });
-                loader.present();
-                const fileTransfer: FileTransferObject = this.transfer.create();
-
-                let uuid = UUID.UUID();
-                this.uuid = uuid;
-                this.api.get("table/link_image", { params: { limit: 100, filter: 'parent=' + "'" + this.uuidqcresult + "'", sort: "param" + " ASC " } }).subscribe(val => {
-                  let photos = val['data'];
-                  if (photos.length == 0) {
-                    let options: FileUploadOptions = {
-                      fileKey: 'fileToUpload',
-                      //fileName: this.imageURI.substr(this.imageURI.lastIndexOf('/') + 1),
-                      fileName: "QCIN-" + "001" + uuid + '.jpeg',
-                      chunkedMode: true,
-                      mimeType: "image/jpeg",
-                      headers: {}
-                    }
-
-                    let url = "http://10.10.10.7/qctesting/api/Upload";
-                    fileTransfer.upload(this.imageURI, url, options)
-                      .then((data) => {
-                        loader.dismiss();
-                        let date = moment().format('YYYY-MM-DD HH:mm:ss');
-                        const headers = new HttpHeaders()
-                          .set("Content-Type", "application/json");
-
-                        this.api.put("table/link_image",
-                          {
-                            "no": UUID.UUID(),
-                            "img_src": 'http://10.10.10.7/qctesting/img/' + "QCIN-" + "001" + uuid,
-                            "file_name": "QCIN-" + "001" + uuid,
-                            "description": datadesc.description,
-                            "upload_date": date,
-                            "upload_by": ""
-                          },
-                          { headers })
-                          .subscribe(
-                            (val) => {
-                              this.presentToast("Image uploaded successfully");
-                              this.photos = [];
-                              this.api.get("table/link_image", { params: { limit: 100, filter: 'parent=' + "'" + this.uuidqcresult + "'", sort: "param" + " ASC " } }).subscribe(val => {
-                                this.photos = val['data'];
-                                this.totalphoto = val['count'];
-                              });
-                            });
-                        this.imageURI = '';
-                        this.imageFileName = '';
-                      }, (err) => {
-                        loader.dismiss();
-                        this.presentToast('Silahkan Coba lagi');
-                      });
-                  }
-                  else {
-                    let param = parseInt(photos[0].param) + 1
-                    console.log(param)
-                    let options: FileUploadOptions = {
-                      fileKey: 'fileToUpload',
-                      //fileName: this.imageURI.substr(this.imageURI.lastIndexOf('/') + 1),
-                      fileName: "QCIN-" + param + uuid + '.jpeg',
-                      chunkedMode: true,
-                      mimeType: "image/jpeg",
-                      headers: {}
-                    }
-
-                    let url = "http://10.10.10.7/qctesting/api/Upload";
-                    fileTransfer.upload(this.imageURI, url, options)
-                      .then((data) => {
-                        loader.dismiss();
-                        let date = moment().format('YYYY-MM-DD HH:mm:ss');
-                        const headers = new HttpHeaders()
-                          .set("Content-Type", "application/json");
-
-                        this.api.put("table/link_image",
-                          {
-                            "no": UUID.UUID(),
-                            "img_src": 'http://10.10.10.7/qctesting/img/' + "QCIN-" + "001" + uuid,
-                            "file_name": "QCIN-" + "001" + uuid,
-                            "description": datadesc.description,
-                            "upload_date": date,
-                            "upload_by": ""
-                          },
-                          { headers })
-                          .subscribe(
-                            (val) => {
-                              this.presentToast("Image uploaded successfully");
-                              this.photos = [];
-                              this.api.get("table/link_image", { params: { limit: 100, filter: 'parent=' + "'" + this.uuidqcresult + "'", sort: "param" + " ASC " } }).subscribe(val => {
-                                this.photos = val['data'];
-                                this.totalphoto = val['count'];
-                              });
-                            });
-                        this.imageURI = '';
-                        this.imageFileName = '';
-                      }, (err) => {
-                        loader.dismiss();
-                        this.presentToast('Silahkan Coba lagi');
-                      });
-                  }
-                });
+        this.camera.getPicture(options).then((imageData) => {
+          let alert = this.alertCtrl.create({
+            title: 'Description',
+            inputs: [
+              {
+                name: 'description',
+                placeholder: 'Description'
               }
-            }
-          ]
+            ],
+            buttons: [
+              {
+                text: 'SAVE',
+                handler: datadesc => {
+                  this.imageURI = imageData;
+                  this.imageFileName = this.imageURI;
+                  if (this.imageURI == '') return;
+                  let loader = this.loadingCtrl.create({
+                    content: "Uploading..."
+                  });
+                  loader.present();
+                  const fileTransfer: FileTransferObject = this.transfer.create();
+
+                  let uuid = UUID.UUID();
+                  this.uuid = uuid;
+                  let options: FileUploadOptions = {
+                    fileKey: 'fileToUpload',
+                    //fileName: this.imageURI.substr(this.imageURI.lastIndexOf('/') + 1),
+                    fileName: "QCIN" + "-" + this.itemno + "-" + foto.param + uuid + '.jpeg',
+                    chunkedMode: true,
+                    mimeType: "image/jpeg",
+                    headers: {}
+                  }
+
+                  let url = "http://10.10.10.7/qctesting/api/Upload";
+                  fileTransfer.upload(this.imageURI, url, options)
+                    .then((data) => {
+                      loader.dismiss();
+                      let date = moment().format('YYYY-MM-DD HH:mm:ss');
+                      const headers = new HttpHeaders()
+                        .set("Content-Type", "application/json");
+
+                      this.api.put("table/link_image",
+                        {
+                          "no": foto.no,
+                          "img_src": 'http://10.10.10.7/qctesting/img/' + "QCIN" + "-" + this.itemno + "-" + foto.param + uuid,
+                          "file_name": "QCIN" + "-" + this.itemno + "-" + foto.param + uuid,
+                          "description": datadesc.description,
+                          "upload_date": date,
+                          "upload_by": ""
+                        },
+                        { headers })
+                        .subscribe(
+                          (val) => {
+                            this.presentToast("Image uploaded successfully");
+                            this.photos = [];
+                            this.api.get("table/link_image", { params: { limit: 100, filter: 'parent=' + "'" + this.uuidqcresult + "'", sort: "param" + " ASC " } }).subscribe(val => {
+                              this.photos = val['data'];
+                              this.totalphoto = val['count'];
+                            });
+                          });
+                      this.imageURI = '';
+                      this.imageFileName = '';
+                    }, (err) => {
+                      loader.dismiss();
+                      this.presentToast('Silahkan Coba lagi');
+                    });
+                }
+              }
+            ]
+          });
+          alert.present();
+        }, (err) => {
+          this.presentToast('This Platform is Not Supported');
         });
-        alert.present();
-      }, (err) => {
-        this.presentToast('This Platform is Not Supported');
-      });
+      }
+      else {
+        this.doViewPhoto(foto);
+      }
     });
   }
   presentToast(msg) {

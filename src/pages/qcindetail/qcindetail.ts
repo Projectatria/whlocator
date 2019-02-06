@@ -59,6 +59,10 @@ export class QcindetailPage {
   public detailinspection = '';
   private nextnoqc = '';
   private token:any;
+  public userid: any;
+  public role = [];
+  public roleid: any;
+  public rolecab: any;
 
   constructor(
     public navCtrl: NavController,
@@ -88,6 +92,15 @@ export class QcindetailPage {
     this.shippingmark = false;
     this.qc = "qcin"
     this.button = "qcin"
+    this.storage.get('userid').then((val) => {
+      this.userid = val;
+      this.api.get('table/user_role', { params: { filter: "id_user=" + "'" + this.userid + "'" } })
+        .subscribe(val => {
+          this.role = val['data']
+          this.roleid = this.role[0].id_group
+          this.rolecab = this.role[0].id_cab
+        })
+    });
   }
   ionViewCanEnter() {
     this.storage.get('token').then((val) => {
@@ -312,7 +325,7 @@ export class QcindetailPage {
                           "order_no": this.orderno,
                           "batch_no": this.batchno,
                           "item_no": this.receiving[0].item_no,
-                          "pic": '',
+                          "pic": this.userid,
                           "qty": 20,
                           "qty_checked": 0,
                           "unit": this.receiving[0].unit,
@@ -342,8 +355,8 @@ export class QcindetailPage {
                         "date_finish": date,
                         "time_start": time,
                         "time_finish": time,
-                        "qc_pic": 'AJI',
-                        "qty_receiving": 25,
+                        "qc_pic": this.userid,
+                        "qty_receiving": this.receiving[0].qty,
                         "unit": this.receiving[0].unit,
                         "qc_status": "OPEN",
                         "qc_description": "",
