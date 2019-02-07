@@ -303,7 +303,7 @@ export class MovementPage {
     });
   }
   doSaveToMovement() {
-    this.api.get('table/movement_temp', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" } })
+    this.api.get('table/movement_temp_detail', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" } })
       .subscribe(val => {
         this.getmovementlist = val['data'];
         this.api.get('table/location_master', { params: { limit: 30, filter: "location_alocation=" + "'" + this.myForm.value.rackno + "'" } })
@@ -348,7 +348,7 @@ export class MovementPage {
                   {
                     text: 'Save',
                     handler: () => {
-                      this.api.get('table/movement_temp', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" } })
+                      this.api.get('table/movement_temp_detail', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" } })
                         .subscribe(val => {
                           this.getmovementlist = val['data'];
                           for (let i = 0; i < this.getmovementlist.length; i++) {
@@ -402,9 +402,9 @@ export class MovementPage {
                                       .subscribe(val => {
                                         const headers = new HttpHeaders()
                                           .set("Content-Type", "application/json");
-                                        this.api.delete("table/movement_temp", { params: { filter: "movementtemp_no=" + "'" + this.getmovementlist[0].movementtemp_no + "'" }, headers })
+                                        this.api.delete("table/movement_temp_detail", { params: { filter: "movementtemp_no=" + "'" + this.getmovementlist[0].movementtemp_no + "'" }, headers })
                                           .subscribe(val => {
-                                            this.api.get('table/movement_temp', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" } })
+                                            this.api.get('table/movement_temp_detail', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" } })
                                               .subscribe(val => {
                                                 this.getmovementlist = val['data'];
                                                 let alert = this.alertCtrl.create({
@@ -413,7 +413,7 @@ export class MovementPage {
                                                   buttons: ['OK']
                                                 });
                                                 this.myForm.reset()
-                                                this.getMovementTemp();
+                                                this.getMovementTempDetail();
                                                 alert.present();
                                               });
                                           })
@@ -516,9 +516,9 @@ export class MovementPage {
                         this.api.delete("table/movement_temp_detail", { params: { filter: 'movementtemp_no=' + "'" + putemp.movementtemp_no + "'" }, headers })
                           .subscribe(
                             (val) => {
+                              this.getMovementTemp();
+                              this.getMovementTempDetail();
                             });
-                        this.getMovementTemp();
-                        this.getMovementTempDetail();
                       })
                   });
                 }
@@ -541,9 +541,9 @@ export class MovementPage {
                       this.api.delete("table/movement_temp_detail", { params: { filter: 'movementtemp_no=' + "'" + putemp.movementtemp_no + "'" }, headers })
                         .subscribe(
                           (val) => {
+                            this.getMovementTemp();
+                            this.getMovementTempDetail();
                           });
-                      this.getMovementTemp();
-                      this.getMovementTempDetail();
                     })
                 }
               });
@@ -750,9 +750,9 @@ export class MovementPage {
                                   "batch_no": putawaylist[0].batch_no,
                                   "item_no": putawaylist[0].item_no,
                                   "qty": data.qty,
-                                  "location_code": putawaylist[0].location,
-                                  "location_previous_position": putawaylist[0].sub_location,
-                                  "location_current_position": '',
+                                  "location_code": putawaylist[0].location_code,
+                                  "location_previous_position": putawaylist[0].location_previous_position,
+                                  "location_current_position": putawaylist[0].location_current_position,
                                   "status": 'OPEN',
                                   "datetime": datetime,
                                   "pic": self.userid,
@@ -791,14 +791,22 @@ export class MovementPage {
                               },
                               { headers })
                               .subscribe(val => {
-                                self.getMovementTemp()
-                                self.getMovementTempDetail()
-                                let alert = self.alertCtrl.create({
-                                  title: 'Sukses ',
-                                  subTitle: 'Add Item Sukses',
-                                  buttons: ['OK']
-                                });
-                                alert.present();
+                                self.api.put("table/movement_temp",
+                                  {
+                                    "movementtemp_no": putawaylist[0].movementtemp_no,
+                                    "qty": putawaylist[0].qty - data.qty
+                                  },
+                                  { headers })
+                                  .subscribe(val => {
+                                    self.getMovementTemp()
+                                    self.getMovementTempDetail()
+                                    let alert = self.alertCtrl.create({
+                                      title: 'Sukses ',
+                                      subTitle: 'Add Item Sukses',
+                                      buttons: ['OK']
+                                    });
+                                    alert.present();
+                                  });
                               });
                           }
                         });

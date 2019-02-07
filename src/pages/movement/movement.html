@@ -100,10 +100,6 @@
     <ion-icon name="md-apps"></ion-icon>
   </button>
   <ion-fab-list side="top">
-    <button ion-fab class="fab-list" color="greenlake" (click)="doScanBarcodeRack()">
-      <ion-icon name="md-qr-scanner"></ion-icon>
-      <ion-label>Add Rack</ion-label>
-    </button>
     <button ion-fab class="fab-list" color="greenlake" (click)="doScanBarcodeItem()">
       S
       <ion-label>Add Item To Staging</ion-label>
@@ -111,6 +107,12 @@
     <button ion-fab class="fab-list" color="greenlake" (click)="doScanBarcodeItemDetail()">
       T
       <ion-label>Add Item To Temp</ion-label>
+    </button>
+  </ion-fab-list>
+  <ion-fab-list side="left">
+    <button ion-fab class="fab-list" color="greenlake" (click)="doScanBarcodeRack()">
+      <ion-icon name="md-qr-scanner"></ion-icon>
+      <ion-label>Add Rack</ion-label>
     </button>
   </ion-fab-list>
 </ion-fab>
