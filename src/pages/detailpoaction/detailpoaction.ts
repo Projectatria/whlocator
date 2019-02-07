@@ -432,209 +432,300 @@ export class DetailpoactionPage {
     });
   }*/
   doPostingRCV(detailpo) {
-    let alert = this.alertCtrl.create({
-      title: 'Confirm Posting',
-      message: 'Do you want to posting Item No ' + detailpo.item_no + ' ?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          handler: () => {
-          }
-        },
-        {
-          text: 'Posting',
-          handler: () => {
-            if (this.userid == this.piclokasi && detailpo.status_location == '') {
-              const headers = new HttpHeaders()
-                .set("Content-Type", "application/json");
-              this.api.put("table/purchasing_order_detail",
-                {
-                  "code": detailpo.code,
-                  "status_location": 'OK',
-                  "pic_location": this.userid
-                },
-                { headers })
-                .subscribe(val => {
-                  let alert = this.alertCtrl.create({
-                    title: 'Sukses',
-                    subTitle: 'Save Lokasi Sukses',
-                    buttons: ['OK']
-                  });
-                  alert.present();
-                  this.api.get("table/purchasing_order_detail", { params: { filter: 'order_no=' + "'" + detailpo.order_no + "'" + " AND code=" + "'" + detailpo.code + "'" } }).subscribe(val => {
-                    this.podetail = val['data'];
-                    if (this.podetail[0].status_location == 'OK' && this.podetail[0].status_barcode == 'OK') {
-                      this.getNextNoRCV().subscribe(val => {
-                        this.nextno = val['nextno'];
-                        let uuid = UUID.UUID();
-                        this.uuid = uuid;
-                        let date = moment().format();
+    if (detailpo.location == '') {
+      let alert = this.alertCtrl.create({
+        title: 'Sukses',
+        subTitle: 'Lokasi belum disiapkan',
+        buttons: ['OK']
+      });
+      alert.present();
+    }
+    else {
+      let alert = this.alertCtrl.create({
+        title: 'Confirm Posting',
+        message: 'Do you want to posting Item No ' + detailpo.item_no + ' ?',
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {
+            }
+          },
+          {
+            text: 'Posting',
+            handler: () => {
+              if ((this.userid == this.piclokasi && detailpo.status_location == '') && (this.userid == this.picbarcode && detailpo.status_barcode == '')) {
+                const headers = new HttpHeaders()
+                  .set("Content-Type", "application/json");
+                this.api.put("table/purchasing_order_detail",
+                  {
+                    "code": detailpo.code,
+                    "status_location": 'OK',
+                    "status_barcode": 'OK',
+                    "pic_location": this.userid,
+                    "pic_barcode": this.userid
+                  },
+                  { headers })
+                  .subscribe(val => {
+                    let alert = this.alertCtrl.create({
+                      title: 'Sukses',
+                      subTitle: 'Save Lokasi & Barcode Sukses',
+                      buttons: ['OK']
+                    });
+                    alert.present();
+                    this.api.get("table/purchasing_order_detail", { params: { filter: 'order_no=' + "'" + detailpo.order_no + "'" + " AND code=" + "'" + detailpo.code + "'" } }).subscribe(val => {
+                      this.podetail = val['data'];
+                      if (this.podetail[0].status_location == 'OK' && this.podetail[0].status_barcode == 'OK') {
+                        this.getNextNoRCV().subscribe(val => {
+                          this.nextno = val['nextno'];
+                          let uuid = UUID.UUID();
+                          this.uuid = uuid;
+                          let date = moment().format();
+                          const headers = new HttpHeaders()
+                            .set("Content-Type", "application/json");
+                          this.api.post("table/receiving",
+                            {
+                              "receiving_no": this.nextno,
+                              "order_no": detailpo.order_no,
+                              "line_no": detailpo.line_no,
+                              "batch_no": detailpo.batch_no,
+                              "item_no": detailpo.item_no,
+                              "location_code": '81003',
+                              "expected_receipt_date": detailpo.expected_receipt_date,
+                              "description": detailpo.description,
+                              "unit": detailpo.unit,
+                              "qty": detailpo.qty,
+                              "qty_receiving": 0,
+                              "vendor_no": detailpo.vendor_no,
+                              "vendor_status": detailpo.vendor_status,
+                              "division": detailpo.division,
+                              "item_category_code": detailpo.item_category_code,
+                              "product_group_code": detailpo.product_group_code,
+                              "location": detailpo.location,
+                              "status": 'OPEN',
+                              "status_location": 'OK',
+                              "status_barcode": 'OK',
+                              "pic_location": this.userid,
+                              "pic_barcode": this.userid,
+                              "date": date,
+                              "uuid": this.uuid
+                            },
+                            { headers })
+                            .subscribe()
+                        });
+                      }
+                    });
+                    this.api.get("table/purchasing_order_detail", { params: { filter: 'order_no=' + "'" + this.orderno + "'" + " AND status_location='' AND status_barcode=''" } }).subscribe(val => {
+                      this.podlocation = val['data'];
+                      if (this.podlocation.length == 0) {
                         const headers = new HttpHeaders()
                           .set("Content-Type", "application/json");
-                        this.api.post("table/receiving",
+                        this.api.put("table/purchasing_order",
                           {
-                            "receiving_no": this.nextno,
                             "order_no": detailpo.order_no,
-                            "line_no": detailpo.line_no,
-                            "batch_no": detailpo.batch_no,
-                            "item_no": detailpo.item_no,
-                            "location_code": '81003',
-                            "expected_receipt_date": detailpo.expected_receipt_date,
-                            "description": detailpo.description,
-                            "unit": detailpo.unit,
-                            "qty": detailpo.qty,
-                            "qty_receiving": 0,
-                            "vendor_no": detailpo.vendor_no,
-                            "vendor_status": detailpo.vendor_status,
-                            "division": detailpo.division,
-                            "item_category_code": detailpo.item_category_code,
-                            "product_group_code": detailpo.product_group_code,
-                            "location": detailpo.location,
-                            "status": 'OPEN',
                             "status_location": 'OK',
-                            "status_barcode": detailpo.status_barcode,
-                            "pic_location": this.userid,
-                            "pic_barcode": detailpo.pic_barcode,
-                            "date": date,
-                            "uuid": this.uuid
-                          },
-                          { headers })
-                          .subscribe()
-                      });
-                    }
-                  });
-                  this.api.get("table/purchasing_order_detail", { params: { filter: 'order_no=' + "'" + this.orderno + "'" + " AND status_location=''" } }).subscribe(val => {
-                    this.podlocation = val['data'];
-                    if (this.podlocation.length == 0) {
-                      const headers = new HttpHeaders()
-                        .set("Content-Type", "application/json");
-                      this.api.put("table/purchasing_order",
-                        {
-                          "order_no": detailpo.order_no,
-                          "status_location": 'OK'
-                        },
-                        { headers })
-                        .subscribe(val => {
-                        });
-                    }
-                    this.api.get("table/purchasing_order", { params: { filter: 'order_no=' + "'" + this.orderno + "'" } }).subscribe(val => {
-                      this.pod = val['data'];
-                      if (this.podlocation.length == 0 && this.pod[0].status_barcode == 'OK') {
-                        const headers = new HttpHeaders()
-                          .set("Content-Type", "application/json");
-                        this.api.put("table/purchasing_order",
-                          {
-                            "order_no": detailpo.order_no,
-                            "status": 'INPG'
-                          },
-                          { headers })
-                          .subscribe(val => {
-                          });
-                      }
-                    });
-                  })
-                  this.getPOD();
-                });
-            }
-            else if (this.userid == this.picbarcode && detailpo.status_barcode == '') {
-              console.log('barcode')
-              const headers = new HttpHeaders()
-                .set("Content-Type", "application/json");
-              this.api.put("table/purchasing_order_detail",
-                {
-                  "code": detailpo.code,
-                  "status_barcode": 'OK',
-                  "pic_barcode": this.userid
-                },
-                { headers })
-                .subscribe(val => {
-                  let alert = this.alertCtrl.create({
-                    title: 'Sukses',
-                    subTitle: 'Save Barcode Sukses',
-                    buttons: ['OK']
-                  });
-                  alert.present();
-                  this.api.get("table/purchasing_order_detail", { params: { filter: 'order_no=' + "'" + detailpo.order_no + "'" + " AND code=" + "'" + detailpo.code + "'" } }).subscribe(val => {
-                    this.podetail = val['data'];
-                    if (this.podetail[0].status_location == 'OK' && this.podetail[0].status_barcode == 'OK') {
-                      this.getNextNoRCV().subscribe(val => {
-                        this.nextno = val['nextno'];
-                        let uuid = UUID.UUID();
-                        this.uuid = uuid;
-                        let date = moment().format();
-                        const headers = new HttpHeaders()
-                          .set("Content-Type", "application/json");
-                        this.api.post("table/receiving",
-                          {
-                            "receiving_no": this.nextno,
-                            "order_no": detailpo.order_no,
-                            "line_no": detailpo.line_no,
-                            "batch_no": detailpo.batch_no,
-                            "item_no": detailpo.item_no,
-                            "location_code": detailpo.location_code,
-                            "expected_receipt_date": detailpo.expected_receipt_date,
-                            "description": detailpo.description,
-                            "unit": detailpo.unit,
-                            "qty": detailpo.qty,
-                            "qty_receiving": 0,
-                            "vendor_no": detailpo.vendor_no,
-                            "vendor_status": detailpo.vendor_status,
-                            "division": detailpo.division,
-                            "item_category_code": detailpo.item_category_code,
-                            "product_group_code": detailpo.product_group_code,
-                            "location": detailpo.location,
-                            "status": 'OPEN',
-                            "status_location": detailpo.status_location,
                             "status_barcode": 'OK',
-                            "pic_location": detailpo.pic_location,
-                            "pic_barcode": this.userid,
-                            "date": date,
-                            "uuid": this.uuid
-                          },
-                          { headers })
-                          .subscribe()
-                      });
-                    }
-                  });
-                  this.api.get("table/purchasing_order_detail", { params: { filter: 'order_no=' + "'" + this.orderno + "'" + " AND status_barcode=''" } }).subscribe(val => {
-                    this.podbarcode = val['data'];
-                    if (this.podbarcode.length == 0) {
-                      const headers = new HttpHeaders()
-                        .set("Content-Type", "application/json");
-                      this.api.put("table/purchasing_order",
-                        {
-                          "order_no": detailpo.order_no,
-                          "status_barcode": 'OK'
-                        },
-                        { headers })
-                        .subscribe(val => {
-                        });
-                    }
-                    this.api.get("table/purchasing_order", { params: { filter: 'order_no=' + "'" + this.orderno + "'" } }).subscribe(val => {
-                      this.pod = val['data'];
-                      if (this.podbarcode.length == 0 && this.pod[0].status_location == 'OK') {
-                        const headers = new HttpHeaders()
-                          .set("Content-Type", "application/json");
-                        this.api.put("table/purchasing_order",
-                          {
-                            "order_no": detailpo.order_no,
                             "status": 'INPG'
                           },
                           { headers })
                           .subscribe(val => {
                           });
                       }
+                    })
+                    this.getPOD();
+                  });
+              }
+              else if (this.userid == this.piclokasi && detailpo.status_location == '') {
+                const headers = new HttpHeaders()
+                  .set("Content-Type", "application/json");
+                this.api.put("table/purchasing_order_detail",
+                  {
+                    "code": detailpo.code,
+                    "status_location": 'OK',
+                    "pic_location": this.userid
+                  },
+                  { headers })
+                  .subscribe(val => {
+                    let alert = this.alertCtrl.create({
+                      title: 'Sukses',
+                      subTitle: 'Save Lokasi Sukses',
+                      buttons: ['OK']
                     });
-                  })
-                  this.getPOD();
-                });
+                    alert.present();
+                    this.api.get("table/purchasing_order_detail", { params: { filter: 'order_no=' + "'" + detailpo.order_no + "'" + " AND code=" + "'" + detailpo.code + "'" } }).subscribe(val => {
+                      this.podetail = val['data'];
+                      if (this.podetail[0].status_location == 'OK' && this.podetail[0].status_barcode == 'OK') {
+                        this.getNextNoRCV().subscribe(val => {
+                          this.nextno = val['nextno'];
+                          let uuid = UUID.UUID();
+                          this.uuid = uuid;
+                          let date = moment().format();
+                          const headers = new HttpHeaders()
+                            .set("Content-Type", "application/json");
+                          this.api.post("table/receiving",
+                            {
+                              "receiving_no": this.nextno,
+                              "order_no": detailpo.order_no,
+                              "line_no": detailpo.line_no,
+                              "batch_no": detailpo.batch_no,
+                              "item_no": detailpo.item_no,
+                              "location_code": '81003',
+                              "expected_receipt_date": detailpo.expected_receipt_date,
+                              "description": detailpo.description,
+                              "unit": detailpo.unit,
+                              "qty": detailpo.qty,
+                              "qty_receiving": 0,
+                              "vendor_no": detailpo.vendor_no,
+                              "vendor_status": detailpo.vendor_status,
+                              "division": detailpo.division,
+                              "item_category_code": detailpo.item_category_code,
+                              "product_group_code": detailpo.product_group_code,
+                              "location": detailpo.location,
+                              "status": 'OPEN',
+                              "status_location": 'OK',
+                              "status_barcode": detailpo.status_barcode,
+                              "pic_location": this.userid,
+                              "pic_barcode": detailpo.pic_barcode,
+                              "date": date,
+                              "uuid": this.uuid
+                            },
+                            { headers })
+                            .subscribe()
+                        });
+                      }
+                    });
+                    this.api.get("table/purchasing_order_detail", { params: { filter: 'order_no=' + "'" + this.orderno + "'" + " AND status_location=''" } }).subscribe(val => {
+                      this.podlocation = val['data'];
+                      if (this.podlocation.length == 0) {
+                        const headers = new HttpHeaders()
+                          .set("Content-Type", "application/json");
+                        this.api.put("table/purchasing_order",
+                          {
+                            "order_no": detailpo.order_no,
+                            "status_location": 'OK'
+                          },
+                          { headers })
+                          .subscribe(val => {
+                          });
+                      }
+                      this.api.get("table/purchasing_order", { params: { filter: 'order_no=' + "'" + this.orderno + "'" } }).subscribe(val => {
+                        this.pod = val['data'];
+                        if (this.podlocation.length == 0 && this.pod[0].status_barcode == 'OK') {
+                          const headers = new HttpHeaders()
+                            .set("Content-Type", "application/json");
+                          this.api.put("table/purchasing_order",
+                            {
+                              "order_no": detailpo.order_no,
+                              "status": 'INPG'
+                            },
+                            { headers })
+                            .subscribe(val => {
+                            });
+                        }
+                      });
+                    })
+                    this.getPOD();
+                  });
+              }
+              else if (this.userid == this.picbarcode && detailpo.status_barcode == '') {
+                console.log('barcode')
+                const headers = new HttpHeaders()
+                  .set("Content-Type", "application/json");
+                this.api.put("table/purchasing_order_detail",
+                  {
+                    "code": detailpo.code,
+                    "status_barcode": 'OK',
+                    "pic_barcode": this.userid
+                  },
+                  { headers })
+                  .subscribe(val => {
+                    let alert = this.alertCtrl.create({
+                      title: 'Sukses',
+                      subTitle: 'Save Barcode Sukses',
+                      buttons: ['OK']
+                    });
+                    alert.present();
+                    this.api.get("table/purchasing_order_detail", { params: { filter: 'order_no=' + "'" + detailpo.order_no + "'" + " AND code=" + "'" + detailpo.code + "'" } }).subscribe(val => {
+                      this.podetail = val['data'];
+                      if (this.podetail[0].status_location == 'OK' && this.podetail[0].status_barcode == 'OK') {
+                        this.getNextNoRCV().subscribe(val => {
+                          this.nextno = val['nextno'];
+                          let uuid = UUID.UUID();
+                          this.uuid = uuid;
+                          let date = moment().format();
+                          const headers = new HttpHeaders()
+                            .set("Content-Type", "application/json");
+                          this.api.post("table/receiving",
+                            {
+                              "receiving_no": this.nextno,
+                              "order_no": detailpo.order_no,
+                              "line_no": detailpo.line_no,
+                              "batch_no": detailpo.batch_no,
+                              "item_no": detailpo.item_no,
+                              "location_code": detailpo.location_code,
+                              "expected_receipt_date": detailpo.expected_receipt_date,
+                              "description": detailpo.description,
+                              "unit": detailpo.unit,
+                              "qty": detailpo.qty,
+                              "qty_receiving": 0,
+                              "vendor_no": detailpo.vendor_no,
+                              "vendor_status": detailpo.vendor_status,
+                              "division": detailpo.division,
+                              "item_category_code": detailpo.item_category_code,
+                              "product_group_code": detailpo.product_group_code,
+                              "location": detailpo.location,
+                              "status": 'OPEN',
+                              "status_location": detailpo.status_location,
+                              "status_barcode": 'OK',
+                              "pic_location": detailpo.pic_location,
+                              "pic_barcode": this.userid,
+                              "date": date,
+                              "uuid": this.uuid
+                            },
+                            { headers })
+                            .subscribe()
+                        });
+                      }
+                    });
+                    this.api.get("table/purchasing_order_detail", { params: { filter: 'order_no=' + "'" + this.orderno + "'" + " AND status_barcode=''" } }).subscribe(val => {
+                      this.podbarcode = val['data'];
+                      if (this.podbarcode.length == 0) {
+                        const headers = new HttpHeaders()
+                          .set("Content-Type", "application/json");
+                        this.api.put("table/purchasing_order",
+                          {
+                            "order_no": detailpo.order_no,
+                            "status_barcode": 'OK'
+                          },
+                          { headers })
+                          .subscribe(val => {
+                          });
+                      }
+                      this.api.get("table/purchasing_order", { params: { filter: 'order_no=' + "'" + this.orderno + "'" } }).subscribe(val => {
+                        this.pod = val['data'];
+                        if (this.podbarcode.length == 0 && this.pod[0].status_location == 'OK') {
+                          const headers = new HttpHeaders()
+                            .set("Content-Type", "application/json");
+                          this.api.put("table/purchasing_order",
+                            {
+                              "order_no": detailpo.order_no,
+                              "status": 'INPG'
+                            },
+                            { headers })
+                            .subscribe(val => {
+                            });
+                        }
+                      });
+                    })
+                    this.getPOD();
+                  });
+              }
             }
           }
-        }
-      ]
-    });
-    alert.present();
+        ]
+      });
+      alert.present();
+    }
   }
   doOpenOptions(detailpo) {
     let actionSheet = this.actionSheetCtrl.create({

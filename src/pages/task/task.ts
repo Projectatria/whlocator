@@ -16,11 +16,13 @@ export class TaskPage {
   public userid: any;
   public role = [];
   public roleid = '';
+  public rolearea: any;
   private qclist = '';
   private batchnolist = '';
   private qcqty = '';
   public detailqc: boolean = false;
   public rolecab = '';
+  public rolegroup = '';
 
   constructor(
     public navCtrl: NavController,
@@ -55,6 +57,8 @@ export class TaskPage {
           this.role = val['data']
           this.roleid = this.role[0].id_group
           this.rolecab = this.role[0].id_cab
+          this.rolearea = this.role[0].id_area
+          this.rolegroup = this.role[0].id_group
         })
     });
   }
@@ -161,6 +165,7 @@ export class TaskPage {
           this.role = val['data']
           this.roleid = this.role[0].id_group
           this.rolecab = this.role[0].id_cab
+          this.rolearea = this.role[0].id_area
         })
       refresher.complete();
     });

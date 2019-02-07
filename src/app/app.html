@@ -26,11 +26,11 @@
             <i class="fas fa-box imgfa"></i>
             Purchasing Order
           </button>
-          <button *ngIf="rolearea == 'INBOUND' || rolearea == 'HO'" class="btn-side-menu" ion-item (click)="open('ReceivingPage')" menuClose>
+          <button *ngIf="rolegroup != 'STAFF' && (rolearea == 'INBOUND' || rolearea == 'HO')" class="btn-side-menu" ion-item (click)="open('ReceivingPage')" menuClose>
             <i class="fas fa-clipboard-list imgfa"></i>
             &nbsp;Receiving
           </button>
-          <button *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="btn-side-menu" ion-item (click)="open('QcinPage')" menuClose>
+          <button *ngIf="rolearea == 'OUTBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="btn-side-menu" ion-item (click)="open('QcinPage')" menuClose>
             <i class="fas fa-calendar-check imgfa"></i>
             QC In
           </button>

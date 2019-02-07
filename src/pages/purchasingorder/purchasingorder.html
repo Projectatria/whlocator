@@ -211,7 +211,7 @@
               {{info.No_}}
             </ion-col>
             <ion-col padding class="col-content" col-xl-2 (click)="viewDetailInfoPO(info)">
-             {{info.batchno}}
+              {{info.batchno}}
             </ion-col>
             <ion-col padding class="col-content" col-xl-2 (click)="viewDetailInfoPO(info)">
               {{info["Buy-from Vendor No_"]}}
@@ -371,49 +371,49 @@
     </ion-list>
 
   </div>
-  <div id="myModalPic" class="modal">
-    <div class="modal-content">
-      <span class="closeModal" (click)="doOffToPIC()">&times;</span>
-      <form [formGroup]="myFormModal">
-        <ion-list no-lines>
-          <ion-item class="item-rcv" style="border-bottom:1px solid;border-color:#dedede;">
-            <ion-label floating>PIC</ion-label>
-            <ion-select formControlName="pic">
-              <ion-option *ngFor="let user of users" value="{{user.id_user}}" (ionSelect)="onChange(user)">{{user.id_user}} {{user.name}} {{user.id_role}}</ion-option>
-            </ion-select>
-          </ion-item>
-        </ion-list>
-      </form>
-      <ion-buttons end>
-        <button ion-button color="greenlake" (click)="doSendToPic();">Save</button>
-      </ion-buttons>
-    </div>
-  </div>
-  <div id="myModalPicPrepare" class="modal">
-    <div class="modal-content">
-      <span class="closeModal" (click)="doOffToPICPrepare()">&times;</span>
-      <form [formGroup]="myFormModalPrepare">
-        <ion-list no-lines>
-          <ion-item class="item-rcv" style="border-bottom:1px solid;border-color:#dedede;">
-            <ion-label floating>PIC LOKASI</ion-label>
-            <ion-select [disabled]="statussendlocation == 'OK'" formControlName="piclokasi">
-              <ion-option *ngFor="let user of users" value="{{user.id_user}}" (ionSelect)="onChange(user)">{{user.id_user}} {{user.name}}</ion-option>
-            </ion-select>
-          </ion-item>
-          <ion-item class="item-rcv" style="border-bottom:1px solid;border-color:#dedede;">
-            <ion-label floating>PIC BARCODE</ion-label>
-            <ion-select [disabled]="statussendbarcode == 'OK'" formControlName="picbarcode">
-              <ion-option *ngFor="let user of users" value="{{user.id_user}}" (ionSelect)="onChange(user)">{{user.id_user}} {{user.name}}</ion-option>
-            </ion-select>
-          </ion-item>
-        </ion-list>
-      </form>
-      <ion-buttons end>
-        <button ion-button color="greenlake" (click)="doSendToPicPrepare();">Save</button>
-      </ion-buttons>
-    </div>
-  </div>
 </ion-content>
+<div id="myModalPic" class="modal">
+  <div class="modal-content">
+    <span class="closeModal" (click)="doOffToPIC()">&times;</span>
+    <form [formGroup]="myFormModal">
+      <ion-list no-lines>
+        <ion-item class="item-rcv" style="border-bottom:1px solid;border-color:#dedede;">
+          <ion-label floating>PIC</ion-label>
+          <ion-select formControlName="pic">
+            <ion-option *ngFor="let user of users" value="{{user.id_user}}" (ionSelect)="onChange(user)">{{user.id_user}} {{user.name}} {{user.id_role}}</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+    </form>
+    <ion-buttons end>
+      <button ion-button color="greenlake" (click)="doSendToPic();">Save</button>
+    </ion-buttons>
+  </div>
+</div>
+<div id="myModalPicPrepare" class="modal">
+  <div class="modal-content">
+    <span class="closeModal" (click)="doOffToPICPrepare()">&times;</span>
+    <form [formGroup]="myFormModalPrepare">
+      <ion-list no-lines>
+        <ion-item class="item-rcv" style="border-bottom:1px solid;border-color:#dedede;">
+          <ion-label floating>PIC LOKASI</ion-label>
+          <ion-select [disabled]="statussendlocation == 'OK'" formControlName="piclokasi">
+            <ion-option *ngFor="let user of users" value="{{user.id_user}}" (ionSelect)="onChange(user)">{{user.id_user}} {{user.name}}</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item class="item-rcv" style="border-bottom:1px solid;border-color:#dedede;">
+          <ion-label floating>PIC BARCODE</ion-label>
+          <ion-select [disabled]="statussendbarcode == 'OK'" formControlName="picbarcode">
+            <ion-option *ngFor="let user of users" value="{{user.id_user}}" (ionSelect)="onChange(user)">{{user.id_user}} {{user.name}}</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+    </form>
+    <ion-buttons end>
+      <button ion-button color="greenlake" (click)="doSendToPicPrepare();">Save</button>
+    </ion-buttons>
+  </div>
+</div>
 <!--<div [ngSwitch]="po">
   <ion-fab *ngSwitchCase="'purchasingorder'" class="fixed-div" bottom right>
     <button ion-fab color="greenlake">

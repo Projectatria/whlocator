@@ -14,7 +14,7 @@
       pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
     </ion-refresher-content>
   </ion-refresher>
-  <ion-list>
+  <ion-list *ngIf="rolearea == 'INBOUND'">
     <div style="font-weight: bold;font-size:15px;border-bottom:1px solid;border-color:#dedede;text-align:center;">PO</div>
     <ion-row>
       <ion-col col-4 style="border:1px solid;border-color:#dedede;">Order No</ion-col>
@@ -29,7 +29,7 @@
       </ion-col>
     </ion-row>
   </ion-list>
-  <ion-list>
+  <ion-list *ngIf="rolegroup != 'STAFF' && rolearea == 'INBOUND'">
     <div style="font-weight: bold;font-size:15px;border-bottom:1px solid;border-color:#dedede;text-align:center;">RECEIVING</div>
     <ion-row>
       <ion-col col-4 style="border:1px solid;border-color:#dedede;">Order No</ion-col>
@@ -44,7 +44,7 @@
       </ion-col>
     </ion-row>
   </ion-list>
-  <ion-list>
+  <ion-list *ngIf="rolearea == 'OUTBOUND'">
     <div style="font-weight: bold;font-size:15px;border-bottom:1px solid;border-color:#dedede;text-align:center;">QC IN</div>
     <ion-row>
       <ion-col col-4 style="border:1px solid;border-color:#dedede;">Item No</ion-col>
@@ -72,7 +72,7 @@
               </ion-row>
             </ion-col>
             <ion-col *ngFor="let result of qcresult" col-12 style="border-top:1px solid;border-color:#dedede;">
-              <ion-row (click)="getfoto(result);" *ngIf="detailqc && result.item_no == qclist">
+              <ion-row *ngIf="detailqc && result.item_no == qclist">
                 <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.date_finish}}</ion-col>
                 <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.time_start}}</ion-col>
                 <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.time_finish}}</ion-col>
@@ -86,14 +86,14 @@
       </div>
     </ion-row>
   </ion-list>
-  <ion-list>
+  <ion-list *ngIf="rolearea == 'INBOUND'">
     <div style="font-weight: bold;font-size:15px;border-bottom:1px solid;border-color:#dedede;text-align:center;">PICKING</div>
     <ion-row>
       <ion-col col-4 style="border:1px solid;border-color:#dedede;">Picking Note</ion-col>
       <ion-col col-8 style="border:1px solid;border-color:#dedede;">Transfer Date</ion-col>
     </ion-row>
   </ion-list>
-  <ion-list>
+  <ion-list *ngIf="rolearea == 'OUTBOUND'">
     <div style="font-weight: bold;font-size:15px;border-bottom:1px solid;border-color:#dedede;text-align:center;">QC OUT</div>
     <ion-row>
       <ion-col col-4 style="border:1px solid;border-color:#dedede;">QC Note</ion-col>

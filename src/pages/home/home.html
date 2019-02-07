@@ -24,11 +24,15 @@
         <i class="fas fa-box imgfa"></i>
         <h5 class="textfa">Purchasing Order</h5>
       </ion-col>
-      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'HO'" class="col" col-8 col-md-12 col-xl-3 (click)="doReceiving()">
+      <ion-col padding *ngIf="rolegroup != 'STAFF' && (rolearea == 'INBOUND' || rolearea == 'HO')" class="col" col-8 col-md-12 col-xl-3 (click)="doReceiving()">
         <i class="fas fa-clipboard-list imgfa"></i>
         <h5 class="textfa">Receiving</h5>
       </ion-col>
-      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-3 (click)="doPutaway()">
+      <ion-col padding *ngIf="rolegroup != 'STAFF' && (rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO')" class="col" col-12 col-md-12 col-xl-3 (click)="doPutaway()">
+        <i class="fas fa-pallet imgfa"></i>
+        <h5 class="textfa">Putaway</h5>
+      </ion-col>
+      <ion-col padding *ngIf="rolegroup == 'STAFF' && (rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO')" class="col" col-8 col-md-12 col-xl-3 (click)="doPutaway()">
         <i class="fas fa-pallet imgfa"></i>
         <h5 class="textfa">Putaway</h5>
       </ion-col>
@@ -44,7 +48,7 @@
         <i class="fas fa-dolly imgfa"></i>
         <h5 class="textfa">Picking</h5>
       </ion-col>
-      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-3 (click)="doQcIn()">
+      <ion-col padding *ngIf="rolearea == 'OUTBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-3 (click)="doQcIn()">
         <i class="fas fa-calendar-check imgfa"></i>
         <h5 class="textfa">QC In</h5>
       </ion-col>
@@ -52,7 +56,7 @@
         <i class="fas fa-calendar-check imgfa"></i>
         <h5 class="textfa">QC Out</h5>
       </ion-col>
-      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-9 (click)="doCekStock()">
+      <ion-col padding *ngIf="rolegroup != 'STAFF' && (rolearea == 'INBOUND' || rolearea == 'HO')" class="col" col-12 col-md-12 col-xl-9 (click)="doCekStock()">
         <i class="fas fa-retweet imgfa"></i>
         <h5 class="textfa">Cek Stock</h5>
       </ion-col>

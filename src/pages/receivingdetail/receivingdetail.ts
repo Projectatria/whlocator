@@ -344,7 +344,7 @@ export class ReceivingdetailPage {
                       else {
                         const headers = new HttpHeaders()
                           .set("Content-Type", "application/json");
-                          self.api.put("table/receiving",
+                        self.api.put("table/receiving",
                           {
                             "receiving_no": self.itemdata[0].receiving_no,
                             "qty_receiving": parseInt(self.itemdata[0].qty_receiving) + parseInt(data.qty)
@@ -354,7 +354,7 @@ export class ReceivingdetailPage {
                             if ((parseInt(self.itemdata[0].qty_receiving) + parseInt(data.qty)) == self.itemdata[0].qty) {
                               const headers = new HttpHeaders()
                                 .set("Content-Type", "application/json");
-                                self.api.put("table/receiving",
+                              self.api.put("table/receiving",
                                 {
                                   "receiving_no": self.itemdata[0].receiving_no,
                                   "status": 'CHECKED'
@@ -879,79 +879,89 @@ export class ReceivingdetailPage {
     return this.api.get('nextno/receiving/receiving_no')
   }
   doPostPartial(detailrcv) {
-    let alert = this.alertCtrl.create({
-      title: 'Confirm Posting Partial',
-      message: 'Do you want to Submit  ' + detailrcv.item_no + ' ?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          handler: () => {
-
-          }
-        },
-        {
-          text: 'Posting',
-          handler: () => {
-            if (detailrcv.qty_receiving <= detailrcv.qty) {
-              const headers = new HttpHeaders()
-                .set("Content-Type", "application/json");
-              this.api.put("table/receiving",
-                {
-                  "receiving_no": detailrcv.receiving_no,
-                  "status": 'CHECKED'
-                },
-                { headers })
-                .subscribe(val => {
-                  this.getNextNoRCV().subscribe(val => {
-                    this.nextno = val['nextno'];
-                    let uuid = UUID.UUID();
-                    this.uuid = uuid;
-                    let date = moment().format();
-                    const headers = new HttpHeaders()
-                      .set("Content-Type", "application/json");
-                    this.api.post("table/receiving",
-                      {
-                        "receiving_no": this.nextno,
-                        "order_no": detailrcv.order_no,
-                        "batch_no": detailrcv.batch_no,
-                        "line_no": detailrcv.line_no,
-                        "item_no": detailrcv.item_no,
-                        "location_code": detailrcv.location_code,
-                        "expected_receipt_date": detailrcv.expected_receipt_date,
-                        "description": detailrcv.description,
-                        "unit": detailrcv.unit,
-                        "qty": parseInt(detailrcv.qty) - parseInt(detailrcv.qty_receiving),
-                        "qty_receiving": 0,
-                        "vendor_no": detailrcv.vendor_no,
-                        "vendor_status": detailrcv.vendor_status,
-                        "division": detailrcv.division,
-                        "item_category_code": detailrcv.item_category_code,
-                        "product_group_code": detailrcv.product_group_code,
-                        "location": detailrcv.location,
-                        "status": 'OPEN',
-                        "status_location": detailrcv.status_location,
-                        "status_barcode": 'OK',
-                        "pic_location": detailrcv.pic_location,
-                        "pic_barcode": detailrcv.pic_barcode,
-                        "date": date,
-                        "uuid": this.uuid
-                      },
-                      { headers })
-                      .subscribe(val => {
-                        this.getRCV();
-                        this.getRCVChecked();
-                      })
+    if (detailrcv.qty_receiving == 0) {
+      let alert = this.alertCtrl.create({
+        title: 'Perhatian',
+        subTitle: 'Qty receiving masih kosong',
+        buttons: ['OK']
+      });
+      alert.present();
+    }
+    else {
+      let alert = this.alertCtrl.create({
+        title: 'Confirm Posting Partial',
+        message: 'Do you want to Submit  ' + detailrcv.item_no + ' ?',
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {
+  
+            }
+          },
+          {
+            text: 'Posting',
+            handler: () => {
+              if (detailrcv.qty_receiving <= detailrcv.qty) {
+                const headers = new HttpHeaders()
+                  .set("Content-Type", "application/json");
+                this.api.put("table/receiving",
+                  {
+                    "receiving_no": detailrcv.receiving_no,
+                    "status": 'CHECKED'
+                  },
+                  { headers })
+                  .subscribe(val => {
+                    this.getNextNoRCV().subscribe(val => {
+                      this.nextno = val['nextno'];
+                      let uuid = UUID.UUID();
+                      this.uuid = uuid;
+                      let date = moment().format();
+                      const headers = new HttpHeaders()
+                        .set("Content-Type", "application/json");
+                      this.api.post("table/receiving",
+                        {
+                          "receiving_no": this.nextno,
+                          "order_no": detailrcv.order_no,
+                          "batch_no": detailrcv.batch_no,
+                          "line_no": detailrcv.line_no,
+                          "item_no": detailrcv.item_no,
+                          "location_code": detailrcv.location_code,
+                          "expected_receipt_date": detailrcv.expected_receipt_date,
+                          "description": detailrcv.description,
+                          "unit": detailrcv.unit,
+                          "qty": parseInt(detailrcv.qty) - parseInt(detailrcv.qty_receiving),
+                          "qty_receiving": 0,
+                          "vendor_no": detailrcv.vendor_no,
+                          "vendor_status": detailrcv.vendor_status,
+                          "division": detailrcv.division,
+                          "item_category_code": detailrcv.item_category_code,
+                          "product_group_code": detailrcv.product_group_code,
+                          "location": detailrcv.location,
+                          "status": 'OPEN',
+                          "status_location": detailrcv.status_location,
+                          "status_barcode": 'OK',
+                          "pic_location": detailrcv.pic_location,
+                          "pic_barcode": detailrcv.pic_barcode,
+                          "date": date,
+                          "uuid": this.uuid
+                        },
+                        { headers })
+                        .subscribe(val => {
+                          this.getRCV();
+                          this.getRCVChecked();
+                        })
+                    });
+                    this.getRCV();
+                    this.getRCVChecked();
                   });
-                  this.getRCV();
-                  this.getRCVChecked();
-                });
+              }
             }
           }
-        }
-      ]
-    })
-    alert.present();
+        ]
+      })
+      alert.present();
+    }
   }
   getNextNoStaging() {
     return this.api.get('nextno/staging_in/staging_no')
