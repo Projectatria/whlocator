@@ -270,6 +270,8 @@ export class QcinPage {
         }, err => {
           this.doInsertQCResult(data, staging, nextnoqc)
         })
+    }, err => {
+      this.doInsertQCResult(data, staging, nextnoqc)
     });
   }
   doLoopQcOutResult(data, staging, nextnoqc) {
@@ -297,7 +299,16 @@ export class QcinPage {
         {
           text: 'OK',
           handler: data => {
-            this.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" + " AND " + "batch_no=" + "'" + staging.batch_no + "'" + " AND " + "item_no=" + "'" + staging.item_no + "'" } })
+            if (staging.qty_qc < data.qty) {
+              let alert = this.alertCtrl.create({
+                title: 'Error',
+                subTitle: 'Qty lebih besar dari stok',
+                buttons: ['OK']
+              });
+              alert.present();
+            }
+            else {
+              this.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" + " AND " + "batch_no=" + "'" + staging.batch_no + "'" + " AND " + "item_no=" + "'" + staging.item_no + "'" } })
               .subscribe(val => {
                 this.qcinpic = val['data'];
                 if (this.qcinpic.length == 0) {
@@ -324,6 +335,32 @@ export class QcinPage {
                         },
                         { headers })
                         .subscribe(val => {
+                          let nextnoqc = this.nextnoqc
+                          this.doLoopQcOutResult(data, staging, nextnoqc)
+                          const headers = new HttpHeaders()
+                            .set("Content-Type", "application/json");
+                          this.api.put("table/staging_in",
+                            {
+                              "staging_no": staging.staging_no,
+                              "qty_qc": staging.qty_qc - data.qty
+                            },
+                            { headers })
+                            .subscribe(val => {
+                              this.api.get('table/staging_in', { params: { filter: "qty_qc!=0" } })
+                                .subscribe(val => {
+                                  this.staging_in = val['data'];
+                                  this.totaldata = val['count'];
+                                  this.searchstaging = this.staging_in;
+                                  this.api.get('table/qc_in', { params: { limit: 30, filter: "status='OPEN' AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
+                                    .subscribe(val => {
+                                      this.quality_control = val['data'];
+                                      this.totaldataqc = val['count'];
+                                      this.searchqc = this.quality_control;
+                                    });
+                                });
+
+                            });
+                        }, err => {
                           let nextnoqc = this.nextnoqc
                           this.doLoopQcOutResult(data, staging, nextnoqc)
                           const headers = new HttpHeaders()
@@ -388,9 +425,36 @@ export class QcinPage {
                             });
 
                         });
+                    }, err => {
+                      let nextnoqc = this.qcinpic[0].qc_no
+                      this.doLoopQcOutResult(data, staging, nextnoqc)
+                      const headers = new HttpHeaders()
+                        .set("Content-Type", "application/json");
+                      this.api.put("table/staging_in",
+                        {
+                          "staging_no": staging.staging_no,
+                          "qty_qc": staging.qty_qc - data.qty
+                        },
+                        { headers })
+                        .subscribe(val => {
+                          this.api.get('table/staging_in', { params: { filter: "qty_qc!=0" } })
+                            .subscribe(val => {
+                              this.staging_in = val['data'];
+                              this.totaldata = val['count'];
+                              this.searchstaging = this.staging_in;
+                              this.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
+                                .subscribe(val => {
+                                  this.quality_control = val['data'];
+                                  this.totaldataqc = val['count'];
+                                  this.searchqc = this.quality_control;
+                                });
+                            });
+
+                        });
                     });
                 }
               });
+            }
           }
         }
       ]

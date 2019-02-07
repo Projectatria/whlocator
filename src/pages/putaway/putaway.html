@@ -39,7 +39,7 @@
       <ion-card *ngFor="let rcv of receiving">
         <ion-item *ngIf="rcv.staging != 'RACK'" (click)="viewDetail(rcv)">
           <h3 style="font-weight:bold;padding-bottom:5px;text-align:left;">ITEM NO - {{rcv.item_no}}</h3>
-          <p>Qty : {{rcv.qty_receiving}}</p>
+          <p>Qty : {{rcv.qty_putaway}}</p>
           <p>Staging : {{rcv.staging}}</p>
           <p item-end>Batch No : {{rcv.batch_no}}</p>
         </ion-item>
@@ -280,8 +280,9 @@
       loadingSpinner="bubbles" loadingText="Loading more data...">
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
+</ion-content>
 
-  <div id="myModal" class="modal">
+<div id="myModal" class="modal">
     <div class="modal-content">
       <span class="closeModal" (click)="doOffPutaway()">&times;</span>
       <form [formGroup]="myFormModal">
@@ -302,8 +303,6 @@
       </ion-buttons>
     </div>
   </div>
-
-</ion-content>
 
 <div id="myLocations" class="modal-location">
   <div class="modal-content-location">
