@@ -30,8 +30,8 @@
         <button item-end ion-button clear color="greenlake" (click)="doOpenQty()">
           <ion-icon name="md-add" style="font-size:20px;"></ion-icon>
         </button>
-        <button *ngIf="" item-end ion-button clear color="greenlake">
-          <ion-icon name="md-sync" style="font-size:20px;"></ion-icon>
+        <button item-end ion-button clear color="greenlake" (click)="doOpenQtyDetail()">
+          <ion-icon name="remove" style="font-size:20px;"></ion-icon>
         </button>
       </ion-item>
     </ion-card>
@@ -101,12 +101,12 @@
   </button>
   <ion-fab-list side="top">
     <button ion-fab class="fab-list" color="greenlake" (click)="doScanBarcodeItem()">
-      S
-      <ion-label>Add Item To Staging</ion-label>
+      <ion-icon name="md-add"></ion-icon>
+      <ion-label>Add Item Staging</ion-label>
     </button>
     <button ion-fab class="fab-list" color="greenlake" (click)="doScanBarcodeItemDetail()">
-      T
-      <ion-label>Add Item To Temp</ion-label>
+      <ion-icon name="remove"></ion-icon>
+      <ion-label>Add Item Rack</ion-label>
     </button>
   </ion-fab-list>
   <ion-fab-list side="left">

@@ -86,6 +86,7 @@ export class PutawayPage {
   public roleid: any;
   public rolecab: any;
   public stagingno: any;
+  public buttonscan: boolean = false;
 
   constructor(
     public navCtrl: NavController,
@@ -367,31 +368,48 @@ export class PutawayPage {
       });
   }
   doOpenListPutaway() {
+    console.log(this.buttonscan)
     this.myForm.reset();
     if (document.getElementById("myListPutaway").style.display == "none" && document.getElementById("myHeader").style.display == "block") {
       document.getElementById("myListPutaway").style.display = "block";
       document.getElementById("myHeader").style.display = "none";
+      this.buttonscan = true
       this.getPutawayTemp();
+      this.getPutawayTempDetail();
     }
     else if (document.getElementById("myListPutaway").style.display == "" && document.getElementById("myHeader").style.display == "") {
       document.getElementById("myListPutaway").style.display = "block";
       document.getElementById("myHeader").style.display = "none";
+      this.buttonscan = true
       this.getPutawayTemp();
+      this.getPutawayTempDetail();
     }
     else {
       document.getElementById("myListPutaway").style.display = "none";
       document.getElementById("myHeader").style.display = "block";
+      this.buttonscan = false
       this.putawaytemp = [];
     }
   }
   doOpenQty() {
-    var batchno = this.myForm.value.barcodeno.substring(0, 6);
-    var itemno = this.myForm.value.barcodeno.substring(6, 14);
-    this.api.get('table/staging_in', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" + ' AND ' + "qty_putaway!=0" } })
+    var self = this;
+    var batchno = self.myForm.value.barcodeno.substring(0, 6);
+    var itemno = self.myForm.value.barcodeno.substring(6, 14);
+    let rackno = self.myForm.value.rackno
+    if (rackno == '') {
+      let alert = self.alertCtrl.create({
+        title: 'Error ',
+        subTitle: 'Rack Number Must Be Fill',
+        buttons: ['OK']
+      });
+      alert.present();
+    }
+    else {
+      self.api.get('table/staging_in', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" + ' AND ' + "qty_putaway!=0 AND staging=" + "'" + rackno + "'" } })
       .subscribe(val => {
-        this.receivingputawaylist = val['data'];
-        if (this.receivingputawaylist.length != 0) {
-          let alert = this.alertCtrl.create({
+        self.receivingputawaylist = val['data'];
+        if (self.receivingputawaylist.length != 0) {
+          let alert = self.alertCtrl.create({
             title: 'Qty',
             inputs: [
               {
@@ -410,73 +428,83 @@ export class PutawayPage {
               {
                 text: 'OK',
                 handler: data => {
-                  this.api.get('table/putawaylist_temp', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" } })
-                    .subscribe(val => {
-                      this.getputawaylist = val['data'];
-                      if (this.getputawaylist.length) {
-                        const headers = new HttpHeaders()
-                          .set("Content-Type", "application/json");
-                        let date = moment().format('YYYY-MM-DD');
-                        this.api.put("table/putawaylist_temp",
-                          {
-                            "putawaylisttemp_no": this.getputawaylist[0].putawaylisttemp_no,
-                            "qty": parseInt(this.getputawaylist[0].qty) + parseInt(data.qty),
-                            "date": date,
-                            "pic": this.userid
-                          },
-                          { headers })
-                          .subscribe(val => {
-                            this.getPutawayTemp();
-                            this.myForm.get('barcodeno').setValue('')
-                            let alert = this.alertCtrl.create({
-                              title: 'Sukses ',
-                              subTitle: 'Update Item Sukses',
-                              buttons: ['OK']
-                            });
-                            alert.present();
-                          })
-                      }
-                      else {
-                        const headers = new HttpHeaders()
-                          .set("Content-Type", "application/json");
-                        this.getNextNoPUTemp().subscribe(val => {
-                          this.nextno = val['nextno'];
+                  if (self.receivingputawaylist[0].qty_putaway < data.qty) {
+                    let alert = self.alertCtrl.create({
+                      title: 'Error ',
+                      subTitle: 'Qty does not exist',
+                      buttons: ['OK']
+                    });
+                    alert.present();
+                  }
+                  else {
+                    self.api.get('table/putawaylist_temp', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" } })
+                      .subscribe(val => {
+                        self.getputawaylist = val['data'];
+                        if (self.getputawaylist.length) {
+                          const headers = new HttpHeaders()
+                            .set("Content-Type", "application/json");
                           let date = moment().format('YYYY-MM-DD');
-                          this.api.post("table/putawaylist_temp",
+                          self.api.put("table/putawaylist_temp",
                             {
-                              "putawaylisttemp_no": this.nextno,
-                              "receiving_no": this.receivingputawaylist[0].receiving_no,
-                              "doc_no": this.receivingputawaylist[0].doc_no,
-                              "order_no": this.receivingputawaylist[0].order_no,
-                              "batch_no": this.receivingputawaylist[0].batch_no,
-                              "item_no": this.receivingputawaylist[0].item_no,
-                              "posting_date": date,
-                              "location_code": this.receivingputawaylist[0].location_code,
-                              "location_position": this.receivingputawaylist[0].position,
-                              "division": this.receivingputawaylist[0].division,
-                              "qty": data.qty,
-                              "qty_receiving": this.receivingputawaylist[0].qty_receiving,
-                              "unit": this.receivingputawaylist[0].unit,
-                              "flag": '',
-                              "pic": this.userid,
-                              "status": 'OPEN',
-                              "chronology_no": '',
-                              "uuid": UUID.UUID()
+                              "putawaylisttemp_no": self.getputawaylist[0].putawaylisttemp_no,
+                              "qty": parseInt(self.getputawaylist[0].qty) + parseInt(data.qty),
+                              "date": date,
+                              "pic": self.userid
                             },
                             { headers })
                             .subscribe(val => {
-                              this.getPutawayTemp();
-                              this.myForm.get('barcodeno').setValue('')
-                              let alert = this.alertCtrl.create({
+                              self.getPutawayTemp();
+                              self.myForm.get('barcodeno').setValue('')
+                              let alert = self.alertCtrl.create({
                                 title: 'Sukses ',
-                                subTitle: 'Add Item Sukses',
+                                subTitle: 'Update Item Sukses',
                                 buttons: ['OK']
                               });
                               alert.present();
                             })
-                        });
-                      }
-                    });
+                        }
+                        else {
+                          const headers = new HttpHeaders()
+                            .set("Content-Type", "application/json");
+                          self.getNextNoPUTemp().subscribe(val => {
+                            self.nextno = val['nextno'];
+                            let date = moment().format('YYYY-MM-DD');
+                            self.api.post("table/putawaylist_temp",
+                              {
+                                "putawaylisttemp_no": self.nextno,
+                                "receiving_no": self.receivingputawaylist[0].receiving_no,
+                                "doc_no": self.receivingputawaylist[0].doc_no,
+                                "order_no": self.receivingputawaylist[0].order_no,
+                                "batch_no": self.receivingputawaylist[0].batch_no,
+                                "item_no": self.receivingputawaylist[0].item_no,
+                                "posting_date": date,
+                                "location_code": self.receivingputawaylist[0].location_code,
+                                "location_position": self.receivingputawaylist[0].position,
+                                "division": self.receivingputawaylist[0].division,
+                                "qty": data.qty,
+                                "qty_receiving": self.receivingputawaylist[0].qty_receiving,
+                                "unit": self.receivingputawaylist[0].unit,
+                                "flag": '',
+                                "pic": self.userid,
+                                "status": 'OPEN',
+                                "chronology_no": '',
+                                "uuid": UUID.UUID()
+                              },
+                              { headers })
+                              .subscribe(val => {
+                                self.getPutawayTemp();
+                                self.myForm.get('barcodeno').setValue('')
+                                let alert = self.alertCtrl.create({
+                                  title: 'Sukses ',
+                                  subTitle: 'Add Item Sukses',
+                                  buttons: ['OK']
+                                });
+                                alert.present();
+                              })
+                          });
+                        }
+                      });
+                  }
                 }
               }
             ]
@@ -484,7 +512,7 @@ export class PutawayPage {
           alert.present();
         }
         else {
-          let alert = this.alertCtrl.create({
+          let alert = self.alertCtrl.create({
             title: 'Error ',
             subTitle: 'Barcode Not Found',
             buttons: ['OK']
@@ -493,7 +521,157 @@ export class PutawayPage {
         }
 
       });
+    }
 
+  }
+  doOpenQtyDetail() {
+    var self = this;
+    var batchno = self.myForm.value.barcodeno.substring(0, 6);
+    var itemno = self.myForm.value.barcodeno.substring(6, 14);
+    self.api.get('table/putawaylist_temp', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "' AND pic=" + "'" + self.userid + "'" } })
+      .subscribe(val => {
+        self.receivingputawaylist = val['data'];
+        if (self.receivingputawaylist.length != 0) {
+          let alert = self.alertCtrl.create({
+            title: 'Qty',
+            inputs: [
+              {
+                name: 'qty',
+                placeholder: 'Qty'
+              }
+            ],
+            buttons: [
+              {
+                text: 'Cancel',
+                role: 'cancel',
+                handler: data => {
+
+                }
+              },
+              {
+                text: 'OK',
+                handler: data => {
+                  if (self.receivingputawaylist[0].qty < data.qty) {
+                    let alert = self.alertCtrl.create({
+                      title: 'Error ',
+                      subTitle: 'Qty does not exist',
+                      buttons: ['OK']
+                    });
+                    alert.present();
+                  }
+                  else {
+                    self.api.get('table/putawaylist_temp_detail', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "' AND pic=" + "'" + self.userid + "'" } })
+                      .subscribe(val => {
+                        self.getputawaylist = val['data'];
+                        if (self.getputawaylist.length) {
+                          const headers = new HttpHeaders()
+                            .set("Content-Type", "application/json");
+                          let date = moment().format('YYYY-MM-DD');
+                          self.api.put("table/putawaylist_temp_detail",
+                            {
+                              "putawaylisttemp_no": self.getputawaylist[0].putawaylisttemp_no,
+                              "qty": parseInt(self.getputawaylist[0].qty) + parseInt(data.qty),
+                              "date": date,
+                              "pic": self.userid
+                            },
+                            { headers })
+                            .subscribe(val => {
+                              const headers = new HttpHeaders()
+                                .set("Content-Type", "application/json");
+                              let date = moment().format('YYYY-MM-DD');
+                              self.api.put("table/putawaylist_temp",
+                                {
+                                  "putawaylisttemp_no": self.receivingputawaylist[0].putawaylisttemp_no,
+                                  "qty": parseInt(self.receivingputawaylist[0].qty) - parseInt(data.qty),
+                                  "date": date,
+                                  "pic": self.userid
+                                },
+                                { headers })
+                                .subscribe(val => {
+                                  self.getPutawayTemp();
+                                  self.getPutawayTempDetail();
+                                  self.myForm.get('barcodeno').setValue('')
+                                  let alert = self.alertCtrl.create({
+                                    title: 'Sukses ',
+                                    subTitle: 'Update Item Sukses',
+                                    buttons: ['OK']
+                                  });
+                                  alert.present();
+                                });
+                            })
+                        }
+                        else {
+                          const headers = new HttpHeaders()
+                            .set("Content-Type", "application/json");
+                          self.getNextNoPUTempDetail().subscribe(val => {
+                            self.nextno = val['nextno'];
+                            let date = moment().format('YYYY-MM-DD');
+                            self.api.post("table/putawaylist_temp_detail",
+                              {
+                                "putawaylisttemp_no": self.nextno,
+                                "receiving_no": self.receivingputawaylist[0].receiving_no,
+                                "doc_no": self.receivingputawaylist[0].doc_no,
+                                "order_no": self.receivingputawaylist[0].order_no,
+                                "batch_no": self.receivingputawaylist[0].batch_no,
+                                "item_no": self.receivingputawaylist[0].item_no,
+                                "posting_date": date,
+                                "location_code": self.receivingputawaylist[0].location_code,
+                                "location_position": self.receivingputawaylist[0].location_position,
+                                "division": self.receivingputawaylist[0].division,
+                                "qty": data.qty,
+                                "qty_receiving": self.receivingputawaylist[0].qty_receiving,
+                                "unit": self.receivingputawaylist[0].unit,
+                                "flag": '',
+                                "pic": self.userid,
+                                "status": 'OPEN',
+                                "chronology_no": '',
+                                "uuid": UUID.UUID()
+                              },
+                              { headers })
+                              .subscribe(val => {
+                                const headers = new HttpHeaders()
+                                  .set("Content-Type", "application/json");
+                                let date = moment().format('YYYY-MM-DD');
+                                self.api.put("table/putawaylist_temp",
+                                  {
+                                    "putawaylisttemp_no": self.receivingputawaylist[0].putawaylisttemp_no,
+                                    "qty": parseInt(self.receivingputawaylist[0].qty) - parseInt(data.qty),
+                                    "date": date,
+                                    "pic": self.userid
+                                  },
+                                  { headers })
+                                  .subscribe(val => {
+                                    self.getPutawayTemp();
+                                    self.getPutawayTempDetail();
+                                    self.myForm.get('barcodeno').setValue('')
+                                    let alert = self.alertCtrl.create({
+                                      title: 'Sukses ',
+                                      subTitle: 'Add Item Sukses',
+                                      buttons: ['OK']
+                                    });
+                                    alert.present();
+                                  });
+                              })
+                          });
+                        }
+                      });
+                  }
+                }
+              }
+            ]
+          });
+          alert.present();
+        }
+        else {
+          let alert = self.alertCtrl.create({
+            title: 'Error ',
+            subTitle: 'Barcode Not Found',
+            buttons: ['OK']
+          });
+          alert.present();
+        }
+
+      });
   }
   doSavelistToPutaway() {
     this.api.get('table/putawaylist_temp_detail', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" } })
@@ -531,9 +709,23 @@ export class PutawayPage {
                   },
                   { headers })
                   .subscribe(val => {
-                    this.api.get('table/staging_in', { params: { limit: 30, filter: "receiving_no=" + "'" + this.receivingno + "'" } })
+                    this.api.get('table/staging_in', { params: { limit: 30, filter: "receiving_no=" + "'" + this.getputawaylist[0].receiving_no + "'" } })
                       .subscribe(val => {
                         let data = val['data']
+                        console.log(data, this.getputawaylist[0].qty)
+                        const headers = new HttpHeaders()
+                          .set("Content-Type", "application/json");
+                        this.api.put("table/staging_in",
+                          {
+                            "staging_no": data[0].staging_no,
+                            "qty_putaway": parseInt(data[0].qty_putaway) - parseInt(this.getputawaylist[0].qty)
+                          },
+                          { headers })
+                          .subscribe(val => {
+                            this.receiving = [];
+                            this.halaman = 0;
+                            this.getrcv()
+                          });
                         this.getNextNoStockBalance().subscribe(val => {
                           console.log('1', this.myFormModal)
                           this.nextnostockbalance = val['nextno'];
@@ -616,9 +808,23 @@ export class PutawayPage {
                 },
                 { headers })
                 .subscribe(val => {
-                  this.api.get('table/staging_in', { params: { limit: 30, filter: "receiving_no=" + "'" + this.receivingno + "'" } })
+                  this.api.get('table/staging_in', { params: { limit: 30, filter: "receiving_no=" + "'" + this.getputawaylist[0].receiving_no + "'" } })
                     .subscribe(val => {
                       let data = val['data']
+                      console.log(data, this.getputawaylist[0].qty)
+                      const headers = new HttpHeaders()
+                        .set("Content-Type", "application/json");
+                      this.api.put("table/staging_in",
+                        {
+                          "staging_no": data[0].staging_no,
+                          "qty_putaway": parseInt(data[0].qty_putaway) - parseInt(this.getputawaylist[0].qty)
+                        },
+                        { headers })
+                        .subscribe(val => {
+                          this.receiving = [];
+                          this.halaman = 0;
+                          this.getrcv()
+                        });
                       this.getNextNoStockBalance().subscribe(val => {
                         console.log('2', this.myFormModal)
                         this.nextnostockbalance = val['nextno'];
@@ -914,6 +1120,7 @@ export class PutawayPage {
                       this.api.get('table/staging_in', { params: { limit: 30, filter: "receiving_no=" + "'" + this.receivingno + "'" } })
                         .subscribe(val => {
                           let data = val['data']
+                          console.log(data, this.myFormModal.value.qty)
                           const headers = new HttpHeaders()
                             .set("Content-Type", "application/json");
                           this.api.put("table/staging_in",
@@ -1022,6 +1229,7 @@ export class PutawayPage {
                         this.api.get('table/staging_in', { params: { limit: 30, filter: "receiving_no=" + "'" + this.receivingno + "'" } })
                           .subscribe(val => {
                             let data = val['data']
+                            console.log(data, this.myFormModal.value.qty)
                             const headers = new HttpHeaders()
                               .set("Content-Type", "application/json");
                             this.api.put("table/staging_in",
@@ -1141,6 +1349,7 @@ export class PutawayPage {
                   this.api.get('table/staging_in', { params: { limit: 30, filter: "receiving_no=" + "'" + this.receivingno + "'" } })
                     .subscribe(val => {
                       let data = val['data']
+                      console.log(data, this.myFormModal.value.qty)
                       const headers = new HttpHeaders()
                         .set("Content-Type", "application/json");
                       this.api.put("table/staging_in",
@@ -1349,10 +1558,20 @@ export class PutawayPage {
     var self = this
     Honeywell.barcodeReaderPressSoftwareTrigger(function () {
       Honeywell.onBarcodeEvent(function (data) {
+        let rackno = self.myForm.value.rackno
         var barcodeno = data.barcodeData;
         var batchno = barcodeno.substring(0, 6);
         var itemno = barcodeno.substring(6, 14);
-        self.api.get('table/staging_in', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" + ' AND ' + "qty_putaway!=0" } })
+        if (rackno == '') {
+          let alert = self.alertCtrl.create({
+            title: 'Error ',
+            subTitle: 'Rack Number Must Be Fill',
+            buttons: ['OK']
+          });
+          alert.present();
+        }
+        else {
+          self.api.get('table/staging_in', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" + ' AND ' + "qty_putaway!=0 AND staging=" + "'" + rackno + "'" } })
           .subscribe(val => {
             self.receivingputawaylist = val['data'];
             if (self.receivingputawaylist.length != 0) {
@@ -1375,58 +1594,28 @@ export class PutawayPage {
                   {
                     text: 'OK',
                     handler: data => {
-                      self.api.get('table/putawaylist_temp', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" } })
-                        .subscribe(val => {
-                          self.getputawaylist = val['data'];
-                          if (self.getputawaylist.length) {
-                            const headers = new HttpHeaders()
-                              .set("Content-Type", "application/json");
-                            let date = moment().format('YYYY-MM-DD');
-                            self.api.put("table/putawaylist_temp",
-                              {
-                                "putawaylisttemp_no": self.getputawaylist[0].putawaylisttemp_no,
-                                "qty": parseInt(self.getputawaylist[0].qty) + parseInt(data.qty),
-                                "date": date,
-                                "pic": self.userid
-                              },
-                              { headers })
-                              .subscribe(val => {
-                                self.getPutawayTemp();
-                                self.myForm.get('barcodeno').setValue('')
-                                let alert = self.alertCtrl.create({
-                                  title: 'Sukses ',
-                                  subTitle: 'Update Item Sukses',
-                                  buttons: ['OK']
-                                });
-                                alert.present();
-                              })
-                          }
-                          else {
-                            const headers = new HttpHeaders()
-                              .set("Content-Type", "application/json");
-                            self.getNextNoPUTemp().subscribe(val => {
-                              self.nextno = val['nextno'];
+                      if (self.receivingputawaylist[0].qty_putaway < data.qty) {
+                        let alert = self.alertCtrl.create({
+                          title: 'Error ',
+                          subTitle: 'Qty does not exist',
+                          buttons: ['OK']
+                        });
+                        alert.present();
+                      }
+                      else {
+                        self.api.get('table/putawaylist_temp', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" } })
+                          .subscribe(val => {
+                            self.getputawaylist = val['data'];
+                            if (self.getputawaylist.length) {
+                              const headers = new HttpHeaders()
+                                .set("Content-Type", "application/json");
                               let date = moment().format('YYYY-MM-DD');
-                              self.api.post("table/putawaylist_temp",
+                              self.api.put("table/putawaylist_temp",
                                 {
-                                  "putawaylisttemp_no": self.nextno,
-                                  "receiving_no": self.receivingputawaylist[0].receiving_no,
-                                  "doc_no": self.receivingputawaylist[0].doc_no,
-                                  "order_no": self.receivingputawaylist[0].order_no,
-                                  "batch_no": self.receivingputawaylist[0].batch_no,
-                                  "item_no": self.receivingputawaylist[0].item_no,
-                                  "posting_date": date,
-                                  "location_code": self.receivingputawaylist[0].location_code,
-                                  "location_position": self.receivingputawaylist[0].position,
-                                  "division": self.receivingputawaylist[0].division,
-                                  "qty": data.qty,
-                                  "qty_receiving": self.receivingputawaylist[0].qty_receiving,
-                                  "unit": self.receivingputawaylist[0].unit,
-                                  "flag": '',
-                                  "pic": self.userid,
-                                  "status": 'OPEN',
-                                  "chronology_no": '',
-                                  "uuid": UUID.UUID()
+                                  "putawaylisttemp_no": self.getputawaylist[0].putawaylisttemp_no,
+                                  "qty": parseInt(self.getputawaylist[0].qty) + parseInt(data.qty),
+                                  "date": date,
+                                  "pic": self.userid
                                 },
                                 { headers })
                                 .subscribe(val => {
@@ -1434,14 +1623,54 @@ export class PutawayPage {
                                   self.myForm.get('barcodeno').setValue('')
                                   let alert = self.alertCtrl.create({
                                     title: 'Sukses ',
-                                    subTitle: 'Add Item Sukses',
+                                    subTitle: 'Update Item Sukses',
                                     buttons: ['OK']
                                   });
                                   alert.present();
                                 })
-                            });
-                          }
-                        });
+                            }
+                            else {
+                              const headers = new HttpHeaders()
+                                .set("Content-Type", "application/json");
+                              self.getNextNoPUTemp().subscribe(val => {
+                                self.nextno = val['nextno'];
+                                let date = moment().format('YYYY-MM-DD');
+                                self.api.post("table/putawaylist_temp",
+                                  {
+                                    "putawaylisttemp_no": self.nextno,
+                                    "receiving_no": self.receivingputawaylist[0].receiving_no,
+                                    "doc_no": self.receivingputawaylist[0].doc_no,
+                                    "order_no": self.receivingputawaylist[0].order_no,
+                                    "batch_no": self.receivingputawaylist[0].batch_no,
+                                    "item_no": self.receivingputawaylist[0].item_no,
+                                    "posting_date": date,
+                                    "location_code": self.receivingputawaylist[0].location_code,
+                                    "location_position": self.receivingputawaylist[0].position,
+                                    "division": self.receivingputawaylist[0].division,
+                                    "qty": data.qty,
+                                    "qty_receiving": self.receivingputawaylist[0].qty_receiving,
+                                    "unit": self.receivingputawaylist[0].unit,
+                                    "flag": '',
+                                    "pic": self.userid,
+                                    "status": 'OPEN',
+                                    "chronology_no": '',
+                                    "uuid": UUID.UUID()
+                                  },
+                                  { headers })
+                                  .subscribe(val => {
+                                    self.getPutawayTemp();
+                                    self.myForm.get('barcodeno').setValue('')
+                                    let alert = self.alertCtrl.create({
+                                      title: 'Sukses ',
+                                      subTitle: 'Add Item Sukses',
+                                      buttons: ['OK']
+                                    });
+                                    alert.present();
+                                  })
+                              });
+                            }
+                          });
+                      }
                     }
                   }
                 ]
@@ -1458,6 +1687,7 @@ export class PutawayPage {
             }
 
           });
+        }
       }, function (reason) {
         console.error(reason);
       });
@@ -1497,72 +1727,28 @@ export class PutawayPage {
                   {
                     text: 'OK',
                     handler: data => {
-                      self.api.get('table/putawaylist_temp_detail', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "' AND pic=" + "'" + self.userid + "'" } })
-                        .subscribe(val => {
-                          self.getputawaylist = val['data'];
-                          if (self.getputawaylist.length) {
-                            const headers = new HttpHeaders()
-                              .set("Content-Type", "application/json");
-                            let date = moment().format('YYYY-MM-DD');
-                            self.api.put("table/putawaylist_temp_detail",
-                              {
-                                "putawaylisttemp_no": self.getputawaylist[0].putawaylisttemp_no,
-                                "qty": parseInt(self.getputawaylist[0].qty) + parseInt(data.qty),
-                                "date": date,
-                                "pic": self.userid
-                              },
-                              { headers })
-                              .subscribe(val => {
-                                const headers = new HttpHeaders()
-                                  .set("Content-Type", "application/json");
-                                let date = moment().format('YYYY-MM-DD');
-                                self.api.put("table/putawaylist_temp",
-                                  {
-                                    "putawaylisttemp_no": self.receivingputawaylist[0].putawaylisttemp_no,
-                                    "qty": parseInt(self.receivingputawaylist[0].qty) - parseInt(data.qty),
-                                    "date": date,
-                                    "pic": self.userid
-                                  },
-                                  { headers })
-                                  .subscribe(val => {
-                                    self.getPutawayTemp();
-                                    self.getPutawayTempDetail();
-                                    self.myForm.get('barcodeno').setValue('')
-                                    let alert = self.alertCtrl.create({
-                                      title: 'Sukses ',
-                                      subTitle: 'Update Item Sukses',
-                                      buttons: ['OK']
-                                    });
-                                    alert.present();
-                                  });
-                              })
-                          }
-                          else {
-                            const headers = new HttpHeaders()
-                              .set("Content-Type", "application/json");
-                            self.getNextNoPUTempDetail().subscribe(val => {
-                              self.nextno = val['nextno'];
+                      if (self.receivingputawaylist[0].qty < data.qty) {
+                        let alert = self.alertCtrl.create({
+                          title: 'Error ',
+                          subTitle: 'Qty does not exist',
+                          buttons: ['OK']
+                        });
+                        alert.present();
+                      }
+                      else {
+                        self.api.get('table/putawaylist_temp_detail', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "' AND pic=" + "'" + self.userid + "'" } })
+                          .subscribe(val => {
+                            self.getputawaylist = val['data'];
+                            if (self.getputawaylist.length) {
+                              const headers = new HttpHeaders()
+                                .set("Content-Type", "application/json");
                               let date = moment().format('YYYY-MM-DD');
-                              self.api.post("table/putawaylist_temp_detail",
+                              self.api.put("table/putawaylist_temp_detail",
                                 {
-                                  "putawaylisttemp_no": self.nextno,
-                                  "receiving_no": self.receivingputawaylist[0].receiving_no,
-                                  "doc_no": self.receivingputawaylist[0].doc_no,
-                                  "order_no": self.receivingputawaylist[0].order_no,
-                                  "batch_no": self.receivingputawaylist[0].batch_no,
-                                  "item_no": self.receivingputawaylist[0].item_no,
-                                  "posting_date": date,
-                                  "location_code": self.receivingputawaylist[0].location_code,
-                                  "location_position": self.receivingputawaylist[0].location_position,
-                                  "division": self.receivingputawaylist[0].division,
-                                  "qty": data.qty,
-                                  "qty_receiving": self.receivingputawaylist[0].qty_receiving,
-                                  "unit": self.receivingputawaylist[0].unit,
-                                  "flag": '',
-                                  "pic": self.userid,
-                                  "status": 'OPEN',
-                                  "chronology_no": '',
-                                  "uuid": UUID.UUID()
+                                  "putawaylisttemp_no": self.getputawaylist[0].putawaylisttemp_no,
+                                  "qty": parseInt(self.getputawaylist[0].qty) + parseInt(data.qty),
+                                  "date": date,
+                                  "pic": self.userid
                                 },
                                 { headers })
                                 .subscribe(val => {
@@ -1583,15 +1769,69 @@ export class PutawayPage {
                                       self.myForm.get('barcodeno').setValue('')
                                       let alert = self.alertCtrl.create({
                                         title: 'Sukses ',
-                                        subTitle: 'Add Item Sukses',
+                                        subTitle: 'Update Item Sukses',
                                         buttons: ['OK']
                                       });
                                       alert.present();
                                     });
                                 })
-                            });
-                          }
-                        });
+                            }
+                            else {
+                              const headers = new HttpHeaders()
+                                .set("Content-Type", "application/json");
+                              self.getNextNoPUTempDetail().subscribe(val => {
+                                self.nextno = val['nextno'];
+                                let date = moment().format('YYYY-MM-DD');
+                                self.api.post("table/putawaylist_temp_detail",
+                                  {
+                                    "putawaylisttemp_no": self.nextno,
+                                    "receiving_no": self.receivingputawaylist[0].receiving_no,
+                                    "doc_no": self.receivingputawaylist[0].doc_no,
+                                    "order_no": self.receivingputawaylist[0].order_no,
+                                    "batch_no": self.receivingputawaylist[0].batch_no,
+                                    "item_no": self.receivingputawaylist[0].item_no,
+                                    "posting_date": date,
+                                    "location_code": self.receivingputawaylist[0].location_code,
+                                    "location_position": self.receivingputawaylist[0].location_position,
+                                    "division": self.receivingputawaylist[0].division,
+                                    "qty": data.qty,
+                                    "qty_receiving": self.receivingputawaylist[0].qty_receiving,
+                                    "unit": self.receivingputawaylist[0].unit,
+                                    "flag": '',
+                                    "pic": self.userid,
+                                    "status": 'OPEN',
+                                    "chronology_no": '',
+                                    "uuid": UUID.UUID()
+                                  },
+                                  { headers })
+                                  .subscribe(val => {
+                                    const headers = new HttpHeaders()
+                                      .set("Content-Type", "application/json");
+                                    let date = moment().format('YYYY-MM-DD');
+                                    self.api.put("table/putawaylist_temp",
+                                      {
+                                        "putawaylisttemp_no": self.receivingputawaylist[0].putawaylisttemp_no,
+                                        "qty": parseInt(self.receivingputawaylist[0].qty) - parseInt(data.qty),
+                                        "date": date,
+                                        "pic": self.userid
+                                      },
+                                      { headers })
+                                      .subscribe(val => {
+                                        self.getPutawayTemp();
+                                        self.getPutawayTempDetail();
+                                        self.myForm.get('barcodeno').setValue('')
+                                        let alert = self.alertCtrl.create({
+                                          title: 'Sukses ',
+                                          subTitle: 'Add Item Sukses',
+                                          buttons: ['OK']
+                                        });
+                                        alert.present();
+                                      });
+                                  })
+                              });
+                            }
+                          });
+                      }
                     }
                   }
                 ]

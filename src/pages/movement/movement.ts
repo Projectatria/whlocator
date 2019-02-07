@@ -254,6 +254,137 @@ export class MovementPage {
         });
     }
   }
+  doOpenQtyDetail() {
+    var self = this;
+    let rackno = this.myForm.value.rackno
+    let barcodeno = this.myForm.value.barcodeno
+    var batchno = barcodeno.substring(0, 6);
+    var itemno = barcodeno.substring(6, 14);
+    self.api.get('table/movement_temp', { params: { limit: 100, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" + ' AND ' + "pic=" + "'" + self.userid + "'" } })
+      .subscribe(val => {
+        let putawaylist = val['data'];
+        if (putawaylist.length) {
+          let alert = self.alertCtrl.create({
+            title: 'Qty',
+            inputs: [
+              {
+                name: 'qty',
+                placeholder: 'Qty'
+              }
+            ],
+            buttons: [
+              {
+                text: 'Cancel',
+                role: 'cancel',
+                handler: data => {
+                }
+              },
+              {
+                text: 'OK',
+                handler: data => {
+                  if (putawaylist.qty < data.qty) {
+                    let alert = self.alertCtrl.create({
+                      title: 'Error ',
+                      subTitle: 'Qty does not exist',
+                      buttons: ['OK']
+                    });
+                    alert.present();
+                  }
+                  else {
+                    self.api.get('table/movement_temp_detail', { params: { limit: 30, filter: "pic=" + "'" + self.userid + "' AND batch_no=" + "'" + putawaylist[0].batch_no + "' AND item_no=" + "'" + putawaylist[0].item_no + "'" } })
+                      .subscribe(val => {
+                        let movetempdetail = val['data']
+                        if (movetempdetail.length == 0) {
+                          const headers = new HttpHeaders()
+                            .set("Content-Type", "application/json");
+                          self.getNextNoPUTempDetail().subscribe(val => {
+                            let nextno = val['nextno'];
+                            let datetime = moment().format('YYYY-MM-DD HH:mm');
+                            self.api.post("table/movement_temp_detail",
+                              {
+                                "movementtemp_no": nextno,
+                                "receiving_no": putawaylist[0].receiving_no,
+                                "batch_no": putawaylist[0].batch_no,
+                                "item_no": putawaylist[0].item_no,
+                                "qty": data.qty,
+                                "location_code": putawaylist[0].location_code,
+                                "location_previous_position": putawaylist[0].location_previous_position,
+                                "location_current_position": putawaylist[0].location_current_position,
+                                "status": 'OPEN',
+                                "datetime": datetime,
+                                "pic": self.userid,
+                                "uuid": UUID.UUID()
+                              },
+                              { headers })
+                              .subscribe(val => {
+                                self.api.put("table/movement_temp",
+                                  {
+                                    "movementtemp_no": putawaylist[0].movementtemp_no,
+                                    "qty": putawaylist[0].qty - data.qty
+                                  },
+                                  { headers })
+                                  .subscribe(val => {
+                                    self.getMovementTemp()
+                                    self.getMovementTempDetail()
+                                    let alert = self.alertCtrl.create({
+                                      title: 'Sukses ',
+                                      subTitle: 'Add Item Sukses',
+                                      buttons: ['OK']
+                                    });
+                                    alert.present();
+                                  });
+                              });
+                          });
+                        }
+                        else {
+                          const headers = new HttpHeaders()
+                            .set("Content-Type", "application/json");
+                          let datetime = moment().format('YYYY-MM-DD HH:mm');
+                          self.api.put("table/movement_temp_detail",
+                            {
+                              "movementtemp_no": movetempdetail[0].movementtemp_no,
+                              "qty": movetempdetail[0].qty + data.qty,
+                              "datetime": datetime
+                            },
+                            { headers })
+                            .subscribe(val => {
+                              self.api.put("table/movement_temp",
+                                {
+                                  "movementtemp_no": putawaylist[0].movementtemp_no,
+                                  "qty": putawaylist[0].qty - data.qty
+                                },
+                                { headers })
+                                .subscribe(val => {
+                                  self.getMovementTemp()
+                                  self.getMovementTempDetail()
+                                  let alert = self.alertCtrl.create({
+                                    title: 'Sukses ',
+                                    subTitle: 'Add Item Sukses',
+                                    buttons: ['OK']
+                                  });
+                                  alert.present();
+                                });
+                            });
+                        }
+                      });
+                  }
+                }
+              }
+            ]
+          });
+          alert.present();
+        }
+        else {
+          let alert = self.alertCtrl.create({
+            title: 'Error ',
+            subTitle: 'Item Not Found',
+            buttons: ['OK']
+          });
+          alert.present();
+        }
+
+      });
+  }
   getNextNoStockBalance() {
     return this.api.get('nextno/stock_balance/id')
   }
@@ -734,29 +865,69 @@ export class MovementPage {
                   {
                     text: 'OK',
                     handler: data => {
-                      self.api.get('table/movement_temp_detail', { params: { limit: 30, filter: "pic=" + "'" + self.userid + "' AND batch_no=" + "'" + putawaylist[0].batch_no + "' AND item_no=" + "'" + putawaylist[0].item_no + "'" } })
-                        .subscribe(val => {
-                          let movetempdetail = val['data']
-                          if (movetempdetail.length == 0) {
-                            const headers = new HttpHeaders()
-                              .set("Content-Type", "application/json");
-                            self.getNextNoPUTempDetail().subscribe(val => {
-                              let nextno = val['nextno'];
+                      if (putawaylist.qty < data.qty) {
+                        let alert = self.alertCtrl.create({
+                          title: 'Error ',
+                          subTitle: 'Qty does not exist',
+                          buttons: ['OK']
+                        });
+                        alert.present();
+                      }
+                      else {
+                        self.api.get('table/movement_temp_detail', { params: { limit: 30, filter: "pic=" + "'" + self.userid + "' AND batch_no=" + "'" + putawaylist[0].batch_no + "' AND item_no=" + "'" + putawaylist[0].item_no + "'" } })
+                          .subscribe(val => {
+                            let movetempdetail = val['data']
+                            if (movetempdetail.length == 0) {
+                              const headers = new HttpHeaders()
+                                .set("Content-Type", "application/json");
+                              self.getNextNoPUTempDetail().subscribe(val => {
+                                let nextno = val['nextno'];
+                                let datetime = moment().format('YYYY-MM-DD HH:mm');
+                                self.api.post("table/movement_temp_detail",
+                                  {
+                                    "movementtemp_no": nextno,
+                                    "receiving_no": putawaylist[0].receiving_no,
+                                    "batch_no": putawaylist[0].batch_no,
+                                    "item_no": putawaylist[0].item_no,
+                                    "qty": data.qty,
+                                    "location_code": putawaylist[0].location_code,
+                                    "location_previous_position": putawaylist[0].location_previous_position,
+                                    "location_current_position": putawaylist[0].location_current_position,
+                                    "status": 'OPEN',
+                                    "datetime": datetime,
+                                    "pic": self.userid,
+                                    "uuid": UUID.UUID()
+                                  },
+                                  { headers })
+                                  .subscribe(val => {
+                                    self.api.put("table/movement_temp",
+                                      {
+                                        "movementtemp_no": putawaylist[0].movementtemp_no,
+                                        "qty": putawaylist[0].qty - data.qty
+                                      },
+                                      { headers })
+                                      .subscribe(val => {
+                                        self.getMovementTemp()
+                                        self.getMovementTempDetail()
+                                        let alert = self.alertCtrl.create({
+                                          title: 'Sukses ',
+                                          subTitle: 'Add Item Sukses',
+                                          buttons: ['OK']
+                                        });
+                                        alert.present();
+                                      });
+                                  });
+                              });
+                            }
+                            else {
+                              const headers = new HttpHeaders()
+                                .set("Content-Type", "application/json");
                               let datetime = moment().format('YYYY-MM-DD HH:mm');
-                              self.api.post("table/movement_temp_detail",
+                              self.api.put("table/movement_temp_detail",
                                 {
-                                  "movementtemp_no": nextno,
-                                  "receiving_no": putawaylist[0].receiving_no,
-                                  "batch_no": putawaylist[0].batch_no,
-                                  "item_no": putawaylist[0].item_no,
-                                  "qty": data.qty,
-                                  "location_code": putawaylist[0].location_code,
-                                  "location_previous_position": putawaylist[0].location_previous_position,
-                                  "location_current_position": putawaylist[0].location_current_position,
-                                  "status": 'OPEN',
-                                  "datetime": datetime,
-                                  "pic": self.userid,
-                                  "uuid": UUID.UUID()
+                                  "movementtemp_no": movetempdetail[0].movementtemp_no,
+                                  "qty": movetempdetail[0].qty + data.qty,
+                                  "datetime": datetime
                                 },
                                 { headers })
                                 .subscribe(val => {
@@ -777,39 +948,9 @@ export class MovementPage {
                                       alert.present();
                                     });
                                 });
-                            });
-                          }
-                          else {
-                            const headers = new HttpHeaders()
-                              .set("Content-Type", "application/json");
-                            let datetime = moment().format('YYYY-MM-DD HH:mm');
-                            self.api.put("table/movement_temp_detail",
-                              {
-                                "movementtemp_no": movetempdetail[0].movementtemp_no,
-                                "qty": movetempdetail[0].qty + data.qty,
-                                "datetime": datetime
-                              },
-                              { headers })
-                              .subscribe(val => {
-                                self.api.put("table/movement_temp",
-                                  {
-                                    "movementtemp_no": putawaylist[0].movementtemp_no,
-                                    "qty": putawaylist[0].qty - data.qty
-                                  },
-                                  { headers })
-                                  .subscribe(val => {
-                                    self.getMovementTemp()
-                                    self.getMovementTempDetail()
-                                    let alert = self.alertCtrl.create({
-                                      title: 'Sukses ',
-                                      subTitle: 'Add Item Sukses',
-                                      buttons: ['OK']
-                                    });
-                                    alert.present();
-                                  });
-                              });
-                          }
-                        });
+                            }
+                          });
+                      }
                     }
                   }
                 ]

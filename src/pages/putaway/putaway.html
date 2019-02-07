@@ -283,26 +283,26 @@
 </ion-content>
 
 <div id="myModal" class="modal">
-    <div class="modal-content">
-      <span class="closeModal" (click)="doOffPutaway()">&times;</span>
-      <form [formGroup]="myFormModal">
-        <ion-list no-lines>
-          <ion-item class="item-rc" style="border:0px;">
-            <ion-label floating>Location</ion-label>
-            <ion-input type="text" formControlName="location"></ion-input>
-          </ion-item>
-          <ion-item class="item-rc" style="border:0px;">
-            <ion-label floating>Qty</ion-label>
-            <ion-input type="text" formControlName="qty"></ion-input>
-          </ion-item>
-        </ion-list>
-      </form>
-      <ion-buttons end>
-        <button ion-button color="greenlake" style="margin-top:20px;" (click)="doOpenLocation()">Location</button>
-        <button ion-button color="greenlake" style="margin-top:20px;" [disabled]="!myFormModal.valid" (click)="doSavePutaway(rcv)">Save</button>
-      </ion-buttons>
-    </div>
+  <div class="modal-content">
+    <span class="closeModal" (click)="doOffPutaway()">&times;</span>
+    <form [formGroup]="myFormModal">
+      <ion-list no-lines>
+        <ion-item class="item-rc" style="border:0px;">
+          <ion-label floating>Location</ion-label>
+          <ion-input type="text" formControlName="location"></ion-input>
+        </ion-item>
+        <ion-item class="item-rc" style="border:0px;">
+          <ion-label floating>Qty</ion-label>
+          <ion-input type="text" formControlName="qty"></ion-input>
+        </ion-item>
+      </ion-list>
+    </form>
+    <ion-buttons end>
+      <button ion-button color="greenlake" style="margin-top:20px;" (click)="doOpenLocation()">Location</button>
+      <button ion-button color="greenlake" style="margin-top:20px;" [disabled]="!myFormModal.valid" (click)="doSavePutaway(rcv)">Save</button>
+    </ion-buttons>
   </div>
+</div>
 
 <div id="myLocations" class="modal-location">
   <div class="modal-content-location">
@@ -376,8 +376,8 @@
             <button item-end ion-button clear color="greenlake" (click)="doOpenQty()">
               <ion-icon name="md-add" style="font-size:20px;"></ion-icon>
             </button>
-            <button *ngIf="" item-end ion-button clear color="greenlake">
-              <ion-icon name="md-sync" style="font-size:20px;"></ion-icon>
+            <button item-end ion-button clear color="greenlake" (click)="doOpenQtyDetail()">
+              <ion-icon name="remove" style="font-size:20px;"></ion-icon>
             </button>
           </ion-item>
         </ion-card>
@@ -444,18 +444,26 @@
   </div>
 </div>
 <div [ngSwitch]="put">
-  <ion-fab *ngSwitchCase="'qcin'" class="fixed-div" bottom right>
-    <button ion-fab color="greenlake" (click)="doOpenListPutaway()">
+  <ion-buttons *ngSwitchCase="'qcin'" style="top:40%;position: fixed;right:-20px;padding:0px;">
+    <button ion-button clear color="greenlake" (click)="doOpenListPutaway()">
+      <ion-icon *ngIf="buttonscan == false" style="font-size:50px;" name="arrow-dropright"></ion-icon>
+      <ion-icon *ngIf="buttonscan == true" style="font-size:50px;" name="arrow-dropleft"></ion-icon>
+    </button>
+  </ion-buttons>
+</div>
+<div *ngIf="buttonscan == true">
+  <ion-fab class="fixed-div" bottom right>
+    <button ion-fab color="greenlake">
       <ion-icon name="md-apps"></ion-icon>
     </button>
     <ion-fab-list side="top">
       <button ion-fab class="fab-list" color="greenlake" (click)="doScanBarcodeItem()">
-        S
-        <ion-label>Add Item To Staging</ion-label>
+        <ion-icon name="md-add"></ion-icon>
+        <ion-label>Add Item Staging</ion-label>
       </button>
       <button ion-fab class="fab-list" color="greenlake" (click)="doScanBarcodeItemDetail()">
-        T
-        <ion-label>Add Item To Temp</ion-label>
+        <ion-icon name="remove"></ion-icon>
+        <ion-label>Add Item Rack</ion-label>
       </button>
     </ion-fab-list>
     <ion-fab-list side="left">
