@@ -282,7 +282,7 @@ export class MovementPage {
               {
                 text: 'OK',
                 handler: data => {
-                  if (putawaylist.qty < data.qty) {
+                  if (putawaylist[0].qty < data.qty) {
                     let alert = self.alertCtrl.create({
                       title: 'Error ',
                       subTitle: 'Qty does not exist',
@@ -324,6 +324,14 @@ export class MovementPage {
                                   },
                                   { headers })
                                   .subscribe(val => {
+                                    if (putawaylist[0].qty == data.qty) {
+                                      self.api.delete("table/putawaylist_temp", { params: { filter: 'putawaylisttemp_no=' + "'" + putawaylist[0].putawaylisttemp_no + "'" }, headers })
+                                        .subscribe(
+                                          (val) => {
+                                            self.getMovementTemp()
+                                            self.getMovementTempDetail()
+                                          });
+                                    }
                                     self.getMovementTemp()
                                     self.getMovementTempDetail()
                                     let alert = self.alertCtrl.create({
@@ -343,7 +351,7 @@ export class MovementPage {
                           self.api.put("table/movement_temp_detail",
                             {
                               "movementtemp_no": movetempdetail[0].movementtemp_no,
-                              "qty": movetempdetail[0].qty + data.qty,
+                              "qty": parseInt(movetempdetail[0].qty) + parseInt(data.qty),
                               "datetime": datetime
                             },
                             { headers })
@@ -355,6 +363,14 @@ export class MovementPage {
                                 },
                                 { headers })
                                 .subscribe(val => {
+                                  if (putawaylist[0].qty == data.qty) {
+                                    self.api.delete("table/putawaylist_temp", { params: { filter: 'putawaylisttemp_no=' + "'" + putawaylist[0].putawaylisttemp_no + "'" }, headers })
+                                      .subscribe(
+                                        (val) => {
+                                          self.getMovementTemp()
+                                          self.getMovementTempDetail()
+                                        });
+                                  }
                                   self.getMovementTemp()
                                   self.getMovementTempDetail()
                                   let alert = self.alertCtrl.create({
@@ -865,7 +881,7 @@ export class MovementPage {
                   {
                     text: 'OK',
                     handler: data => {
-                      if (putawaylist.qty < data.qty) {
+                      if (putawaylist[0].qty < data.qty) {
                         let alert = self.alertCtrl.create({
                           title: 'Error ',
                           subTitle: 'Qty does not exist',
@@ -907,6 +923,14 @@ export class MovementPage {
                                       },
                                       { headers })
                                       .subscribe(val => {
+                                        if (putawaylist[0].qty == data.qty) {
+                                          self.api.delete("table/putawaylist_temp", { params: { filter: 'putawaylisttemp_no=' + "'" + putawaylist[0].putawaylisttemp_no + "'" }, headers })
+                                            .subscribe(
+                                              (val) => {
+                                                self.getMovementTemp()
+                                                self.getMovementTempDetail()
+                                              });
+                                        }
                                         self.getMovementTemp()
                                         self.getMovementTempDetail()
                                         let alert = self.alertCtrl.create({
@@ -926,7 +950,7 @@ export class MovementPage {
                               self.api.put("table/movement_temp_detail",
                                 {
                                   "movementtemp_no": movetempdetail[0].movementtemp_no,
-                                  "qty": movetempdetail[0].qty + data.qty,
+                                  "qty": parseInt(movetempdetail[0].qty) + parseInt(data.qty),
                                   "datetime": datetime
                                 },
                                 { headers })
@@ -938,6 +962,14 @@ export class MovementPage {
                                     },
                                     { headers })
                                     .subscribe(val => {
+                                      if (putawaylist[0].qty == data.qty) {
+                                        self.api.delete("table/putawaylist_temp", { params: { filter: 'putawaylisttemp_no=' + "'" + putawaylist[0].putawaylisttemp_no + "'" }, headers })
+                                          .subscribe(
+                                            (val) => {
+                                              self.getMovementTemp()
+                                              self.getMovementTempDetail()
+                                            });
+                                      }
                                       self.getMovementTemp()
                                       self.getMovementTempDetail()
                                       let alert = self.alertCtrl.create({
