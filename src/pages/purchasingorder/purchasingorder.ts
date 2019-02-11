@@ -211,8 +211,16 @@ export class PurchasingorderPage {
                     // January 4 is always in week 1.
                     let week1 = new Date(date.getFullYear(), 0, 4);
                     // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                    let batchno = (date.getFullYear().toString().substr(-2) + (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                      - 3 + (week1.getDay() + 6) % 7) / 7) + 1))
+                    let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                    - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                    let batchfix = '';
+                    if (batch < 10) {
+                      batchfix = '0' + batch.toString()
+                    }
+                    else {
+                      batchfix = batch.toString()
+                    }
+                    let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
                     data[i]["batchno"] = batchno
                     this.infopo.push(data[i]);
                   }
@@ -227,8 +235,16 @@ export class PurchasingorderPage {
                       // January 4 is always in week 1.
                       let week1 = new Date(date.getFullYear(), 0, 4);
                       // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                      let batchno = (date.getFullYear().toString().substr(-2) + (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                        - 3 + (week1.getDay() + 6) % 7) / 7) + 1))
+                      let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                      - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                      let batchfix = '';
+                      if (batch < 10) {
+                        batchfix = '0' + batch.toString()
+                      }
+                      else {
+                        batchfix = batch.toString()
+                      }
+                      let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
                       data[i]["batchno"] = batchno
                       this.infopo.push(data[i]);
                     }
@@ -271,8 +287,16 @@ export class PurchasingorderPage {
                     // January 4 is always in week 1.
                     let week1 = new Date(date.getFullYear(), 0, 4);
                     // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                    let batchno = (date.getFullYear().toString().substr(-2) + (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                      - 3 + (week1.getDay() + 6) % 7) / 7) + 1))
+                    let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                    - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                    let batchfix = '';
+                    if (batch < 10) {
+                      batchfix = '0' + batch.toString()
+                    }
+                    else {
+                      batchfix = batch.toString()
+                    }
+                    let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
                     data[i]["batchno"] = batchno
                     this.infopo.push(data[i]);
                   }
@@ -287,8 +311,16 @@ export class PurchasingorderPage {
                       // January 4 is always in week 1.
                       let week1 = new Date(date.getFullYear(), 0, 4);
                       // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                      let batchno = (date.getFullYear().toString().substr(-2) + (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                        - 3 + (week1.getDay() + 6) % 7) / 7) + 1))
+                      let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                      - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                      let batchfix = '';
+                      if (batch < 10) {
+                        batchfix = '0' + batch.toString()
+                      }
+                      else {
+                        batchfix = batch.toString()
+                      }
+                      let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
                       data[i]["batchno"] = batchno
                       this.infopo.push(data[i]);
                     }
@@ -508,15 +540,51 @@ export class PurchasingorderPage {
             .subscribe(val => {
               this.porelease = val['data'];
               if (this.porelease.length == 0) {
-                this.infopo.push(data[i]);
                 this.totaldatainfopo = val['count'];
                 this.searchinfopo = this.infopo;
+                let date = new Date(data[i]["Order Date"]);
+                date.setHours(0, 0, 0, 0);
+                // Thursday in current week decides the year.
+                date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+                // January 4 is always in week 1.
+                let week1 = new Date(date.getFullYear(), 0, 4);
+                // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+                let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                let batchfix = '';
+                if (batch < 10) {
+                  batchfix = '0' + batch.toString()
+                }
+                else {
+                  batchfix = batch.toString()
+                }
+                let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
+                data[i]["batchno"] = batchno
+                this.infopo.push(data[i]);
               }
               else if (this.porelease.length) {
                 if (this.porelease[0].batch_no == '') {
-                  this.infopo.push(data[i]);
                   this.totaldatainfopo = val['count'];
                   this.searchinfopo = this.infopo;
+                  let date = new Date(data[i]["Order Date"]);
+                  date.setHours(0, 0, 0, 0);
+                  // Thursday in current week decides the year.
+                  date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+                  // January 4 is always in week 1.
+                  let week1 = new Date(date.getFullYear(), 0, 4);
+                  // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+                  let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                  - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                  let batchfix = '';
+                  if (batch < 10) {
+                    batchfix = '0' + batch.toString()
+                  }
+                  else {
+                    batchfix = batch.toString()
+                  }
+                  let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
+                  data[i]["batchno"] = batchno
+                  this.infopo.push(data[i]);
                 }
               }
             });
@@ -645,12 +713,20 @@ export class PurchasingorderPage {
                   // January 4 is always in week 1.
                   let week1 = new Date(date.getFullYear(), 0, 4);
                   // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                  let batch = (date.getFullYear().toString().substr(-2) + (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                    - 3 + (week1.getDay() + 6) % 7) / 7) + 1))
+                  let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                  - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                  let batchfix = '';
+                  if (batch < 10) {
+                    batchfix = '0' + batch.toString()
+                  }
+                  else {
+                    batchfix = batch.toString()
+                  }
+                  let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
                   this.api.put("table/purchasing_order",
                     {
                       "order_no": info.No_,
-                      "batch_no": batch,
+                      "batch_no": batchno,
                       "vendor_no": info["Buy-from Vendor No_"],
                       "vendor_status": info["Gen_ Bus_ Posting Group"],
                       "expected_receipt_date": info["Order Date"],
@@ -675,15 +751,51 @@ export class PurchasingorderPage {
                                     .subscribe(val => {
                                       this.porelease = val['data'];
                                       if (this.porelease.length == 0) {
-                                        this.infopo.push(data[i]);
                                         this.totaldatainfopo = val['count'];
                                         this.searchinfopo = this.infopo;
+                                        let date = new Date(data[i]["Order Date"]);
+                                        date.setHours(0, 0, 0, 0);
+                                        // Thursday in current week decides the year.
+                                        date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+                                        // January 4 is always in week 1.
+                                        let week1 = new Date(date.getFullYear(), 0, 4);
+                                        // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+                                        let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                                        - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                                        let batchfix = '';
+                                        if (batch < 10) {
+                                          batchfix = '0' + batch.toString()
+                                        }
+                                        else {
+                                          batchfix = batch.toString()
+                                        }
+                                        let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
+                                        data[i]["batchno"] = batchno
+                                        this.infopo.push(data[i]);
                                       }
                                       else if (this.porelease.length) {
                                         if (this.porelease[0].batch_no == '') {
-                                          this.infopo.push(data[i]);
                                           this.totaldatainfopo = val['count'];
                                           this.searchinfopo = this.infopo;
+                                          let date = new Date(data[i]["Order Date"]);
+                                          date.setHours(0, 0, 0, 0);
+                                          // Thursday in current week decides the year.
+                                          date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+                                          // January 4 is always in week 1.
+                                          let week1 = new Date(date.getFullYear(), 0, 4);
+                                          // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+                                          let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                                          - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                                          let batchfix = '';
+                                          if (batch < 10) {
+                                            batchfix = '0' + batch.toString()
+                                          }
+                                          else {
+                                            batchfix = batch.toString()
+                                          }
+                                          let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
+                                          data[i]["batchno"] = batchno
+                                          this.infopo.push(data[i]);
                                         }
                                       }
                                     });
@@ -704,8 +816,16 @@ export class PurchasingorderPage {
                                   // January 4 is always in week 1.
                                   let week1 = new Date(date.getFullYear(), 0, 4);
                                   // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                                  let batch = (date.getFullYear().toString().substr(-2) + (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                                    - 3 + (week1.getDay() + 6) % 7) / 7) + 1))
+                                  let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                                  - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                                  let batchfix = '';
+                                  if (batch < 10) {
+                                    batchfix = '0' + batch.toString()
+                                  }
+                                  else {
+                                    batchfix = batch.toString()
+                                  }
+                                  let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
                                   let code = data[i]["Document No_"] + data[i].No_
                                   let qty = parseInt(data[i].Quantity)
                                   this.api.post("table/purchasing_order_detail",
@@ -713,7 +833,7 @@ export class PurchasingorderPage {
                                       "code": code,
                                       "order_no": data[i]["Document No_"],
                                       "line_no": data[i]["Line No_"],
-                                      "batch_no": batch,
+                                      "batch_no": batchno,
                                       "item_no": data[i].No_,
                                       "location_code": '81003',
                                       "expected_receipt_date": data[i]["Expected Receipt Date"],
@@ -737,7 +857,7 @@ export class PurchasingorderPage {
                                             "code": code,
                                             "order_no": data[i]["Document No_"],
                                             "line_no": data[i]["Line No_"],
-                                            "batch_no": batch,
+                                            "batch_no": batchno,
                                             "item_no": data[i].No_,
                                             "location_code": '81003',
                                             "expected_receipt_date": data[i]["Expected Receipt Date"],
@@ -761,7 +881,7 @@ export class PurchasingorderPage {
                                                   "code": code,
                                                   "order_no": data[i]["Document No_"],
                                                   "line_no": data[i]["Line No_"],
-                                                  "batch_no": batch,
+                                                  "batch_no": batchno,
                                                   "item_no": data[i].No_,
                                                   "location_code": '81003',
                                                   "expected_receipt_date": data[i]["Expected Receipt Date"],
@@ -1147,15 +1267,51 @@ export class PurchasingorderPage {
                   .subscribe(val => {
                     this.porelease = val['data'];
                     if (this.porelease.length == 0) {
-                      this.infopo.push(data[i]);
                       this.totaldatainfopo = val['count'];
                       this.searchinfopo = this.infopo;
+                      let date = new Date(data[i]["Order Date"]);
+                      date.setHours(0, 0, 0, 0);
+                      // Thursday in current week decides the year.
+                      date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+                      // January 4 is always in week 1.
+                      let week1 = new Date(date.getFullYear(), 0, 4);
+                      // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+                      let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                      - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                      let batchfix = '';
+                      if (batch < 10) {
+                        batchfix = '0' + batch.toString()
+                      }
+                      else {
+                        batchfix = batch.toString()
+                      }
+                      let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
+                      data[i]["batchno"] = batchno
+                      this.infopo.push(data[i]);
                     }
                     else if (this.porelease.length) {
                       if (this.porelease[0].batch_no == '') {
-                        this.infopo.push(data[i]);
                         this.totaldatainfopo = val['count'];
                         this.searchinfopo = this.infopo;
+                        let date = new Date(data[i]["Order Date"]);
+                        date.setHours(0, 0, 0, 0);
+                        // Thursday in current week decides the year.
+                        date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+                        // January 4 is always in week 1.
+                        let week1 = new Date(date.getFullYear(), 0, 4);
+                        // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+                        let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                        - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                        let batchfix = '';
+                        if (batch < 10) {
+                          batchfix = '0' + batch.toString()
+                        }
+                        else {
+                          batchfix = batch.toString()
+                        }
+                        let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
+                        data[i]["batchno"] = batchno
+                        this.infopo.push(data[i]);
                       }
                     }
                   });

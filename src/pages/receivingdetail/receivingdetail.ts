@@ -295,8 +295,8 @@ export class ReceivingdetailPage {
     Honeywell.barcodeReaderPressSoftwareTrigger(function () {
       Honeywell.onBarcodeEvent(function (data) {
         var barcodeno = data.barcodeData;
-        var batchno = barcodeno.substring(0, 6);
-        var itemno = barcodeno.substring(6, 14);
+        var batchno = barcodeno.substring(0, 4);
+        var itemno = barcodeno.substring(4, 12);
         return new Promise(resolve => {
           self.api.get("table/receiving", {
             params: {
@@ -397,10 +397,115 @@ export class ReceivingdetailPage {
             })
         });
       }, function (reason) {
-        console.error(reason);
+        alert(reason + '1');
       });
     }, function (reason) {
-      console.error(reason);
+      self.barcodeScanner.scan().then(barcodeData => {
+        var barcodeno = barcodeData.text;
+        var batchno = barcodeno.substring(0, 4);
+        var itemno = barcodeno.substring(4, 12);
+        return new Promise(resolve => {
+          self.api.get("table/receiving", {
+            params: {
+              filter:
+                'order_no=' + "'" + self.orderno + "'" +
+                " " + 'AND' + " " +
+                "batch_no=" + "'" + batchno + "'" +
+                " " + 'AND' + " " +
+                "item_no=" + "'" + itemno + "'"
+            }
+          }).subscribe((val) => {
+            let data = val['data'];
+            for (let i = 0; i < data.length; i++) {
+              self.itemdata.push(data[i]);
+            }
+            if (self.itemdata[0].qty_receiving < self.itemdata[0].qty) {
+              let alert = self.alertCtrl.create({
+                subTitle: data,
+                inputs: [
+                  {
+                    name: 'qty',
+                    placeholder: 'Qty',
+                    value: '1'
+                  }
+                ],
+                buttons: [
+                  {
+                    text: 'Cancel',
+                    role: 'cancel',
+                    handler: data => {
+
+                    }
+                  },
+                  {
+                    text: 'OK',
+                    handler: data => {
+                      if ((parseInt(self.itemdata[0].qty_receiving) + parseInt(data.qty)) > self.itemdata[0].qty) {
+                        let alert = self.alertCtrl.create({
+                          title: 'Error',
+                          message: 'Total QTY Receiving greater than QTY',
+                          buttons: ['OK']
+                        });
+                        alert.present();
+                      }
+                      else {
+                        const headers = new HttpHeaders()
+                          .set("Content-Type", "application/json");
+                        self.api.put("table/receiving",
+                          {
+                            "receiving_no": self.itemdata[0].receiving_no,
+                            "qty_receiving": parseInt(self.itemdata[0].qty_receiving) + parseInt(data.qty)
+                          },
+                          { headers })
+                          .subscribe(val => {
+                            if ((parseInt(self.itemdata[0].qty_receiving) + parseInt(data.qty)) == self.itemdata[0].qty) {
+                              const headers = new HttpHeaders()
+                                .set("Content-Type", "application/json");
+                              self.api.put("table/receiving",
+                                {
+                                  "receiving_no": self.itemdata[0].receiving_no,
+                                  "status": 'CHECKED'
+                                },
+                                { headers })
+                                .subscribe(val => {
+                                  self.getRCV();
+                                  self.getRCVChecked();
+                                });
+                            }
+                            self.itemdata = [];
+                            self.getRCV();
+                            alert.present();
+                          });
+                      }
+                    }
+                  }
+                ]
+              });
+              alert.present();
+              resolve();
+            }
+            else {
+              self.itemdata = [];
+              let alert = self.alertCtrl.create({
+                title: 'Error',
+                message: 'Data Not Found',
+                buttons: ['OK']
+              });
+              alert.present();
+            }
+          },
+            response => {
+              let alert = self.alertCtrl.create({
+                title: 'Error',
+                message: 'Data Not Found' + response,
+                buttons: ['OK']
+              });
+              alert.present();
+            })
+        });
+      }).catch(err => {
+          console.log('Error', err);
+      });
     }, {
         press: true
       });

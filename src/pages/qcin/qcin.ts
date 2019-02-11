@@ -76,6 +76,7 @@ export class QcinPage {
     public menu: MenuController,
     public modalCtrl: ModalController,
     private transfer: FileTransfer,
+    private barcodeScanner: BarcodeScanner,
     private camera: Camera,
     public loadingCtrl: LoadingController,
     public storage: Storage
@@ -483,8 +484,8 @@ export class QcinPage {
     Honeywell.barcodeReaderPressSoftwareTrigger(function () {
       Honeywell.onBarcodeEvent(function (data) {
         var barcodeno = data.barcodeData;
-        var batchno = barcodeno.substring(0, 6);
-        var itemno = barcodeno.substring(6, 14);
+        var batchno = barcodeno.substring(0, 4);
+        var itemno = barcodeno.substring(4, 12);
         self.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" + " AND " + "batch_no=" + "'" + batchno + "'" + " AND " + "item_no=" + "'" + itemno + "'" + " AND " + "status='OPEN'" } })
           .subscribe(val => {
             self.qcinbarcode = val['data'];
@@ -579,12 +580,112 @@ export class QcinPage {
             }
 
           });
+        }, function (reason) {
+          alert(reason + '1');
+        });
       }, function (reason) {
-        console.error(reason);
-      });
-    }, function (reason) {
-      console.error(reason);
-    }, {
+        self.barcodeScanner.scan().then(barcodeData => {
+          var barcodeno = barcodeData.text;
+          var batchno = barcodeno.substring(0, 4);
+          var itemno = barcodeno.substring(4, 12);
+          self.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" + " AND " + "batch_no=" + "'" + batchno + "'" + " AND " + "item_no=" + "'" + itemno + "'" + " AND " + "status='OPEN'" } })
+            .subscribe(val => {
+              self.qcinbarcode = val['data'];
+              if (self.qcinbarcode.length == 0) {
+                let alert = self.alertCtrl.create({
+                  title: 'Error',
+                  subTitle: 'Data Not Found In My QC',
+                  buttons: ['OK']
+                });
+                alert.present();
+              }
+              else {
+                self.api.get("table/qc_in_result", { params: { filter: 'qc_no=' + "'" + self.qcinbarcode[0].qc_no + "'" } }).subscribe(val => {
+                  self.qcresult = val['data'];
+                  self.totaldataqcresult = val['count'];
+                  if (self.qcinbarcode.length == 0) {
+                    let alert = self.alertCtrl.create({
+                      title: 'Error',
+                      subTitle: 'Data Not Found In My QC',
+                      buttons: ['OK']
+                    });
+                    alert.present();
+                  }
+                  else if (self.totaldataqcresult == self.qcinbarcode[0].qty) {
+                    let alert = self.alertCtrl.create({
+                      title: 'Error',
+                      subTitle: 'Data Already Create',
+                      buttons: ['OK']
+                    });
+                    alert.present();
+                  }
+                  else {
+                    let alert = self.alertCtrl.create({
+                      title: 'Confirm Start',
+                      message: 'Do you want to QC Now?',
+                      buttons: [
+                        {
+                          text: 'Cancel',
+                          role: 'cancel',
+                          handler: () => {
+                          }
+                        },
+                        {
+                          text: 'Start',
+                          handler: () => {
+                            self.getNextNoQCResult().subscribe(val => {
+                              let time = moment().format('HH:mm:ss');
+                              let date = moment().format('YYYY-MM-DD');
+                              let uuid = UUID.UUID();
+                              self.nextnoqcresult = val['nextno'];
+                              const headers = new HttpHeaders()
+                                .set("Content-Type", "application/json");
+                              self.api.post("table/qc_in_result",
+                                {
+                                  "qc_result_no": self.nextnoqcresult,
+                                  "qc_no": self.qcinbarcode[0].qc_no,
+                                  "batch_no": self.qcinbarcode[0].batch_no,
+                                  "item_no": self.qcinbarcode[0].item_no,
+                                  "date_start": date,
+                                  "date_finish": date,
+                                  "time_start": time,
+                                  "time_finish": time,
+                                  "qc_pic": this.userid,
+                                  "qty_receiving": self.qcinbarcode[0].qty,
+                                  "unit": self.qcinbarcode[0].unit,
+                                  "qc_status": "OPEN",
+                                  "qc_description": "",
+                                  "uuid": uuid
+                                },
+                                { headers })
+                                .subscribe(val => {
+                                  document.getElementById("myQCChecking").style.display = "block";
+                                  document.getElementById("myBTNChecking").style.display = "block";
+                                  document.getElementById("myHeader").style.display = "none";
+                                  self.button = true;
+                                  self.uuidqcresult = uuid;
+                                  self.qcnoresult = self.nextnoqcresult;
+                                  self.qcno = self.qcinbarcode[0].qc_no
+                                  self.api.get("table/link_image", { params: { limit: 100, filter: 'parent=' + "'" + self.uuidqcresult + "'" } }).subscribe(val => {
+                                    self.photos = val['data'];
+                                    self.totalphoto = val['count'];
+                                  });
+                                })
+                            });
+                          }
+                        }
+                      ]
+                    });
+                    alert.present();
+                  }
+                });
+              }
+  
+            });
+        }).catch(err => {
+            console.log('Error', err);
+        });
+      }, {
         press: true
       });
   }
