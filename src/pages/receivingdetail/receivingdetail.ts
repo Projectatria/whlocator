@@ -314,7 +314,7 @@ export class ReceivingdetailPage {
             }
             if (self.itemdata[0].qty_receiving < self.itemdata[0].qty) {
               let alert = self.alertCtrl.create({
-                subTitle: data,
+                subTitle: self.itemdata[0].item_no,
                 inputs: [
                   {
                     name: 'qty',
@@ -421,7 +421,7 @@ export class ReceivingdetailPage {
             }
             if (self.itemdata[0].qty_receiving < self.itemdata[0].qty) {
               let alert = self.alertCtrl.create({
-                subTitle: data,
+                subTitle: self.itemdata[0].item_no,
                 inputs: [
                   {
                     name: 'qty',
