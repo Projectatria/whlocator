@@ -504,7 +504,7 @@ export class ReceivingdetailPage {
             })
         });
       }).catch(err => {
-          console.log('Error', err);
+        console.log('Error', err);
       });
     }, {
         press: true
@@ -662,7 +662,7 @@ export class ReceivingdetailPage {
   }
   doSubmitRCV(cek) {
     let alert = this.alertCtrl.create({
-      title: 'Confirm Posting',
+      title: 'Confirm Submit',
       message: 'Do you want to Submit  ' + cek.item_no + ' ?',
       buttons: [
         {
@@ -673,7 +673,7 @@ export class ReceivingdetailPage {
           }
         },
         {
-          text: 'Posting',
+          text: 'Submit',
           handler: () => {
             const headers = new HttpHeaders()
               .set("Content-Type", "application/json");
@@ -704,245 +704,30 @@ export class ReceivingdetailPage {
               .subscribe(val => {
                 this.purchasingorder = val['data'];
                 if (this.purchasingorder[0].vendor_status == 'FOREIGN') {
-                  this.getNextNoStaging().subscribe(val => {
-                    this.nextnostaging = val['nextno'];
-                    const headers = new HttpHeaders()
-                      .set("Content-Type", "application/json");
-                    let date = moment().format('YYYY-MM-DD');
-                    this.api.post("table/staging_in",
-                      {
-                        "staging_no": this.nextnostaging,
-                        "receiving_no": cek.receiving_no,
-                        "doc_no": cek.doc_no,
-                        "order_no": cek.order_no,
-                        "batch_no": cek.batch_no,
-                        "item_no": cek.item_no,
-                        "data_entry": date,
-                        "qty": cek.qty_receiving,
-                        "qty_qc": cek.qty_receiving,
-                        "qty_putaway": cek.qty_receiving,
-                        "unit": cek.unit,
-                        "staging": cek.staging,
-                        "uuid": UUID.UUID()
-                      },
-                      { headers })
-                      .subscribe(val => {
-                        this.getNextNoStockBalance().subscribe(val => {
-                          this.nextnostockbalance = val['nextno'];
-                          const headers = new HttpHeaders()
-                            .set("Content-Type", "application/json");
-                          let date = moment().format('YYYY-MM-DD');
-                          this.api.post("table/stock_balance",
-                            {
-                              "id": this.nextnostockbalance,
-                              "receiving_no": cek.receiving_no,
-                              "batch_no": cek.batch_no,
-                              "item_no": cek.item_no,
-                              "qty_in": cek.qty,
-                              "qty_out": 0,
-                              "location": cek.location_code,
-                              "sub_location": cek.staging,
-                              "description": 'Receiving',
-                              "status": 'OPEN',
-                              "datetime": date,
-                              "uuid": UUID.UUID()
-                            },
-                            { headers })
-                            .subscribe(val => {
-                            }, err => {
-                              this.api.post("table/stock_balance",
-                                {
-                                  "id": this.nextnostockbalance,
-                                  "receiving_no": cek.receiving_no,
-                                  "batch_no": cek.batch_no,
-                                  "item_no": cek.item_no,
-                                  "qty_in": cek.qty,
-                                  "qty_out": 0,
-                                  "location": cek.location_code,
-                                  "sub_location": cek.staging,
-                                  "description": 'Receiving',
-                                  "status": 'OPEN',
-                                  "datetime": date,
-                                  "uuid": UUID.UUID()
-                                },
-                                { headers })
-                                .subscribe(val => {
-                                })
-                            })
-                        });
-                      }, err => {
-                        this.api.post("table/staging_in",
-                          {
-                            "staging_no": this.nextnostaging,
-                            "receiving_no": cek.receiving_no,
-                            "doc_no": cek.doc_no,
-                            "order_no": cek.order_no,
-                            "batch_no": cek.batch_no,
-                            "item_no": cek.item_no,
-                            "data_entry": date,
-                            "qty": cek.qty,
-                            "qty_qc": parseInt(cek.qty) / 10,
-                            "qty_putaway": cek.qty,
-                            "unit": cek.unit,
-                            "staging": cek.staging,
-                            "uuid": UUID.UUID()
-                          },
-                          { headers })
-                          .subscribe(val => {
-                            this.getNextNoStockBalance().subscribe(val => {
-                              this.nextnostockbalance = val['nextno'];
-                              const headers = new HttpHeaders()
-                                .set("Content-Type", "application/json");
-                              let date = moment().format('YYYY-MM-DD');
-                              this.api.post("table/stock_balance",
-                                {
-                                  "id": this.nextnostockbalance,
-                                  "receiving_no": cek.receiving_no,
-                                  "batch_no": cek.batch_no,
-                                  "item_no": cek.item_no,
-                                  "qty_in": cek.qty,
-                                  "qty_out": 0,
-                                  "location": cek.location_code,
-                                  "sub_location": cek.staging,
-                                  "description": 'Receiving',
-                                  "status": 'OPEN',
-                                  "datetime": date,
-                                  "uuid": UUID.UUID()
-                                },
-                                { headers })
-                                .subscribe(val => {
-                                }, err => {
-                                  this.api.post("table/stock_balance",
-                                    {
-                                      "id": this.nextnostockbalance,
-                                      "receiving_no": cek.receiving_no,
-                                      "batch_no": cek.batch_no,
-                                      "item_no": cek.item_no,
-                                      "qty_in": cek.qty,
-                                      "qty_out": 0,
-                                      "location": cek.location_code,
-                                      "sub_location": cek.staging,
-                                      "description": 'Receiving',
-                                      "status": 'OPEN',
-                                      "datetime": date,
-                                      "uuid": UUID.UUID()
-                                    },
-                                    { headers })
-                                    .subscribe(val => {
-                                    })
-                                })
-                            });
-                          }, err => {
-                            this.api.post("table/staging_in",
-                              {
-                                "staging_no": this.nextnostaging,
-                                "receiving_no": cek.receiving_no,
-                                "doc_no": cek.doc_no,
-                                "order_no": cek.order_no,
-                                "batch_no": cek.batch_no,
-                                "item_no": cek.item_no,
-                                "data_entry": date,
-                                "qty": cek.qty,
-                                "qty_qc": parseInt(cek.qty) / 10,
-                                "qty_putaway": cek.qty,
-                                "unit": cek.unit,
-                                "staging": cek.staging,
-                                "uuid": UUID.UUID()
-                              },
-                              { headers })
-                              .subscribe()
-                          })
-                      });
-                  });
+                  this.api.get('table/staging_in', { params: { limit: 30, filter: "batch_no=" + "'" + cek.batch_no + "' AND item_no=" + "'" + cek.item_no + "' AND staging=" + "'" + cek.staging + "'" } })
+                    .subscribe(val => {
+                      let data = val['data']
+                      if (data.length == 0) {
+                        this.doPostStagingInImport(cek)
+                      }
+                      else {
+                        let datatemp = data[0]
+                        this.doPutStagingIn(cek, datatemp)
+                      }
+                    });
                 }
                 else {
-                  this.getNextNoStaging().subscribe(val => {
-                    this.nextnostaging = val['nextno'];
-                    const headers = new HttpHeaders()
-                      .set("Content-Type", "application/json");
-                    let date = moment().format('YYYY-MM-DD');
-                    this.api.post("table/staging_in",
-                      {
-                        "staging_no": this.nextnostaging,
-                        "receiving_no": cek.receiving_no,
-                        "doc_no": cek.doc_no,
-                        "order_no": cek.order_no,
-                        "batch_no": cek.batch_no,
-                        "item_no": cek.item_no,
-                        "data_entry": date,
-                        "qty": cek.qty,
-                        "qty_qc": cek.qty,
-                        "qty_putaway": cek.qty,
-                        "unit": cek.unit,
-                        "staging": cek.staging,
-                        "uuid": UUID.UUID()
-                      },
-                      { headers })
-                      .subscribe(val => {
-                        this.getNextNoStockBalance().subscribe(val => {
-                          this.nextnostockbalance = val['nextno'];
-                          const headers = new HttpHeaders()
-                            .set("Content-Type", "application/json");
-                          let date = moment().format('YYYY-MM-DD');
-                          this.api.post("table/stock_balance",
-                            {
-                              "id": this.nextnostockbalance,
-                              "receiving_no": cek.receiving_no,
-                              "batch_no": cek.batch_no,
-                              "item_no": cek.item_no,
-                              "qty_in": cek.qty,
-                              "qty_out": 0,
-                              "location": cek.location_code,
-                              "sub_location": cek.staging,
-                              "description": 'Receiving',
-                              "status": 'OPEN',
-                              "datetime": date,
-                              "uuid": UUID.UUID()
-                            },
-                            { headers })
-                            .subscribe(val => {
-                            }, err => {
-                              this.api.post("table/stock_balance",
-                                {
-                                  "id": this.nextnostockbalance,
-                                  "receiving_no": cek.receiving_no,
-                                  "batch_no": cek.batch_no,
-                                  "item_no": cek.item_no,
-                                  "qty_in": cek.qty,
-                                  "qty_out": 0,
-                                  "location": cek.location_code,
-                                  "sub_location": cek.staging,
-                                  "description": 'Receiving',
-                                  "status": 'OPEN',
-                                  "datetime": date,
-                                  "uuid": UUID.UUID()
-                                },
-                                { headers })
-                                .subscribe(val => {
-                                })
-                            })
-                        });
-                      }, err => {
-                        this.api.post("table/staging_in",
-                          {
-                            "staging_no": this.nextnostaging,
-                            "receiving_no": cek.receiving_no,
-                            "doc_no": cek.doc_no,
-                            "order_no": cek.order_no,
-                            "batch_no": cek.batch_no,
-                            "item_no": cek.item_no,
-                            "data_entry": date,
-                            "qty": cek.qty,
-                            "qty_qc": cek.qty,
-                            "qty_putaway": cek.qty,
-                            "unit": cek.unit,
-                            "staging": cek.staging,
-                            "uuid": UUID.UUID()
-                          },
-                          { headers })
-                          .subscribe()
-                      });
-                  });
+                  this.api.get('table/staging_in', { params: { limit: 30, filter: "batch_no=" + "'" + cek.batch_no + "' AND item_no=" + "'" + cek.item_no + "' AND staging=" + "'" + cek.staging + "'" } })
+                    .subscribe(val => {
+                      let data = val['data']
+                      if (data.length == 0) {
+                        this.doPostStagingInLocal(cek)
+                      }
+                      else {
+                        let datatemp = data[0]
+                        this.doPutStagingIn(cek, datatemp)
+                      }
+                    });
                 }
 
               });
@@ -1001,7 +786,7 @@ export class ReceivingdetailPage {
             text: 'Cancel',
             role: 'cancel',
             handler: () => {
-  
+
             }
           },
           {
@@ -1073,5 +858,183 @@ export class ReceivingdetailPage {
   }
   getNextNoStockBalance() {
     return this.api.get('nextno/stock_balance/id')
+  }
+  getNextNoStock() {
+    return this.api.get('nextno/stock/id')
+  }
+  doPostStockBalance(cek) {
+    this.getNextNoStockBalance().subscribe(val => {
+      let nextnostockbalance = val['nextno'];
+      const headers = new HttpHeaders()
+        .set("Content-Type", "application/json");
+      let date = moment().format('YYYY-MM-DD HH:mm');
+      this.api.post("table/stock_balance",
+        {
+          "id": nextnostockbalance,
+          "receiving_no": cek.receiving_no,
+          "batch_no": cek.batch_no,
+          "item_no": cek.item_no,
+          "qty_in": cek.qty_receiving,
+          "qty_out": 0,
+          "location": cek.location_code,
+          "sub_location": cek.staging,
+          "description": 'Receiving',
+          "status": 'OPEN',
+          "datetime": date,
+          "uuid": UUID.UUID()
+        },
+        { headers })
+        .subscribe(val => {
+          this.doGetStock(cek)
+        }, err => {
+          this.doPostStockBalance(cek)
+        })
+    });
+  }
+  doGetStock(cek) {
+    this.api.get('table/stock', { params: { limit: 30, filter: "batch_no=" + "'" + cek.batch_no + "' AND item_no=" + "'" + cek.item_no + "' AND location=" + "'" + cek.location_code + "' AND sub_location=" + "'" + cek.staging + "'" } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data.length == 0) {
+          this.doPostStock(cek)
+        }
+        else {
+          let datastock = data[0]
+          this.doPutStock(cek, datastock)
+        }
+      }, err => {
+        this.doGetStock(cek)
+      });
+  }
+  doPostStock(cek) {
+    this.getNextNoStock().subscribe(val => {
+      let nextnostock = val['nextno'];
+      const headers = new HttpHeaders()
+        .set("Content-Type", "application/json");
+      let date = moment().format('YYYY-MM-DD HH:mm');
+      this.api.post("table/stock",
+        {
+          "id": nextnostock,
+          "batch_no": cek.batch_no,
+          "item_no": cek.item_no,
+          "qty": cek.qty_receiving,
+          "location": cek.location_code,
+          "sub_location": cek.staging,
+          "datetime": date,
+          "uuid": UUID.UUID()
+        },
+        { headers })
+        .subscribe(val => {
+        }, err => {
+          this.doPostStock(cek)
+        })
+    });
+  }
+  doPutStock(cek, datastock) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    let date = moment().format('YYYY-MM-DD HH:mm');
+    this.api.put("table/stock",
+      {
+        "id": datastock.id,
+        "batch_no": cek.batch_no,
+        "item_no": cek.item_no,
+        "qty": parseInt(datastock.qty) + parseInt(cek.qty_receiving),
+        "location": cek.location_code,
+        "sub_location": cek.staging,
+        "datetime": date,
+        "uuid": UUID.UUID()
+      },
+      { headers })
+      .subscribe(val => {
+      }, err => {
+        this.doPutStock(cek, datastock)
+      })
+  }
+  doPostStagingInImport(cek) {
+    this.getNextNoStaging().subscribe(val => {
+      let nextnostaging = val['nextno'];
+      const headers = new HttpHeaders()
+        .set("Content-Type", "application/json");
+      let date = moment().format('YYYY-MM-DD HH:mm');
+      this.api.post("table/staging_in",
+        {
+          "staging_no": nextnostaging,
+          "receiving_no": cek.receiving_no,
+          "doc_no": cek.doc_no,
+          "order_no": cek.order_no,
+          "batch_no": cek.batch_no,
+          "item_no": cek.item_no,
+          "date_entry": date,
+          "qty": cek.qty_receiving,
+          "qty_qc": cek.qty_receiving,
+          "qty_putaway": cek.qty_receiving,
+          "unit": cek.unit,
+          "staging": cek.staging,
+          "uuid": UUID.UUID()
+        },
+        { headers })
+        .subscribe(val => {
+          this.doPostStockBalance(cek)
+        }, err => {
+          this.doPostStagingInImport(cek)
+        });
+    });
+  }
+  doPostStagingInLocal(cek) {
+    this.getNextNoStaging().subscribe(val => {
+      let nextnostaging = val['nextno'];
+      const headers = new HttpHeaders()
+        .set("Content-Type", "application/json");
+      let date = moment().format('YYYY-MM-DD HH:mm');
+      this.api.post("table/staging_in",
+        {
+          "staging_no": nextnostaging,
+          "receiving_no": cek.receiving_no,
+          "doc_no": cek.doc_no,
+          "order_no": cek.order_no,
+          "batch_no": cek.batch_no,
+          "item_no": cek.item_no,
+          "date_entry": date,
+          "qty": cek.qty_receiving,
+          "qty_qc": cek.qty_receiving,
+          "qty_putaway": cek.qty_receiving,
+          "unit": cek.unit,
+          "staging": cek.staging,
+          "uuid": UUID.UUID()
+        },
+        { headers })
+        .subscribe(val => {
+          this.doPostStockBalance(cek)
+        }, err => {
+          this.doPostStagingInLocal(cek)
+        });
+    });
+  }
+  doPutStagingIn(cek, datatemp) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    let date = moment().format('YYYY-MM-DD HH:mm');
+    this.api.put("table/staging_in",
+      {
+        "staging_no": datatemp.staging_no,
+        "receiving_no": cek.receiving_no,
+        "doc_no": cek.doc_no,
+        "order_no": cek.order_no,
+        "batch_no": cek.batch_no,
+        "item_no": cek.item_no,
+        "date_entry": date,
+        "qty": parseInt(datatemp.qty) + parseInt(cek.qty_receiving),
+        "qty_qc": parseInt(datatemp.qty) + parseInt(cek.qty_receiving),
+        "qty_putaway": parseInt(datatemp.qty) + parseInt(cek.qty_receiving),
+        "unit": cek.unit,
+        "staging": cek.staging
+      },
+      { headers })
+      .subscribe(val => {
+        this.doPostStockBalance(cek)
+      }, err => {
+        this.doPutStagingIn(cek, datatemp)
+      });
   }
 }

@@ -43,7 +43,7 @@
           </ion-avatar>
           <div no-padding (click)="viewDetailTO(to)">
             <h2>TO No : {{to.to_no}}</h2>
-            <p>Lokasi Tujuan: {{to.location_code}}</p>
+            <p>Lokasi Tujuan: {{to.to_location}}</p>
             <p>Description: {{to.description}}</p>
             <ion-note>{{to.transfer_date}}</ion-note>
             <ion-note>{{to.status}}</ion-note>
@@ -89,7 +89,7 @@
               {{to.to_no}}
             </ion-col>
             <ion-col padding class="col-content" col-xl-1 (click)="viewDetailTO(to)">
-              {{to.location_code}}
+              {{to.to_location}}
             </ion-col>
             <ion-col padding class="col-content" col-xl-4 (click)="viewDetailTO(to)">
               {{to.description}}
@@ -127,7 +127,7 @@
           </ion-avatar>
           <div no-padding (click)="viewDetailTOList(tolist)">
             <h2>TO No : {{tolist.to_no}}</h2>
-            <p>Lokasi Tujuan: {{tolist.location_code}}</p>
+            <p>Lokasi Tujuan: {{tolist.to_location}}</p>
             <p>Description: {{tolist.description}}</p>
             <ion-note>{{tolist.transfer_date}}</ion-note>
             <ion-note>{{tolist.status}}</ion-note>
@@ -220,7 +220,7 @@
           </ion-avatar>
           <div no-padding (click)="viewDetailTOReceiving(tolist)">
             <h2>TO No : {{tolist.to_no}}</h2>
-            <p>Lokasi Tujuan: {{tolist.location_code}}</p>
+            <p>Lokasi Tujuan: {{tolist.to_location}}</p>
             <p>Description: {{tolist.description}}</p>
             <ion-note>{{tolist.transfer_date}}</ion-note>
             <ion-note>{{tolist.status}}</ion-note>

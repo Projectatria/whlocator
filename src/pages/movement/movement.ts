@@ -325,11 +325,20 @@ export class MovementPage {
                                   { headers })
                                   .subscribe(val => {
                                     if (putawaylist[0].qty == data.qty) {
-                                      self.api.delete("table/putawaylist_temp", { params: { filter: 'putawaylisttemp_no=' + "'" + putawaylist[0].putawaylisttemp_no + "'" }, headers })
+                                      self.api.delete("table/movement_temp", { params: { filter: 'movementtemp_no=' + "'" + putawaylist[0].movementtemp_no + "'" }, headers })
                                         .subscribe(
                                           (val) => {
                                             self.getMovementTemp()
                                             self.getMovementTempDetail()
+                                          }, err => {
+                                            self.api.delete("table/movement_temp", { params: { filter: 'movementtemp_no=' + "'" + putawaylist[0].movementtemp_no + "'" }, headers })
+                                              .subscribe(
+                                                (val) => {
+                                                  self.getMovementTemp()
+                                                  self.getMovementTempDetail()
+                                                }, err => {
+
+                                                });
                                           });
                                     }
                                     self.getMovementTemp()
@@ -364,11 +373,20 @@ export class MovementPage {
                                 { headers })
                                 .subscribe(val => {
                                   if (putawaylist[0].qty == data.qty) {
-                                    self.api.delete("table/putawaylist_temp", { params: { filter: 'putawaylisttemp_no=' + "'" + putawaylist[0].putawaylisttemp_no + "'" }, headers })
+                                    self.api.delete("table/movement_temp", { params: { filter: 'movementtemp_no=' + "'" + putawaylist[0].movementtemp_no + "'" }, headers })
                                       .subscribe(
                                         (val) => {
                                           self.getMovementTemp()
                                           self.getMovementTempDetail()
+                                        }, err => {
+                                          self.api.delete("table/movement_temp", { params: { filter: 'movementtemp_no=' + "'" + putawaylist[0].movementtemp_no + "'" }, headers })
+                                            .subscribe(
+                                              (val) => {
+                                                self.getMovementTemp()
+                                                self.getMovementTempDetail()
+                                              }, err => {
+
+                                              });
                                         });
                                   }
                                   self.getMovementTemp()
@@ -404,7 +422,7 @@ export class MovementPage {
   getNextNoStockBalance() {
     return this.api.get('nextno/stock_balance/id')
   }
-  doInsertPutaway(data) {
+  doInsertPutaway(cek) {
     this.getNextNoStockBalance().subscribe(val => {
       let nextnostockbalance = val['nextno'];
       const headers = new HttpHeaders()
@@ -413,12 +431,12 @@ export class MovementPage {
       this.api.post("table/stock_balance",
         {
           "id": nextnostockbalance,
-          "receiving_no": data[0].receiving_no,
-          "batch_no": data[0].batch_no,
-          "item_no": data[0].item_no,
-          "qty_in": data[0].qty,
+          "receiving_no": cek.receiving_no,
+          "batch_no": cek.batch_no,
+          "item_no": cek.item_no,
+          "qty_in": cek.qty,
           "qty_out": 0,
-          "location": data[0].location_code,
+          "location": cek.location_code,
           "sub_location": this.myForm.value.rackno,
           "description": 'Putaway',
           "status": 'OPEN',
@@ -427,25 +445,8 @@ export class MovementPage {
         },
         { headers })
         .subscribe(val => {
-
         }, err => {
-          this.api.post("table/stock_balance",
-            {
-              "id": nextnostockbalance,
-              "receiving_no": data[0].receiving_no,
-              "batch_no": data[0].batch_no,
-              "item_no": data[0].item_no,
-              "qty_in": data[0].qty,
-              "qty_out": 0,
-              "location": data[0].location_code,
-              "sub_location": this.myForm.value.rackno,
-              "description": 'Putaway',
-              "status": 'OPEN',
-              "datetime": date,
-              "uuid": UUID.UUID()
-            },
-            { headers })
-            .subscribe()
+          this.doInsertPutaway(cek)
         })
     });
   }
@@ -499,77 +500,8 @@ export class MovementPage {
                         .subscribe(val => {
                           this.getmovementlist = val['data'];
                           for (let i = 0; i < this.getmovementlist.length; i++) {
-                            const headers = new HttpHeaders()
-                              .set("Content-Type", "application/json");
-                            this.getNextNoStockBalance().subscribe(val => {
-                              this.nextno = val['nextno'];
-                              const headers = new HttpHeaders()
-                                .set("Content-Type", "application/json");
-                              let date = moment().format('YYYY-MM-DD');
-                              this.api.post("table/stock_balance",
-                                {
-                                  "id": this.nextno,
-                                  "receiving_no": this.getmovementlist[0].receiving_no,
-                                  "batch_no": this.getmovementlist[0].batch_no,
-                                  "item_no": this.getmovementlist[0].item_no,
-                                  "qty_in": 0,
-                                  "qty_out": this.getmovementlist[0].qty,
-                                  "location": this.getmovementlist[0].location_code,
-                                  "sub_location": this.getmovementlist[0].location_previous_position,
-                                  "description": 'Movement',
-                                  "status": 'OPEN',
-                                  "datetime": date,
-                                  "uuid": UUID.UUID()
-                                },
-                                { headers })
-                                .subscribe(val => {
-                                  let data = this.getmovementlist
-                                  this.doInsertPutaway(data)
-                                  const headers = new HttpHeaders()
-                                    .set("Content-Type", "application/json");
-                                  this.getNextNoPU().subscribe(val => {
-                                    this.nextno = val['nextno'];
-                                    let datetime = moment().format('YYYY-MM-DD HH:mm');
-                                    this.api.post("table/movement",
-                                      {
-                                        "movement_no": this.nextno,
-                                        "receiving_no": this.getmovementlist[0].receiving_no,
-                                        "batch_no": this.getmovementlist[0].batch_no,
-                                        "item_no": this.getmovementlist[0].item_no,
-                                        "location_code": this.getmovementlist[0].location_code,
-                                        "location_previous_position": this.getmovementlist[0].location_previous_position,
-                                        "location_current_position": this.myForm.value.rackno,
-                                        "qty": this.getmovementlist[0].qty,
-                                        "status": 'OPEN',
-                                        "pic": this.userid,
-                                        "datetime": datetime,
-                                        "uuid": UUID.UUID()
-                                      },
-                                      { headers })
-                                      .subscribe(val => {
-                                        const headers = new HttpHeaders()
-                                          .set("Content-Type", "application/json");
-                                        this.api.delete("table/movement_temp_detail", { params: { filter: "movementtemp_no=" + "'" + this.getmovementlist[0].movementtemp_no + "'" }, headers })
-                                          .subscribe(val => {
-                                            this.api.get('table/movement_temp_detail', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" } })
-                                              .subscribe(val => {
-                                                this.getmovementlist = val['data'];
-                                                let alert = this.alertCtrl.create({
-                                                  title: 'Sukses ',
-                                                  subTitle: 'Save Item To Rack Sukses',
-                                                  buttons: ['OK']
-                                                });
-                                                this.myForm.reset()
-                                                this.getMovementTempDetail();
-                                                alert.present();
-                                              });
-                                          })
-
-                                      })
-                                  });
-
-                                });
-                            });
+                            let cek = this.getmovementlist[i]
+                            this.doPostStockBalance(cek)
                           }
                         });
                     }
@@ -986,10 +918,10 @@ export class MovementPage {
               }
 
             });
-          }
-       }).catch(err => {
-           console.log('Error', err);
-       });
+        }
+      }).catch(err => {
+        console.log('Error', err);
+      });
     }, {
         press: true
       });
@@ -1141,107 +1073,68 @@ export class MovementPage {
             }
 
           });
-        }, function (reason) {
-          alert(reason + '1');
-        });
       }, function (reason) {
-        self.barcodeScanner.scan().then(barcodeData => {
-          var barcodeno = barcodeData.text;
-          var batchno = barcodeno.substring(0, 4);
-          var itemno = barcodeno.substring(4, 12);
-          self.api.get('table/movement_temp', { params: { limit: 100, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" + ' AND ' + "pic=" + "'" + self.userid + "'" } })
-            .subscribe(val => {
-              let putawaylist = val['data'];
-              if (putawaylist.length) {
-                let alert = self.alertCtrl.create({
-                  title: 'Qty',
-                  inputs: [
-                    {
-                      name: 'qty',
-                      placeholder: 'Qty'
+        alert(reason + '1');
+      });
+    }, function (reason) {
+      self.barcodeScanner.scan().then(barcodeData => {
+        var barcodeno = barcodeData.text;
+        var batchno = barcodeno.substring(0, 4);
+        var itemno = barcodeno.substring(4, 12);
+        self.api.get('table/movement_temp', { params: { limit: 100, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" + ' AND ' + "pic=" + "'" + self.userid + "'" } })
+          .subscribe(val => {
+            let putawaylist = val['data'];
+            if (putawaylist.length) {
+              let alert = self.alertCtrl.create({
+                title: 'Qty',
+                inputs: [
+                  {
+                    name: 'qty',
+                    placeholder: 'Qty'
+                  }
+                ],
+                buttons: [
+                  {
+                    text: 'Cancel',
+                    role: 'cancel',
+                    handler: data => {
                     }
-                  ],
-                  buttons: [
-                    {
-                      text: 'Cancel',
-                      role: 'cancel',
-                      handler: data => {
+                  },
+                  {
+                    text: 'OK',
+                    handler: data => {
+                      if (putawaylist[0].qty < data.qty) {
+                        let alert = self.alertCtrl.create({
+                          title: 'Error ',
+                          subTitle: 'Qty does not exist',
+                          buttons: ['OK']
+                        });
+                        alert.present();
                       }
-                    },
-                    {
-                      text: 'OK',
-                      handler: data => {
-                        if (putawaylist[0].qty < data.qty) {
-                          let alert = self.alertCtrl.create({
-                            title: 'Error ',
-                            subTitle: 'Qty does not exist',
-                            buttons: ['OK']
-                          });
-                          alert.present();
-                        }
-                        else {
-                          self.api.get('table/movement_temp_detail', { params: { limit: 30, filter: "pic=" + "'" + self.userid + "' AND batch_no=" + "'" + putawaylist[0].batch_no + "' AND item_no=" + "'" + putawaylist[0].item_no + "'" } })
-                            .subscribe(val => {
-                              let movetempdetail = val['data']
-                              if (movetempdetail.length == 0) {
-                                const headers = new HttpHeaders()
-                                  .set("Content-Type", "application/json");
-                                self.getNextNoPUTempDetail().subscribe(val => {
-                                  let nextno = val['nextno'];
-                                  let datetime = moment().format('YYYY-MM-DD HH:mm');
-                                  self.api.post("table/movement_temp_detail",
-                                    {
-                                      "movementtemp_no": nextno,
-                                      "receiving_no": putawaylist[0].receiving_no,
-                                      "batch_no": putawaylist[0].batch_no,
-                                      "item_no": putawaylist[0].item_no,
-                                      "qty": data.qty,
-                                      "location_code": putawaylist[0].location_code,
-                                      "location_previous_position": putawaylist[0].location_previous_position,
-                                      "location_current_position": putawaylist[0].location_current_position,
-                                      "status": 'OPEN',
-                                      "datetime": datetime,
-                                      "pic": self.userid,
-                                      "uuid": UUID.UUID()
-                                    },
-                                    { headers })
-                                    .subscribe(val => {
-                                      self.api.put("table/movement_temp",
-                                        {
-                                          "movementtemp_no": putawaylist[0].movementtemp_no,
-                                          "qty": putawaylist[0].qty - data.qty
-                                        },
-                                        { headers })
-                                        .subscribe(val => {
-                                          if (putawaylist[0].qty == data.qty) {
-                                            self.api.delete("table/putawaylist_temp", { params: { filter: 'putawaylisttemp_no=' + "'" + putawaylist[0].putawaylisttemp_no + "'" }, headers })
-                                              .subscribe(
-                                                (val) => {
-                                                  self.getMovementTemp()
-                                                  self.getMovementTempDetail()
-                                                });
-                                          }
-                                          self.getMovementTemp()
-                                          self.getMovementTempDetail()
-                                          let alert = self.alertCtrl.create({
-                                            title: 'Sukses ',
-                                            subTitle: 'Add Item Sukses',
-                                            buttons: ['OK']
-                                          });
-                                          alert.present();
-                                        });
-                                    });
-                                });
-                              }
-                              else {
-                                const headers = new HttpHeaders()
-                                  .set("Content-Type", "application/json");
+                      else {
+                        self.api.get('table/movement_temp_detail', { params: { limit: 30, filter: "pic=" + "'" + self.userid + "' AND batch_no=" + "'" + putawaylist[0].batch_no + "' AND item_no=" + "'" + putawaylist[0].item_no + "'" } })
+                          .subscribe(val => {
+                            let movetempdetail = val['data']
+                            if (movetempdetail.length == 0) {
+                              const headers = new HttpHeaders()
+                                .set("Content-Type", "application/json");
+                              self.getNextNoPUTempDetail().subscribe(val => {
+                                let nextno = val['nextno'];
                                 let datetime = moment().format('YYYY-MM-DD HH:mm');
-                                self.api.put("table/movement_temp_detail",
+                                self.api.post("table/movement_temp_detail",
                                   {
-                                    "movementtemp_no": movetempdetail[0].movementtemp_no,
-                                    "qty": parseInt(movetempdetail[0].qty) + parseInt(data.qty),
-                                    "datetime": datetime
+                                    "movementtemp_no": nextno,
+                                    "receiving_no": putawaylist[0].receiving_no,
+                                    "batch_no": putawaylist[0].batch_no,
+                                    "item_no": putawaylist[0].item_no,
+                                    "qty": data.qty,
+                                    "location_code": putawaylist[0].location_code,
+                                    "location_previous_position": putawaylist[0].location_previous_position,
+                                    "location_current_position": putawaylist[0].location_current_position,
+                                    "status": 'OPEN',
+                                    "datetime": datetime,
+                                    "pic": self.userid,
+                                    "uuid": UUID.UUID()
                                   },
                                   { headers })
                                   .subscribe(val => {
@@ -1270,29 +1163,68 @@ export class MovementPage {
                                         alert.present();
                                       });
                                   });
-                              }
-                            });
-                        }
+                              });
+                            }
+                            else {
+                              const headers = new HttpHeaders()
+                                .set("Content-Type", "application/json");
+                              let datetime = moment().format('YYYY-MM-DD HH:mm');
+                              self.api.put("table/movement_temp_detail",
+                                {
+                                  "movementtemp_no": movetempdetail[0].movementtemp_no,
+                                  "qty": parseInt(movetempdetail[0].qty) + parseInt(data.qty),
+                                  "datetime": datetime
+                                },
+                                { headers })
+                                .subscribe(val => {
+                                  self.api.put("table/movement_temp",
+                                    {
+                                      "movementtemp_no": putawaylist[0].movementtemp_no,
+                                      "qty": putawaylist[0].qty - data.qty
+                                    },
+                                    { headers })
+                                    .subscribe(val => {
+                                      if (putawaylist[0].qty == data.qty) {
+                                        self.api.delete("table/putawaylist_temp", { params: { filter: 'putawaylisttemp_no=' + "'" + putawaylist[0].putawaylisttemp_no + "'" }, headers })
+                                          .subscribe(
+                                            (val) => {
+                                              self.getMovementTemp()
+                                              self.getMovementTempDetail()
+                                            });
+                                      }
+                                      self.getMovementTemp()
+                                      self.getMovementTempDetail()
+                                      let alert = self.alertCtrl.create({
+                                        title: 'Sukses ',
+                                        subTitle: 'Add Item Sukses',
+                                        buttons: ['OK']
+                                      });
+                                      alert.present();
+                                    });
+                                });
+                            }
+                          });
                       }
                     }
-                  ]
-                });
-                alert.present();
-              }
-              else {
-                let alert = self.alertCtrl.create({
-                  title: 'Error ',
-                  subTitle: 'Item Not Found',
-                  buttons: ['OK']
-                });
-                alert.present();
-              }
-  
-            });
-        }).catch(err => {
-            console.log('Error', err);
-        });
-      }, {
+                  }
+                ]
+              });
+              alert.present();
+            }
+            else {
+              let alert = self.alertCtrl.create({
+                title: 'Error ',
+                subTitle: 'Item Not Found',
+                buttons: ['OK']
+              });
+              alert.present();
+            }
+
+          });
+      }).catch(err => {
+        console.log('Error', err);
+      });
+    }, {
         press: true
       });
   }
@@ -1310,7 +1242,7 @@ export class MovementPage {
         var barcodeno = barcodeData.text.substring(0, 12);
         self.myForm.get('rackno').setValue(barcodeno)
       }).catch(err => {
-          console.log('Error', err);
+        console.log('Error', err);
       });
     }, {
         press: true
@@ -1340,5 +1272,185 @@ export class MovementPage {
   getNextNoPU() {
     return this.api.get('nextno/movement/movement_no')
   }
-
+  getNextNoStock() {
+    return this.api.get('nextno/stock/id')
+  }
+  doGetStockPlus(cek) {
+    this.api.get('table/stock', { params: { limit: 30, filter: "batch_no=" + "'" + cek.batch_no + "' AND item_no=" + "'" + cek.item_no + "' AND location=" + "'" + cek.location_code + "'" + " AND sub_location=" + "'" + this.myForm.value.rackno + "'" } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data.length == 0) {
+          this.doPostStock(cek)
+        }
+        else {
+          let datastock = data[0]
+          this.doPutStockPlus(cek, datastock)
+        }
+      }, err => {
+        this.doGetStockPlus(cek)
+      });
+  }
+  doPostStock(cek) {
+    this.getNextNoStock().subscribe(val => {
+      let nextnostock = val['nextno'];
+      const headers = new HttpHeaders()
+        .set("Content-Type", "application/json");
+      let date = moment().format('YYYY-MM-DD');
+      this.api.post("table/stock",
+        {
+          "id": nextnostock,
+          "batch_no": cek.batch_no,
+          "item_no": cek.item_no,
+          "qty": cek.qty,
+          "location": cek.location_code,
+          "sub_location": this.myForm.value.rackno,
+          "datetime": date,
+          "uuid": UUID.UUID()
+        },
+        { headers })
+        .subscribe(val => {
+        }, err => {
+          this.doPostStock(cek)
+        })
+    });
+  }
+  doPutStockPlus(cek, datastock) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    let date = moment().format('YYYY-MM-DD');
+    this.api.put("table/stock",
+      {
+        "id": datastock.id,
+        "batch_no": cek.batch_no,
+        "item_no": cek.item_no,
+        "qty": parseInt(datastock.qty) + parseInt(cek.qty),
+        "location": '81003',
+        "sub_location": cek.sub_location,
+        "datetime": date,
+        "uuid": UUID.UUID()
+      },
+      { headers })
+      .subscribe(val => {
+      }, err => {
+        this.doPutStockPlus(cek, datastock)
+      })
+  }
+  doGetStockMin(cek) {
+    this.api.get('table/stock', { params: { limit: 30, filter: "batch_no=" + "'" + cek.batch_no + "' AND item_no=" + "'" + cek.item_no + "' AND location=" + "'" + cek.location_code + "'" + " AND sub_location=" + "'" + cek.location_previous_position + "'" } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data.length != 0) {
+          let datastock = data[0]
+          this.doPutStockMin(cek, datastock)
+        }
+      }, err => {
+        this.doGetStockMin(cek)
+      });
+  }
+  doPutStockMin(cek, datastock) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    let date = moment().format('YYYY-MM-DD');
+    this.api.put("table/stock",
+      {
+        "id": datastock.id,
+        "batch_no": cek.batch_no,
+        "item_no": cek.item_no,
+        "qty": parseInt(datastock.qty) - parseInt(cek.qty),
+        "location": cek.location_code,
+        "sub_location": cek.location_previous_position,
+        "datetime": date,
+        "uuid": UUID.UUID()
+      },
+      { headers })
+      .subscribe(val => {
+        this.doGetStockPlus(cek)
+      }, err => {
+        this.doPutStockMin(cek, datastock)
+      })
+  }
+  doPostMovement(cek) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    this.getNextNoPU().subscribe(val => {
+      let nextno = val['nextno'];
+      let datetime = moment().format('YYYY-MM-DD HH:mm');
+      this.api.post("table/movement",
+        {
+          "movement_no": nextno,
+          "receiving_no": cek.receiving_no,
+          "batch_no": cek.batch_no,
+          "item_no": cek.item_no,
+          "location_code": cek.location_code,
+          "location_previous_position": cek.location_previous_position,
+          "location_current_position": this.myForm.value.rackno,
+          "qty": cek.qty,
+          "status": 'OPEN',
+          "pic": this.userid,
+          "datetime": datetime,
+          "uuid": UUID.UUID()
+        },
+        { headers })
+        .subscribe(val => {
+          this.doDeleteMovementDetail(cek)
+        }, err => {
+          this.doPostMovement(cek)
+        })
+    });
+  }
+  doDeleteMovementDetail(cek) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    this.api.delete("table/movement_temp_detail", { params: { filter: "movementtemp_no=" + "'" + cek.movementtemp_no + "'" }, headers })
+      .subscribe(val => {
+        this.api.get('table/movement_temp_detail', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" } })
+          .subscribe(val => {
+            this.getmovementlist = val['data'];
+            let alert = this.alertCtrl.create({
+              title: 'Sukses ',
+              subTitle: 'Save Item To Rack Sukses',
+              buttons: ['OK']
+            });
+            this.getMovementTempDetail();
+            this.myForm.reset()
+            alert.present();
+          });
+      }, err => {
+        this.doDeleteMovementDetail(cek)
+      })
+  }
+  doPostStockBalance(cek) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    this.getNextNoStockBalance().subscribe(val => {
+      let nextno = val['nextno'];
+      const headers = new HttpHeaders()
+        .set("Content-Type", "application/json");
+      let date = moment().format('YYYY-MM-DD');
+      this.api.post("table/stock_balance",
+        {
+          "id": nextno,
+          "receiving_no": cek.receiving_no,
+          "batch_no": cek.batch_no,
+          "item_no": cek.item_no,
+          "qty_in": 0,
+          "qty_out": cek.qty,
+          "location": cek.location_code,
+          "sub_location": cek.location_previous_position,
+          "description": 'Movement',
+          "status": 'OPEN',
+          "datetime": date,
+          "uuid": UUID.UUID()
+        },
+        { headers })
+        .subscribe(val => {
+          console.log(cek)
+          this.doGetStockMin(cek)
+          this.doInsertPutaway(cek)
+          this.doPostMovement(cek)
+        }, err => {
+          this.doPostStockBalance(cek)
+        });
+    });
+  }
 }
