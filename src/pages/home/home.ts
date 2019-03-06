@@ -134,4 +134,10 @@ export class HomePage {
       userid: this.userid
     });
   }
+  doStockOpname() {
+    this.navCtrl.push('StockopnamePage', {
+      rolecab: this.rolecab,
+      userid: this.userid
+    });
+  }
 }

@@ -1324,7 +1324,7 @@ export class MovementPage {
         "batch_no": cek.batch_no,
         "item_no": cek.item_no,
         "qty": parseInt(datastock.qty) + parseInt(cek.qty),
-        "location": '81003',
+        "location": cek.location,
         "sub_location": cek.sub_location,
         "datetime": date,
         "uuid": UUID.UUID()
@@ -1444,7 +1444,6 @@ export class MovementPage {
         },
         { headers })
         .subscribe(val => {
-          console.log(cek)
           this.doGetStockMin(cek)
           this.doInsertPutaway(cek)
           this.doPostMovement(cek)

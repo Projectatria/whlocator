@@ -113,7 +113,6 @@ export class PickingPage {
     });
     this.storage.get('userid').then((val) => {
       this.userid = val;
-      console.log(this.userid)
       this.doListPickingDetail();
       this.api.get('table/user_role', { params: { filter: "id_user=" + "'" + this.userid + "'" } })
         .subscribe(val => {
@@ -123,7 +122,6 @@ export class PickingPage {
             this.rolegroup = this.role[0].id_group
             this.roleid = this.role[0].id_role
             this.rolecab = this.role[0].id_cab
-            console.log(this.roleid, this.rolearea, this.rolegroup)
             if (this.rolegroup == "STAFF") {
               this.pick = "picking"
             }
@@ -194,7 +192,7 @@ export class PickingPage {
     });
   }
   getPickingSearch() {
-    this.api.get("tablenav", { params: { limit: 10000, table: "CSB_LIVE$Delivery Management Header", filter: "Status=0", sort: "[Expected Receipt Date]" + " ASC " } })
+    this.api.get("tablenav", { params: { limit: 10000, table: "CSB_LIVE$Delivery Management Header", filter: "Status=0", sort: "[Expected Receipt Date]" + " DESC " } })
       .subscribe(val => {
         let data = val['data'];
         for (let i = 0; i < data.length; i++) {
@@ -296,7 +294,6 @@ export class PickingPage {
     this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Delivery Management Header", filter: "Status=0 AND [Receipt No_] LIKE '%" + value + "%'", sort: "[Expected Receipt Date]" + " DESC " } })
       .subscribe(val => {
         let data = val['data'];
-        console.log(data)
         if (value && value.trim() != '') {
           this.listpicking = data.filter(pick => {
             return pick["Receipt No_"].toLowerCase().indexOf(value.toLowerCase()) > -1;
@@ -440,7 +437,7 @@ export class PickingPage {
             .subscribe(val => {
               this.pickingrelease = val['data'];
             });
-          this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Delivery Management Header", filter: "Status=0", sort: "[Expected Receipt Date]" + " ASC " } })
+          this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Delivery Management Header", filter: "Status=0", sort: "[Expected Receipt Date]" + " DESC " } })
             .subscribe(val => {
               let data = val['data'];
               for (let i = 0; i < data.length; i++) {
@@ -561,28 +558,41 @@ export class PickingPage {
                                     let dataitem = val['data']
                                     this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Production BOM Line", filter: "[Production BOM No_]=" + "'" + dataitem[0]["Production BOM No_"] + "'" } }).subscribe(val => {
                                       let datapart = val['data']
-                                      for (let j = 0; j < datapart.length; j++) {
-                                        this.api.post("table/picking_list_detail_part",
-                                        {
-                                          "id": data[i]["Receipt No_"] + data[i]["Line No_"],
-                                          "receipt_no": data[i]["Receipt No_"],
-                                          "item_no": data[i]["Item No_"],
-                                          "bom_no": datapart[j]["Production BOM No_"],
-                                          "part_no": datapart[j].No_,
-                                          "line_no": datapart[j]["Line No_"],
-                                          "description": datapart[j].Description,
-                                          "qty": datapart[j].Quantity,
-                                          "location": '81003',
-                                          "sub_location": '',
-                                          "UOM": datapart[j]["Unit of Measure Code"],
-                                          "retail_so_no": data[i]["Retail SO No_"],
-                                          "status" : 'OPEN',
-                                          "uuid": UUID.UUID()
-                                        },
-                                        { headers })
-                                        .subscribe(val => {
-
-                                        });
+                                      if (datapart.length == 0) {
+                                        this.api.get("table/stock", { params: { filter: "item_no=" + "'" + data[i]["Item No_"] + "' AND location=" + "'" + this.rolecab + "'", sort: 'batch_no ASC, sub_location ASC' } })
+                                          .subscribe(val => {
+                                            let datapickingresult = val['data']
+                                            if (datapickingresult.length != 0) {
+                                              let datai = data[i]
+                                              let datapicking = datapickingresult[0]
+                                              this.doPostPickingListDetailPartNull(datai, datapicking)
+                                            }
+                                            else {
+                                              let datai = data[i]
+                                              let datapicking = { 'batch_no': 'NOT FOUND', 'location': 'NOT FOUND', 'sub_location': 'NOT FOUND' }
+                                              this.doPostPickingListDetailPartNull(datai, datapicking)
+                                            }
+                                          });
+                                      }
+                                      else {
+                                        for (let j = 0; j < datapart.length; j++) {
+                                          this.api.get("table/stock", { params: { filter: "item_no=" + "'" + datapart[j].No_ + "' AND location=" + "'" + this.rolecab + "'", sort: 'batch_no ASC, sub_location ASC' } })
+                                            .subscribe(val => {
+                                              let datapickingresult = val['data']
+                                              if (datapickingresult.length != 0) {
+                                                let datai = data[i]
+                                                let dataj = datapart[j]
+                                                let datapicking = datapickingresult[0]
+                                                this.doPostPickingListDetailPart(datai, dataj, datapicking)
+                                              }
+                                              else {
+                                                let datai = data[i]
+                                                let dataj = datapart[j]
+                                                let datapicking = { 'batch_no': 'NOT FOUND', 'location': 'NOT FOUND', 'sub_location': 'NOT FOUND' }
+                                                this.doPostPickingListDetailPart(datai, dataj, datapicking)
+                                              }
+                                            });
+                                        }
                                       }
                                     });
                                   })
@@ -591,7 +601,7 @@ export class PickingPage {
                           });
                         this.doListPickingDetail();
                         this.listpicking = [];
-                        this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Delivery Management Header", filter: "Status=0", sort: "[Expected Receipt Date]" + " ASC " } })
+                        this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Delivery Management Header", filter: "Status=0", sort: "[Expected Receipt Date]" + " DESC " } })
                           .subscribe(val => {
                             let data = val['data'];
                             for (let i = 0; i < data.length; i++) {
@@ -643,6 +653,82 @@ export class PickingPage {
     this.api.get('table/picking_list', { params: { limit: 30, filter: "status='INP1'" } })
       .subscribe(val => {
         this.listpickingdetail = val['data'];
+      });
+  }
+  doPostPickingListDetailPart(datai, dataj, datapicking) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    this.api.post("table/picking_list_detail_part",
+      {
+        "id": datai["Receipt No_"] + datai["Line No_"],
+        "batch_no": datapicking.batch_no,
+        "receipt_no": datai["Receipt No_"],
+        "item_no": datai["Item No_"],
+        "bom_no": dataj["Production BOM No_"],
+        "part_no": dataj.No_,
+        "line_no": dataj["Line No_"],
+        "description": dataj.Description,
+        "qty": parseInt(datai.Quantity) * parseInt(dataj.Quantity),
+        "location": datapicking.location,
+        "sub_location": datapicking.sub_location,
+        "UOM": dataj["Unit of Measure Code"],
+        "retail_so_no": datai["Retail SO No_"],
+        "status": 'OPEN',
+        "uuid": UUID.UUID()
+      },
+      { headers })
+      .subscribe(val => {
+        let qtytotal = parseInt(datai.Quantity) * parseInt(dataj.Quantity)
+        this.doUpdateStock(datai, dataj, datapicking, qtytotal)
+      }, err => {
+        this.doPostPickingListDetailPart(datai, dataj, datapicking)
+      });
+  }
+  doPostPickingListDetailPartNull(datai, datapicking) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    this.api.post("table/picking_list_detail_part",
+      {
+        "id": datai["Receipt No_"] + datai["Line No_"],
+        "batch_no": datapicking.batch_no,
+        "receipt_no": datai["Receipt No_"],
+        "item_no": datai["Item No_"],
+        "bom_no": 'NOT FOUND',
+        "part_no": datai["Item No_"],
+        "line_no": '10000',
+        "description": datai.Description,
+        "qty": datai.Quantity,
+        "location": datapicking.location,
+        "sub_location": datapicking.sub_location,
+        "UOM": datai.UOM,
+        "retail_so_no": datai["Retail SO No_"],
+        "status": 'OPEN',
+        "uuid": UUID.UUID()
+      },
+      { headers })
+      .subscribe(val => {
+        let dataj = {'Quantity':datai.Quantity}
+        let qtytotal = datai.Quantity
+        this.doUpdateStock(datai, dataj, datapicking, qtytotal)
+      }, err => {
+        this.doPostPickingListDetailPartNull(datai, datapicking)
+      });
+  }
+  doUpdateStock(datai, dataj, datapicking, qtytotal) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    let date = moment().format('YYYY-MM-DD');
+    this.api.put("table/stock",
+      {
+        "id": datapicking.id,
+        "qty": parseInt(datapicking.qty) - parseInt(qtytotal),
+        "qty_booking": parseInt(datapicking.qty_booking) + parseInt(qtytotal),
+        "datetime": date
+      },
+      { headers })
+      .subscribe(val => {
+      }, err => {
+        this.doUpdateStock(datai, dataj, datapicking, qtytotal)
       });
   }
 }

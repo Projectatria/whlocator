@@ -33,9 +33,6 @@
     <ion-segment-button value="pickingdetailitem">
       Picking Detail
     </ion-segment-button>
-    <ion-segment-button value="history">
-      History
-    </ion-segment-button>
   </ion-segment>
 
   <div [ngSwitch]="pickingdetail">
@@ -76,22 +73,24 @@
               <ion-row *ngIf="detailpicking && picking.item_no == pickinglist">
                 <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
                   <ion-row>
-                    <ion-col>Line No</ion-col>
+                    <!--<ion-col>Line No</ion-col>-->
                     <ion-col>Part No</ion-col>
                     <ion-col>Description</ion-col>
+                    <ion-col>Qty</ion-col>
                     <ion-col>Unit</ion-col>
+                    <!-- <ion-col>Location</ion-col> -->
                     <ion-col>Location</ion-col>
-                    <ion-col>Sub Location</ion-col>
                     <ion-col>Tools</ion-col>
                   </ion-row>
                 </ion-col>
                 <ion-col *ngFor="let result of pickingresult" col-12 style="border-top:1px solid;border-color:#dedede;">
                   <ion-row>
-                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.line_no}}</ion-col>
+                    <!-- <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.line_no}}</ion-col> -->
                     <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.part_no}}</ion-col>
                     <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.description}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.qty}}</ion-col>
                     <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.UOM}}</ion-col>
-                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.location}}</ion-col>
+                    <!-- <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.location}}</ion-col> -->
                     <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.sub_location}}</ion-col>
                     <ion-col class="mouse-hover" style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede" (click)="doPicking(result)">
                       <i class="fas fa-dolly imgfa" style="font-size:25px;color:#217481;"></i>

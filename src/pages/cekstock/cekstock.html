@@ -1,30 +1,51 @@
 <ion-header class="header-menu">
-    <ion-navbar class="header-navbar" style="width:100%;">
-      <button *ngIf="!toggled" ion-button menuToggle color="light">
-        <ion-icon name="menu" style="font-size:30px;"></ion-icon>
-      </button>
-      <ion-title class="side-title">
-        <div *ngIf="!toggled" class="logo-atria">
-          <img src="assets/imgs/logoatriawhite.png" height="45" />
-        </div>
-      </ion-title>
-    </ion-navbar>
-  </ion-header>
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <button *ngIf="!toggled" ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <ion-title class="side-title">
+      <div *ngIf="!toggled" class="logo-atria">
+        <img src="assets/imgs/logoatriawhite.png" height="45" />
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
 
-<ion-content padding>
-    <ion-searchbar placeholder="Search Items" (ionInput)="getSearch($event)"></ion-searchbar>
-    <ion-grid padding>
-      <ion-row class="row-content">
-        <ion-col padding class="col-content">Item No</ion-col>
-        <ion-col padding class="col-content">Batch No</ion-col>
-        <ion-col padding class="col-content">Sub Location</ion-col>
-        <ion-col padding class="col-content">Qty</ion-col>
-      </ion-row>
-      <ion-row *ngFor="let stok of stock" class="row-content-list">
-        <ion-col padding class="col-content">{{stok.item_no}}</ion-col>
-        <ion-col padding class="col-content">{{stok.batch_no}}</ion-col>
-        <ion-col padding class="col-content">{{stok.sub_location}}</ion-col>
-        <ion-col padding class="col-content">{{stok.qty}}</ion-col>
-      </ion-row>
-    </ion-grid>
+<ion-content>
+  <ion-grid>
+    <ion-row class="row-content">
+      <ion-col padding class="col-content">Batch No</ion-col>
+      <ion-col padding class="col-content">Item No</ion-col>
+      <ion-col padding class="col-content">Location</ion-col>
+      <ion-col padding class="col-content">Sub Location</ion-col>
+      <ion-col padding class="col-content">Qty</ion-col>
+      <ion-col padding class="col-content">Last Update</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col-xl-2 style="padding-top:15px;">
+        <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchBatchNo($event.target.value)" (keyup)="getSearchBatchNo($event.target.value)"></ion-input>
+      </ion-col>
+      <ion-col col-xl-2 style="padding-top:15px;">
+        <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchItemNo($event.target.value)" (keyup)="getSearchItemNo($event.target.value)"></ion-input>
+      </ion-col>
+      <ion-col col-xl-2 style="padding-top:15px;">
+        <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchLocation($event.target.value)" (keyup)="getSearchLocation($event.target.value)"></ion-input>
+      </ion-col>
+      <ion-col col-xl-2 style="padding-top:15px;">
+        <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchSubLocation($event.target.value)" (keyup)="getSearchSubLocation($event.target.value)"></ion-input>
+      </ion-col>
+      <ion-col col-xl-2 style="padding-top:15px;">
+      </ion-col>
+      <ion-col col-xl-2 style="padding-top:15px;">
+      </ion-col>
+    </ion-row>
+    <ion-row *ngFor="let stok of stock" class="row-content-list">
+      <ion-col padding class="col-content">{{stok.batch_no}}</ion-col>
+      <ion-col padding class="col-content">{{stok.item_no}}</ion-col>
+      <ion-col padding class="col-content">{{stok.location}}</ion-col>
+      <ion-col padding class="col-content">{{stok.sub_location}}</ion-col>
+      <ion-col padding class="col-content">{{stok.qty}}</ion-col>
+      <ion-col padding class="col-content">{{stok.datetime | date: 'dd-MM-yyyy'}}</ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

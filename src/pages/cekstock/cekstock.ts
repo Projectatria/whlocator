@@ -16,9 +16,7 @@ import { Storage } from '@ionic/storage';
 })
 export class CekstockPage {
 
-  public stockall = [];
-  public stockplus = [];
-  public stockmin = [];
+  public stock = [];
 
   constructor(
     public navCtrl: NavController,
@@ -33,44 +31,80 @@ export class CekstockPage {
     public actionSheetCtrl: ActionSheetController,
     public storage: Storage,
     public loadingCtrl: LoadingController) {
+    this.doGetStock()
   }
-
-  getSearch(ev: any) {
-    // set val to the value of the searchbar
-    let value = ev.target.value;
+  doGetStock() {
+    this.api.get('table/stock', { params: { limit: 100, filter: "qty !=0" } })
+      .subscribe(val => {
+        this.stock = val['data']
+      });
+  }
+  getSearchBatchNo(ev: any) {
+    let value = ev;
     // if the value is an empty string don't filter the items
     if (value && value.trim() != '') {
-      this.api.get('table/stock_balance', { params: { limit: 100,  group: 'item_no' } })
-      .subscribe(val => {
-        let groupitem = val['data']
-        console.log(groupitem)
-      });
-      this.api.get('table/stock_balance', { params: { limit: 100,  group: 'batch_no' } })
-      .subscribe(val => {
-        let groupbatch = val['data']
-        console.log(groupbatch)
-      });
-      this.api.get('table/stock_balance', { params: { limit: 100,  group: 'sub_location' } })
-      .subscribe(val => {
-        let grouplocation = val['data']
-        console.log(grouplocation)
-      });
-      this.api.get('table/stock_balance', { params: { limit: 100,  group: 'item_no' } })
-      .subscribe(val => {
-        let groupitem = val['data']
-        console.log(groupitem)
-      });
-      this.api.get('table/stock_balance', { params: { limit: 100, filter: "item_no=" + "'" + value + "' AND qty_in !=0" } })
+      this.api.get('table/stock', { params: { limit: 30, filter: "qty !=0 AND batch_no LIKE " + "'%" + value + "%'" } })
         .subscribe(val => {
-          this.stockplus = val['data']
-          var dataplus = 0;
-          for (let i = 0; i < this.stockplus.length; i++) {
-            console.log(this.stockplus[i])
-          }
+          let datastock = val['data'];
+          this.stock = datastock.filter(stock => {
+            return stock.batch_no.toLowerCase().indexOf(value.toLowerCase()) > -1;
+          })
         });
     }
     else {
-      this.stockall = [];
+      this.stock = [];
+      this.doGetStock()
+    }
+  }
+  getSearchItemNo(ev: any) {
+    let value = ev;
+    // if the value is an empty string don't filter the items
+    if (value && value.trim() != '') {
+      this.api.get('table/stock', { params: { limit: 30, filter: "qty !=0 AND item_no LIKE " + "'%" + value + "%'" } })
+        .subscribe(val => {
+          let datastock = val['data'];
+          this.stock = datastock.filter(stock => {
+            return stock.item_no.toLowerCase().indexOf(value.toLowerCase()) > -1;
+          })
+        });
+    }
+    else {
+      this.stock = [];
+      this.doGetStock()
+    }
+  }
+  getSearchLocation(ev: any) {
+    let value = ev;
+    // if the value is an empty string don't filter the items
+    if (value && value.trim() != '') {
+      this.api.get('table/stock', { params: { limit: 30, filter: "qty !=0 AND location LIKE " + "'%" + value + "%'" } })
+        .subscribe(val => {
+          let datastock = val['data'];
+          this.stock = datastock.filter(stock => {
+            return stock.location.toLowerCase().indexOf(value.toLowerCase()) > -1;
+          })
+        });
+    }
+    else {
+      this.stock = [];
+      this.doGetStock()
+    }
+  }
+  getSearchSubLocation(ev: any) {
+    let value = ev;
+    // if the value is an empty string don't filter the items
+    if (value && value.trim() != '') {
+      this.api.get('table/stock', { params: { limit: 30, filter: "qty !=0 AND sub_location LIKE " + "'%" + value + "%'" } })
+        .subscribe(val => {
+          let datastock = val['data'];
+          this.stock = datastock.filter(stock => {
+            return stock.sub_location.toLowerCase().indexOf(value.toLowerCase()) > -1;
+          })
+        });
+    }
+    else {
+      this.stock = [];
+      this.doGetStock()
     }
   }
 }
