@@ -70,14 +70,14 @@ export class PickingdetailpartPage {
     });
   }
   getSOD() {
-    this.api.get("table/picking_list_detail", { params: { filter: "receipt_no=" + "'" + this.receiptno + "' AND status = 'OPEN'" } })
+    this.api.get("table/picking_list_detail", { params: { limit: 1000, filter: "receipt_no=" + "'" + this.receiptno + "' AND status = 'OPEN'" } })
       .subscribe(val => {
         this.picking_detail = val['data'];
         this.totaldata = val['count'];
       })
   }
   doRefresh(refresher) {
-    this.api.get("table/picking_list_detail", { params: { filter: "receipt_no=" + "'" + this.receiptno + "' AND status = 'OPEN'" } })
+    this.api.get("table/picking_list_detail", { params: { limit: 1000, filter: "receipt_no=" + "'" + this.receiptno + "' AND status = 'OPEN'" } })
       .subscribe(val => {
         this.picking_detail = val['data'];
         this.totaldata = val['count'];
@@ -97,7 +97,7 @@ export class PickingdetailpartPage {
     //     this.pickingresult = val['data']
     //   });
     // })
-    this.api.get("table/picking_list_detail_part", { params: { filter: "receipt_no=" + "'" + picking.receipt_no + "' AND item_no=" + "'" + picking.item_no + "' AND status = 'OPEN'", sort: 'line_no ASC' } })
+    this.api.get("table/picking_list_detail_part", { params: { limit: 1000, filter: "receipt_no=" + "'" + picking.receipt_no + "' AND item_no=" + "'" + picking.item_no + "' AND status = 'OPEN'", sort: 'line_no ASC' } })
       .subscribe(val => {
         this.pickingresult = val['data']
       });
@@ -145,24 +145,34 @@ export class PickingdetailpartPage {
       });
   }
   doCekStock(result, batchno, itemno) {
-    this.api.get("table/stock", { params: { filter: "batch_no=" + "'" + batchno + "' AND item_no=" + "'" + itemno + "' AND sub_location=" + "'" + result.sub_location + "'", sort: 'batch_no ASC, sub_location ASC' } })
-    .subscribe(val => {
-      let data = val['data']
-      if (data.length == 0) {
-        let alert = this.alertCtrl.create({
-          title: 'Perhatian',
-          subTitle: 'Data tidak ditemukan',
-          buttons: ['OK']
-        });
-        alert.present();
-      }
-      else {
-        this.doMinStockBalance(result, batchno, itemno)
-        this.doUpdatePicking(result)
-      }
-    }, err => {
-      this.doCekStock(result, batchno, itemno)
-    });
+    if (result.batch_no == batchno && result.part_no == itemno) {
+      this.api.get("table/stock", { params: { filter: "batch_no=" + "'" + batchno + "' AND item_no=" + "'" + itemno + "' AND sub_location=" + "'" + result.sub_location + "'", sort: 'batch_no ASC, sub_location ASC' } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data.length == 0) {
+          let alert = this.alertCtrl.create({
+            title: 'Perhatian',
+            subTitle: 'Data tidak ditemukan',
+            buttons: ['OK']
+          });
+          alert.present();
+        }
+        else {
+          this.doMinStockBalance(result, batchno, itemno)
+          this.doUpdatePicking(result)
+        }
+      }, err => {
+        this.doCekStock(result, batchno, itemno)
+      });
+    }
+    else {
+      let alert = this.alertCtrl.create({
+        title: 'Perhatian',
+        subTitle: 'Data Barcode Salah',
+        buttons: ['OK']
+      });
+      alert.present();
+    }
   }
   doScanBarcode(result) {
     var self = this
@@ -238,7 +248,7 @@ export class PickingdetailpartPage {
       },
       { headers })
       .subscribe(val => {
-        this.api.get("table/picking_list_detail_part", { params: { filter: "receipt_no=" + "'" + result.receipt_no + "' AND item_no=" + "'" + result.item_no + "' AND status = 'OPEN'", sort: 'line_no ASC' } })
+        this.api.get("table/picking_list_detail_part", { params: { limit: 1000, filter: "receipt_no=" + "'" + result.receipt_no + "' AND item_no=" + "'" + result.item_no + "' AND status = 'OPEN'", sort: 'line_no ASC' } })
           .subscribe(val => {
             this.pickingresult = val['data']
             if (this.pickingresult.length == 0) {
@@ -249,18 +259,20 @@ export class PickingdetailpartPage {
                 },
                 { headers })
                 .subscribe(val => {
-                  this.api.get("table/picking_list_detail", { params: { filter: "receipt_no=" + "'" + result.receiptno + "' AND status = 'OPEN'" } })
+                  this.api.get("table/picking_list_detail", { params: { limit:1000, filter: "receipt_no=" + "'" + result.receipt_no + "' AND status = 'OPEN'" } })
                     .subscribe(val => {
                       this.picking_detail = val['data'];
+                      console.log(this.picking_detail)
                       if (this.picking_detail.length == 0) {
                         this.api.put("table/picking_list",
-                        {
-                          "receipt_no": result.receipt_no,
-                          "status": 'CLSD'
-                        },
-                        { headers })
-                        .subscribe(val => {
-                        }); 
+                          {
+                            "receipt_no": result.receipt_no,
+                            "status": 'CLSD'
+                          },
+                          { headers })
+                          .subscribe(val => {
+                            this.navCtrl.pop()
+                          });
                       }
                     })
                   let alert = this.alertCtrl.create({
@@ -272,10 +284,6 @@ export class PickingdetailpartPage {
                 });
             }
             else {
-              this.api.get("table/picking_list_detail", { params: { filter: "receipt_no=" + "'" + result.receiptno + "' AND status = 'OPEN'" } })
-                .subscribe(val => {
-                  this.picking_detail = val['data'];
-                })
               let alert = this.alertCtrl.create({
                 title: 'Sukses',
                 subTitle: 'Save Sukses',
