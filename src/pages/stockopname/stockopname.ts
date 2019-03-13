@@ -62,9 +62,14 @@ export class StockopnamePage {
             });
           this.doGetStockAll()
           this.doGetStockLength()
+          if (this.rolegroup != 'STAFF') {
+            this.so = 'co'
+          }
+          else {
+            this.so = 'list'
+          }
         });
     });
-    this.so = 'co'
     this.date = moment().format('dddd DD MM YYYY HH:mm:ss');
     var self = this;
     setInterval(function () {
@@ -157,6 +162,7 @@ export class StockopnamePage {
             let stok = datastok[i]
             this.doPostSOLine(nextnoheader, stok)
           }
+          this.doGetStockAll()
           loading.dismiss()
         }, err => {
           this.doPostSOHeader(datastok)

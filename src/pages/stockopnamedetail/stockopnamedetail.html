@@ -10,44 +10,46 @@
   <ion-card *ngFor="let soline of stockopnameline">
     <ion-item text-wrap>
       <h3 style="font-weight:bold;padding-bottom:5px;">Sub Location - {{soline.sub_location}}</h3>
-      <button item-end ion-button clear (click)="viewDetail(so)">
-        <ion-icon style="font-size:30px;color:#4a4a4a;font-weight: bold;background: transparent;padding-left:5px;" name="md-barcode"></ion-icon>
+      <button item-end ion-button clear (click)="doScan(soline)">
+        <ion-icon style="font-size:30px;color:#217481;font-weight: bold;background: transparent;padding-left:5px;" name="md-barcode"></ion-icon>
       </button>
     </ion-item>
-    <ion-row (click)="doGetStockResult(soline)" style="border-top:1px solid;border-color:#dedede;background: #dedede;">
+    <ion-row *ngIf="button == false" (click)="doGetStockResult(soline)" style="border-top:1px solid;border-color:#dedede;background: #dedede;">
       <ion-col style="text-align: center;">
         <ion-icon style="color:#217481;font-size: 20px;" name="ios-arrow-down"></ion-icon>
       </ion-col>
     </ion-row>
-    <div *ngIf="detailpicking && picking.item_no == pickinglist" style="border-top:1px solid;border-color:#dedede;background:#ffffff;">
+    <ion-row *ngIf="button == true" (click)="doHideGetStockResult(soline)" style="border-top:1px solid;border-color:#dedede;background: #dedede;">
+      <ion-col style="text-align: center;">
+        <ion-icon style="color:#217481;font-size: 20px;" name="ios-arrow-up"></ion-icon>
+      </ion-col>
+    </ion-row>
+    <div *ngIf="stockopnameresult && soline.id_header == idheader && soline.sub_location == sublocation" style="border-top:1px solid;border-color:#dedede;background:#ffffff;">
       <div padding style="font-weight:bold;">
-        Detail Stock Opname
+        Stock Opname Result
       </div>
       <ion-grid>
-        <ion-row *ngIf="detailpicking && picking.item_no == pickinglist">
+        <ion-row *ngIf="stockopnameresult && soline.id_header == idheader && soline.sub_location == sublocation">
           <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
             <ion-row>
-              <!--<ion-col>Line No</ion-col>-->
-              <ion-col>Part No</ion-col>
-              <ion-col>Description</ion-col>
-              <ion-col>Qty</ion-col>
-              <ion-col>Unit</ion-col>
-              <!-- <ion-col>Location</ion-col> -->
-              <ion-col>Location</ion-col>
-              <ion-col>Tools</ion-col>
+              <ion-col col-3>Sub Location</ion-col>
+              <ion-col col-2>Batch</ion-col>
+              <ion-col col-3>Item No</ion-col>
+              <ion-col col-2>Qty</ion-col>
+              <ion-col *ngIf="tim.status == 'INPG'" col-2>Diff</ion-col>
+              <ion-col *ngIf="tim.status == 'OPEN'" col-2></ion-col>
             </ion-row>
           </ion-col>
-          <ion-col *ngFor="let result of pickingresult" col-12 style="border-top:1px solid;border-color:#dedede;">
+          <ion-col *ngFor="let result of stockopnameresult" col-12 style="border-top:1px solid;border-color:#dedede;">
             <ion-row>
-              <!-- <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.line_no}}</ion-col> -->
-              <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.part_no}}</ion-col>
-              <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.description}}</ion-col>
-              <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.qty}}</ion-col>
-              <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.UOM}}</ion-col>
-              <!-- <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.location}}</ion-col> -->
-              <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.sub_location}}</ion-col>
-              <ion-col class="mouse-hover" style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede" (click)="doPicking(result)">
-                <i class="fas fa-dolly imgfa" style="font-size:25px;color:#217481;"></i>
+              <ion-col col-3 style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.sub_location}}</ion-col>
+              <ion-col col-2 style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.batch_no}}</ion-col>
+              <ion-col col-3 style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.item_no}}</ion-col>
+              <ion-col col-2 style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.qty}}</ion-col>
+              <ion-col *ngIf="tim.status == 'INPG'" col-2 style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.qty_diff}}</ion-col>
+              <ion-col *ngIf="tim.status == 'OPEN'" col-2 style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede;background: #ee1c26;text-align:center;"
+                (click)="doAlertDelete(result)">
+                <ion-icon style="color:#fff;font-weight: bold;font-size:20px;" name="md-close"></ion-icon>
               </ion-col>
             </ion-row>
           </ion-col>
@@ -55,4 +57,12 @@
       </ion-grid>
     </div>
   </ion-card>
+  <ion-grid *ngIf="rolegroup != 'STAFF'" style="background: #fff;">
+    <ion-row style="background: #fff;">
+      <ion-col col-12 style="padding-left:10px;padding-right:10px;background: #fff;">
+        <button *ngIf="tim.status == 'OPEN'" color="delima" style="width: 35%;height: 50px;font-size:15px;float:right;" ion-button block (click)="doConfirmSubmit()">SUBMIT</button>
+        <button *ngIf="tim.status == 'INPG'" color="delima" style="width: 35%;height: 50px;font-size:15px;float:right;" ion-button block (click)="doConfirmSubmitInpg()">SUBMIT</button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

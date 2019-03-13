@@ -60,7 +60,7 @@
         <i class="fas fa-retweet imgfa"></i>
         <h5 class="textfa">Cek Stock</h5>
       </ion-col>
-      <ion-col padding *ngIf="rolegroup != 'STAFF' && (rolearea == 'INBOUND' || rolearea == 'HO')" class="col" col-12 col-md-12 col-xl-6 (click)="doStockOpname()">
+      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-6 (click)="doStockOpname()">
         <i class="fas fa-chart-pie imgfa"></i>
         <h5 class="textfa">Stock Opname</h5>
       </ion-col>

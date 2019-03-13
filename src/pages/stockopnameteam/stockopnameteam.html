@@ -17,16 +17,102 @@
 </ion-header>
 
 <ion-content id="content">
-  <ion-card *ngFor="let tim of team">
-    <ion-item text-wrap>
-      <h3 style="font-weight:bold;padding-bottom:5px;">Team - {{tim.id_team}}</h3>
-      <button item-end ion-button clear (click)="viewDetail(tim)">
-        <ion-icon style="font-size:30px;color:#4a4a4a;font-weight: bold;background: transparent;padding-left:5px;" name="md-arrow-forward"></ion-icon>
-      </button>
-    </ion-item>
-  </ion-card>
+  <ion-segment [(ngModel)]="solist">
+    <ion-segment-button value="list">
+      List Stock Opname
+    </ion-segment-button>
+    <ion-segment-button value="rso">
+      Result SO
+    </ion-segment-button>
+  </ion-segment>
+  <div [ngSwitch]="solist">
+    <div *ngSwitchCase="'list'">
+      <ion-card *ngFor="let tim of team">
+        <ion-item text-wrap>
+          <h3 style="font-weight:bold;padding-bottom:5px;">Stock Opname - {{tim.id_team}} ({{tim.location}})</h3>
+          <h3 style="font-weight:bold;padding-bottom:5px;">Date Cut Off - {{tim.datetime | date:'dd-MM-yy'}}</h3>
+          <button item-end ion-button clear (click)="viewDetail(tim)">
+            <ion-icon style="font-size:30px;color:#217481;font-weight: bold;background: transparent;padding-left:5px;" name="md-arrow-forward"></ion-icon>
+          </button>
+        </ion-item>
+        <ion-row *ngIf="teamline.length != 0" (click)="doHideGetTeamLine(tim)" style="border-top:1px solid;border-color:#dedede;background: #dedede;">
+          <ion-col style="text-align: center;">
+            <ion-icon style="color:#217481;font-size: 20px;" name="ios-arrow-up"></ion-icon>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="teamline.length == 0" (click)="doGetTeamLine(tim)" style="border-top:1px solid;border-color:#dedede;background: #dedede;">
+          <ion-col style="text-align: center;">
+            <ion-icon style="color:#217481;font-size: 20px;" name="ios-arrow-down"></ion-icon>
+          </ion-col>
+        </ion-row>
+        <div *ngIf="teamline && tim.id == idteam" style="border-top:1px solid;border-color:#dedede;background:#ffffff;">
+          <div padding style="font-weight:bold;">
+            List Team
+          </div>
+          <ion-grid>
+            <ion-row *ngIf="teamline && tim.id == idteam">
+              <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+                <ion-row>
+                  <ion-col>Id User</ion-col>
+                  <ion-col>Username</ion-col>
+                </ion-row>
+              </ion-col>
+              <ion-col *ngFor="let line of teamline" col-12 style="border-top:1px solid;border-color:#dedede;">
+                <ion-row>
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{line.id_user}}</ion-col>
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{line.username}}</ion-col>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-card>
+    </div>
+    <div *ngSwitchCase="'rso'">
+      <ion-card *ngFor="let tim of teamresult">
+        <ion-item text-wrap>
+          <h3 style="font-weight:bold;padding-bottom:5px;">Stock Opname - {{tim.id_team}} ({{tim.location}})</h3>
+          <h3 style="font-weight:bold;padding-bottom:5px;">Date Cut Off - {{tim.datetime | date:'dd-MM-yy'}}</h3>
+          <button item-end ion-button clear (click)="viewDetail(tim)">
+            <ion-icon style="font-size:30px;color:#217481;font-weight: bold;background: transparent;padding-left:5px;" name="md-arrow-forward"></ion-icon>
+          </button>
+        </ion-item>
+        <ion-row *ngIf="teamlineresult.length != 0" (click)="doHideGetTeamLineResult(tim)" style="border-top:1px solid;border-color:#dedede;background: #dedede;">
+          <ion-col style="text-align: center;">
+            <ion-icon style="color:#217481;font-size: 20px;" name="ios-arrow-up"></ion-icon>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="teamlineresult.length == 0" (click)="doGetTeamLineResult(tim)" style="border-top:1px solid;border-color:#dedede;background: #dedede;">
+          <ion-col style="text-align: center;">
+            <ion-icon style="color:#217481;font-size: 20px;" name="ios-arrow-down"></ion-icon>
+          </ion-col>
+        </ion-row>
+        <div *ngIf="teamlineresult && tim.id == idteamresult" style="border-top:1px solid;border-color:#dedede;background:#ffffff;">
+          <div padding style="font-weight:bold;">
+            List Team
+          </div>
+          <ion-grid>
+            <ion-row *ngIf="teamlineresult && tim.id == idteamresult">
+              <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+                <ion-row>
+                  <ion-col>Id User</ion-col>
+                  <ion-col>Username</ion-col>
+                </ion-row>
+              </ion-col>
+              <ion-col *ngFor="let line of teamlineresult" col-12 style="border-top:1px solid;border-color:#dedede;">
+                <ion-row>
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{line.id_user}}</ion-col>
+                  <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{line.username}}</ion-col>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-card>
+    </div>
+  </div>
 </ion-content>
-<ion-fab class="fixed-div" bottom right id="footer">
+<ion-fab *ngIf="rolegroup != 'STAFF'" class="fixed-div" bottom right id="footer">
   <button ion-fab color="greenlake" (click)="doAdd()">
     <ion-icon name="md-add"></ion-icon>
   </button>

@@ -25,9 +25,15 @@ export class StockopnameteamPage {
   public roleiddetail = [];
   public rolenamedetail: any;
   public team = [];
+  public teamresult = [];
   public users = [];
   public addshow: boolean = false;
   public listuser = [];
+  public teamline = [];
+  public idteam: any;
+  public solist: any;
+  public idteamresult: any;
+  public teamlineresult = [];
 
   constructor(
     public navCtrl: NavController,
@@ -44,6 +50,7 @@ export class StockopnameteamPage {
     private http: HttpClient,
     public loadingCtrl: LoadingController
   ) {
+    this.solist = 'list'
     this.so = this.navParams.get('so')
     this.storage.get('name').then((val) => {
       this.name = val;
@@ -62,6 +69,7 @@ export class StockopnameteamPage {
               this.rolenamedetail = this.roleiddetail[0].name;
             });
           this.doGetTeam()
+          this.doGetTeamResult()
         });
     });
   }
@@ -69,6 +77,12 @@ export class StockopnameteamPage {
     this.api.get("table/stock_opname_team_header", { params: { limit: 10000, filter: "id_header=" + "'" + this.so.id + "' AND location=" + "'" + this.rolecab + "' AND status='OPEN'", sort: 'id_team ASC' } })
       .subscribe(val => {
         this.team = val['data']
+      });
+  }
+  doGetTeamResult() {
+    this.api.get("table/stock_opname_team_header", { params: { limit: 10000, filter: "id_header=" + "'" + this.so.id + "' AND location=" + "'" + this.rolecab + "' AND status='INPG'", sort: 'id_team ASC' } })
+      .subscribe(val => {
+        this.teamresult = val['data']
       });
   }
   doOffAdd() {
@@ -97,9 +111,12 @@ export class StockopnameteamPage {
       let array: any = document.getElementsByName('listuser[]')
       for (let i = 0; i < array.length; i++) {
         array[i].checked = true;
-        this.listuser.push(array[i].value)
+        this.api.get("table/user_role", { params: { limit: 10000, filter: "id_user=" + "'" + array[i].value + "'", sort: 'id_user ASC' } })
+          .subscribe(val => {
+            let datauser = val['data']
+            this.listuser.push({ 'id_user': datauser[0].id_user, 'username': datauser[0].name })
+          });
       }
-      console.log(this.listuser)
     }
     else {
       let array: any = document.getElementsByName('listuser[]')
@@ -107,24 +124,25 @@ export class StockopnameteamPage {
         array[i].checked = false;
         this.listuser = [];
       }
-      console.log(this.listuser)
     }
   }
   doCheck(user) {
     let index = user.Row - 1
     let check: any = document.getElementsByName('listuser[]')[index]
     if (check.checked == true) {
-      this.listuser.push(check.value)
-      console.log(this.listuser)
+      this.api.get("table/user_role", { params: { limit: 10000, filter: "id_user=" + "'" + check.value + "'", sort: 'id_user ASC' } })
+        .subscribe(val => {
+          let datauser = val['data']
+          this.listuser.push({ 'id_user': datauser[0].id_user, 'username': datauser[0].name })
+        });
     }
     else {
       let search = check.value
       for (var i = this.listuser.length - 1; i >= 0; i--) {
-        if (this.listuser[i] === search) {
+        if (this.listuser[i].id_user === search) {
           this.listuser.splice(i, 1);
         }
       }
-      console.log(this.listuser)
     }
   }
   doSubmit() {
@@ -136,5 +154,132 @@ export class StockopnameteamPage {
       });
       alert.present();
     }
+    else {
+      this.doGetTeamHeader()
+    }
+  }
+  getNextNoTeamHeader() {
+    return this.api.get('nextno/stock_opname_team_header/id')
+  }
+  getNextNoTeamLine() {
+    return this.api.get('nextno/stock_opname_team_line/id')
+  }
+  doGetTeamHeader() {
+    this.api.get("table/stock_opname_team_header", { params: { limit: 10000, filter: "id_header=" + "'" + this.so.id + "' AND location=" + "'" + this.rolecab + "'", sort: 'id_team DESC' } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data.length == 0) {
+          let idteam = 1
+          this.doPostTeamHeader(idteam)
+        }
+        else {
+          let idteam = parseInt(data[0].id_team) + 1
+          this.doPostTeamHeader(idteam)
+        }
+      });
+  }
+  doPostTeamHeader(idteam) {
+    this.getNextNoTeamHeader().subscribe(val => {
+      let nextno = val['nextno'];
+      const headers = new HttpHeaders()
+        .set("Content-Type", "application/json");
+      let date = moment().format('YYYY-MM-DD HH:mm');
+      this.api.post("table/stock_opname_team_header",
+        {
+          "id": nextno,
+          "id_team": idteam,
+          "id_header": this.so.id,
+          "location": this.rolecab,
+          "datecutoff": this.so.date,
+          "datetime": date,
+          "user_create": this.userid,
+          "status": 'OPEN'
+        },
+        { headers })
+        .subscribe(val => {
+          for (let i = 0; i < this.listuser.length; i++) {
+            let line = this.listuser[i]
+            this.doPostTeamLine(nextno, line, idteam)
+          }
+          this.doGetTeam()
+          this.doOffAdd()
+          this.listuser = [];
+        }, err => {
+          this.doPostTeamHeader(idteam)
+        });
+    }, err => {
+      this.doPostTeamHeader(idteam)
+    });
+  }
+  doPostTeamLine(nextno, line, idteam) {
+    this.getNextNoTeamLine().subscribe(val => {
+      let nextnoline = val['nextno'];
+      const headers = new HttpHeaders()
+        .set("Content-Type", "application/json");
+      let date = moment().format('YYYY-MM-DD HH:mm');
+      this.api.post("table/stock_opname_team_line",
+        {
+          "id": nextnoline,
+          "id_team_header": nextno,
+          "id_team": idteam,
+          "id_header": this.so.id,
+          "id_user": line.id_user,
+          "username": line.username,
+          "location": this.rolecab,
+          "datetime": date
+        },
+        { headers })
+        .subscribe(val => {
+        }, err => {
+          this.doPostTeamLine(nextno, line, idteam)
+        });
+    }, err => {
+      this.doPostTeamLine(nextno, line, idteam)
+    });
+  }
+  doGetTeamLine(tim) {
+    this.idteam = tim.id
+    this.api.get("table/stock_opname_team_line", { params: { limit: 10000, filter: "id_team_header=" + "'" + tim.id + "' AND id_team=" + "'" + tim.id_team + "' AND id_header=" + "'" + this.so.id + "' AND location=" + "'" + this.rolecab + "'", sort: 'id_user ASC' } })
+      .subscribe(val => {
+        this.teamline = val['data']
+      });
+  }
+  doHideGetTeamLine(tim) {
+    this.teamline = [];
+    this.idteam = '';
+  }
+  doGetTeamLineResult(tim) {
+    this.idteamresult = tim.id
+    this.api.get("table/stock_opname_team_line", { params: { limit: 10000, filter: "id_team_header=" + "'" + tim.id + "' AND id_team=" + "'" + tim.id_team + "' AND id_header=" + "'" + this.so.id + "' AND location=" + "'" + this.rolecab + "'", sort: 'id_user ASC' } })
+      .subscribe(val => {
+        this.teamlineresult = val['data']
+      });
+  }
+  doHideGetTeamLineResult(tim) {
+    this.teamlineresult = [];
+    this.idteamresult = '';
+  }
+  viewDetail(tim) {
+    this.api.get("table/stock_opname_team_line", { params: { limit: 10000, filter: "id_team_header=" + "'" + tim.id + "' AND id_team=" + "'" + tim.id_team + "' AND id_header=" + "'" + this.so.id + "' AND location=" + "'" + this.rolecab + "' AND id_user=" + "'" + this.userid + "'", sort: 'id_user ASC' } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data.length == 0) {
+          let alert = this.alertCtrl.create({
+            subTitle: 'Perhatian',
+            message: 'Id User anda tidak ada dalam daftar list team.',
+            buttons: ['OK']
+          });
+          alert.present();
+        }
+        else {
+          this.navCtrl.push('StockopnamedetailPage', {
+            so: this.so,
+            tim: tim
+          })
+        }
+      });
+  }
+  ionViewDidEnter() {
+    this.doGetTeam()
   }
 }

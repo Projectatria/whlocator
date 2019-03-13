@@ -13,14 +13,11 @@
 
 <ion-content>
   <ion-segment [(ngModel)]="so">
-    <ion-segment-button value="co">
+    <ion-segment-button *ngIf="rolegroup != 'STAFF'" value="co">
       Cut Off
     </ion-segment-button>
     <ion-segment-button value="list">
       List Location SO
-    </ion-segment-button>
-    <ion-segment-button value="rso">
-      Result SO
     </ion-segment-button>
   </ion-segment>
   <div [ngSwitch]="so">
