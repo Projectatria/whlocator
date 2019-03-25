@@ -166,63 +166,87 @@
             <ion-searchbar (ionInput)="getSearchInfoPO($event)" placeholder="Search PO Number"></ion-searchbar>
           </div>
           <ion-row class="row-content">
-            <ion-col padding class="col-content" col-xl-2 (click)="doSortInfoPO('order_no')">Order No
+            <ion-col col-2 padding class="col-content" col-xl-2 (click)="doSortInfoPO('order_no')">Order No
               <ion-icon *ngIf="filter == 'order_no' && sortInfoPO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
               <ion-icon *ngIf="filter == 'order_no' && sortInfoPO == 'DESC'" name="md-arrow-dropup"></ion-icon>
             </ion-col>
-            <ion-col padding class="col-content" col-xl-2 (click)="doSortInfoPO('batch_no')">Batch No
+            <ion-col col-2 padding class="col-content" col-xl-2 (click)="doSortInfoPO('batch_no')">Batch No
               <ion-icon *ngIf="filter == 'doc_no' && sortInfoPO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
               <ion-icon *ngIf="filter == 'doc_no' && sortInfoPO == 'DESC'" name="md-arrow-dropup"></ion-icon>
             </ion-col>
-            <ion-col padding class="col-content" col-xl-2 (click)="doSortInfoPO('vendor_no')">Vendor No
+            <ion-col col-2 padding class="col-content" col-xl-2 (click)="doSortInfoPO('vendor_no')">Vendor No
               <ion-icon *ngIf="filter == 'total_item' && sortInfoPO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
               <ion-icon *ngIf="filter == 'total_item' && sortInfoPO == 'DESC'" name="md-arrow-dropup"></ion-icon>
             </ion-col>
-            <ion-col padding class="col-content" col-xl-2 (click)="doSortInfoPO('expected_receipt_date')">Estimated Time Of Arrival
+            <ion-col col-2 padding class="col-content" col-xl-2 (click)="doSortInfoPO('expected_receipt_date')">Estimated Time Of Arrival
               <ion-icon *ngIf="filter == 'transfer_date' && sortInfoPO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
               <ion-icon *ngIf="filter == 'transfer_date' && sortInfoPO == 'DESC'" name="md-arrow-dropup"></ion-icon>
             </ion-col>
-            <ion-col padding class="col-content" col-xl-2 (click)="doSortInfoPO('status')">Status
+            <ion-col col-2 padding class="col-content" col-xl-2 (click)="doSortInfoPO('status')">Status
               <ion-icon *ngIf="filter == 'status' && sortInfoPO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
               <ion-icon *ngIf="filter == 'status' && sortInfoPO == 'DESC'" name="md-arrow-dropup"></ion-icon>
             </ion-col>
-            <ion-col padding class="col-content" col-xl-2>Options
+            <ion-col col-2 padding class="col-content" col-xl-2>Options
             </ion-col>
           </ion-row>
-          <ion-row>
-            <ion-col col-xl-2 style="padding-top:15px;">
-              <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchOrderNo($event.target.value)" (keyup)="getSearchOrderNo($event.target.value)"></ion-input>
+          <!-- <ion-row>
+            <ion-col col-xl-2 style="padding:0px;background: #fff;border:1px solid;border-color:#dedede;">
+              <ion-input placeholder="Search" (keydown)="getSearchOrderNo($event.target.value)" (keyup)="getSearchOrderNo($event.target.value)"></ion-input>
             </ion-col>
-            <ion-col col-xl-2 style="padding-top:15px;">
-              <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchBatchNo($event.target.value)" (keyup)="getSearchBatchNo($event.target.value)"></ion-input>
+            <ion-col col-xl-2 style="padding:0px;background: #fff;border:1px solid;border-color:#dedede;">
+              <ion-input placeholder="Search" (keydown)="getSearchBatchNo($event.target.value)" (keyup)="getSearchBatchNo($event.target.value)"></ion-input>
             </ion-col>
-            <ion-col col-xl-2 style="padding-top:15px;">
-              <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchVendorNo($event.target.value)" (keyup)="getSearchVendorNo($event.target.value)"></ion-input>
+            <ion-col col-xl-2 style="padding:0px;background: #fff;border:1px solid;border-color:#dedede;">
+              <ion-input placeholder="Search" (keydown)="getSearchVendorNo($event.target.value)" (keyup)="getSearchVendorNo($event.target.value)"></ion-input>
             </ion-col>
-            <ion-col col-xl-2 style="padding-top:15px;">
-              <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchEstimated($event.target.value)" (keyup)="getSearchEstimated($event.target.value)"></ion-input>
+            <ion-col col-xl-2 style="padding:0px;background: #fff;border:1px solid;border-color:#dedede;">
+              <ion-input placeholder="Search" (keydown)="getSearchEstimated($event.target.value)" (keyup)="getSearchEstimated($event.target.value)"></ion-input>
             </ion-col>
-            <ion-col col-xl-2 style="padding-top:15px;">
-              <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchStatus($event.target.value)" (keyup)="getSearchStatus($event.target.value)"></ion-input>
+            <ion-col col-xl-2 style="padding:0px;background: #fff;border:1px solid;border-color:#dedede;">
+              <ion-input placeholder="Search" (keydown)="getSearchStatus($event.target.value)" (keyup)="getSearchStatus($event.target.value)"></ion-input>
             </ion-col>
-          </ion-row>
-          <ion-row class="row-content-list" *ngFor="let info of infopo">
-            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailInfoPO(info)">
+          </ion-row> -->
+          <ion-row class="row-content-list" *ngFor="let info of infopo ; let i = index">
+            <ion-col *ngIf="info.index % 2 == 0" col-2 padding class="col-content-genap" col-xl-2 (click)="viewDetailInfoPO(info)">
               {{info.No_}}
             </ion-col>
-            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailInfoPO(info)">
+            <ion-col *ngIf="info.index % 2 == 0" col-2 padding class="col-content-genap" col-xl-2 (click)="viewDetailInfoPO(info)">
               {{info.batchno}}
             </ion-col>
-            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailInfoPO(info)">
+            <ion-col *ngIf="info.index % 2 == 0" col-2 padding class="col-content-genap" col-xl-2 (click)="viewDetailInfoPO(info)">
               {{info["Buy-from Vendor No_"]}}
             </ion-col>
-            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailInfoPO(info)">
+            <ion-col *ngIf="info.index % 2 == 0" col-2 padding class="col-content-genap" col-xl-2 (click)="viewDetailInfoPO(info)">
               {{info["Order Date"] | date:"dd MMMM yyyy"}}
             </ion-col>
-            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailInfoPO(info)">
+            <ion-col *ngIf="info.index % 2 == 0" col-2 padding class="col-content-genap" col-xl-2 (click)="viewDetailInfoPO(info)">
               {{info.Status}}
             </ion-col>
-            <ion-col padding class="col-content" col-xl-2>
+            <ion-col *ngIf="info.index % 2 == 0" col-2 padding class="col-content-genap" col-xl-2>
+              <button *ngIf="info.Status == 1" item-end ion-button clear color="greenlake" (click)="doOpenToPIC(info)">
+                <ion-icon name="md-open" style="font-size:30px;"></ion-icon>
+              </button>
+              <button *ngIf="info.Status == 1" item-end ion-button clear color="greenlake" (click)="doPostingInfoPO(info)">
+                <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
+              </button>
+            </ion-col>
+
+            <ion-col *ngIf="info.index % 2 != 0" col-2 padding class="col-content-ganjil" col-xl-2 (click)="viewDetailInfoPO(info)">
+              {{info.No_}}
+            </ion-col>
+            <ion-col *ngIf="info.index % 2 != 0" col-2 padding class="col-content-ganjil" col-xl-2 (click)="viewDetailInfoPO(info)">
+              {{info.batchno}}
+            </ion-col>
+            <ion-col *ngIf="info.index % 2 != 0" col-2 padding class="col-content-ganjil" col-xl-2 (click)="viewDetailInfoPO(info)">
+              {{info["Buy-from Vendor No_"]}}
+            </ion-col>
+            <ion-col *ngIf="info.index % 2 != 0" col-2 padding class="col-content-ganjil" col-xl-2 (click)="viewDetailInfoPO(info)">
+              {{info["Order Date"] | date:"dd MMMM yyyy"}}
+            </ion-col>
+            <ion-col *ngIf="info.index % 2 != 0" col-2 padding class="col-content-ganjil" col-xl-2 (click)="viewDetailInfoPO(info)">
+              {{info.Status}}
+            </ion-col>
+            <ion-col *ngIf="info.index % 2 != 0" col-2 padding class="col-content-ganjil" col-xl-2>
               <button *ngIf="info.Status == 1" item-end ion-button clear color="greenlake" (click)="doOpenToPIC(info)">
                 <ion-icon name="md-open" style="font-size:30px;"></ion-icon>
               </button>
@@ -233,23 +257,23 @@
           </ion-row>
         </ion-grid>
       </div>
-      <ion-grid>
-        <ion-row>
-          <ion-col col-4>
+      <ion-grid style="background: #fff;">
+        <ion-row style="background: #fff;">
+          <ion-col col-4 style="background: #fff;">
 
           </ion-col>
-          <ion-col col-4 style="text-align: center;">
+          <ion-col col-4 style="text-align: center;background: #fff;">
             <ion-col>
               <button ion-button (click)="doPrevious()" [disabled]="pagination == 1" color="greenlake">
                 <i class="fas fa-angle-left"></i>
               </button>
             </ion-col>
-            <ion-col>
+            <ion-col style="background: #fff;">
               <button ion-button color="greenlake">
                 {{pagination}}
               </button>
             </ion-col>
-            <ion-col>
+            <ion-col style="background: #fff;">
               <button ion-button (click)="doNext()" color="greenlake" [disabled]="halamaninfopo < 0">
                 <i class="fas fa-angle-right"></i>
               </button>

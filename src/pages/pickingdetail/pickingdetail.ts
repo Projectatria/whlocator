@@ -57,7 +57,8 @@ export class PickingdetailPage {
     });
   }
   getSOD() {
-    this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Delivery Management Line", filter: "[Receipt No_]=" + "'" + this.receiptno + "'"} }).subscribe(val => {
+    this.api.get("table/delivery_order_line", { params: { limit: 1000, filter: "receipt_no=" + "'" + this.receiptno + "'", sort: "line_no ASC, part_line_no ASC " } })
+    .subscribe(val => {
       this.picking_detail = val['data'];
       this.totaldata = val['count'];
     })

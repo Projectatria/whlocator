@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MenuController, AlertController, Platform, IonicPage, NavController, NavParams } from 'ionic-angular';
+import { ActionSheetController, MenuController, AlertController, Platform, IonicPage, NavController, NavParams } from 'ionic-angular';
 import { ApiProvider } from '../../providers/api/api';
 import { LoginPage } from '../../pages/login/login';
 import { Storage } from '@ionic/storage';
@@ -30,6 +30,7 @@ export class UsersPage {
     public platform: Platform,
     public alert: AlertController,
     public fb: FormBuilder,
+    public actionSheetCtrl: ActionSheetController,
     public storage: Storage) {
     this.param = 'iduser'
     this.sort = 'ASC'
@@ -177,6 +178,7 @@ export class UsersPage {
     this.addusersshow = false;
   }
   doOpenAddUsers() {
+    this.myForm.reset()
     this.addusersshow = true;
   }
   doOffUpdateUsers() {
@@ -348,5 +350,35 @@ export class UsersPage {
           this.users = val['data']
         });
     }
+  }
+  doOpenOptions(user) {
+    let actionSheet = this.actionSheetCtrl.create({
+      title: 'Options',
+      buttons: [
+        {
+          icon: 'md-sync',
+          text: 'Update',
+          handler: () => {
+            this.doOpenUpdateUsers(user)
+          }
+        },
+        {
+          icon: 'md-trash',
+          text: 'Delete',
+          handler: () => {
+            this.doDeleteUsers(user)
+          }
+        },
+        {
+          icon: 'md-close',
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+          }
+        }
+      ]
+    });
+
+    actionSheet.present();
   }
 }

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ModalController, MenuController, IonicPage, NavController, ToastController, NavParams, Refresher } from 'ionic-angular';
 import { ApiProvider } from '../../providers/api/api';
 import { AlertController } from 'ionic-angular';
-import { HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { UUID } from 'angular2-uuid';
 import { BarcodeScanner, BarcodeScannerOptions } from "@ionic-native/barcode-scanner";
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -76,7 +76,8 @@ export class ReceivingdetailPage {
     public menu: MenuController,
     public modalCtrl: ModalController,
     private barcodeScanner: BarcodeScanner,
-    public storage: Storage
+    public storage: Storage,
+    private http: HttpClient
   ) {
     this.myFormModal = formBuilder.group({
       location: ['', Validators.compose([Validators.required])],
@@ -660,6 +661,21 @@ export class ReceivingdetailPage {
           this.doOffStaging();
         })
   }
+  doPostReceiving(cek) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    this.http.post("http://10.10.10.7/posapi/api/poreceive",
+      {
+        "PONo": cek.order_no
+      },
+      { headers })
+      .subscribe(
+        (val) => {
+          console.log('Sukses')
+        }, err => {
+          this.doPostReceiving(cek)
+        });
+  }
   doSubmitRCV(cek) {
     let alert = this.alertCtrl.create({
       title: 'Confirm Submit',
@@ -756,7 +772,9 @@ export class ReceivingdetailPage {
                     "status": 'CLSD'
                   },
                   { headers })
-                  .subscribe();
+                  .subscribe(val => {
+                    this.doPostReceiving(cek)
+                  });
               }
             });
           }

@@ -64,6 +64,7 @@ export class PurchasingorderPage {
   public infopotemp = [];
   public pagination = 1;
   public batchno = [];
+  public index = 0;
 
   constructor(
     public navCtrl: NavController,
@@ -212,7 +213,7 @@ export class PurchasingorderPage {
                     let week1 = new Date(date.getFullYear(), 0, 4);
                     // Adjust to Thursday in week 1 and count number of weeks from date to week1.
                     let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                    - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                      - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
                     let batchfix = '';
                     if (batch < 10) {
                       batchfix = '0' + batch.toString()
@@ -222,6 +223,8 @@ export class PurchasingorderPage {
                     }
                     let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
                     data[i]["batchno"] = batchno
+                    this.index = this.index + 1
+                    data[i]["index"] = this.index
                     this.infopo.push(data[i]);
                   }
                   else if (this.porelease.length) {
@@ -236,7 +239,7 @@ export class PurchasingorderPage {
                       let week1 = new Date(date.getFullYear(), 0, 4);
                       // Adjust to Thursday in week 1 and count number of weeks from date to week1.
                       let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                      - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                        - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
                       let batchfix = '';
                       if (batch < 10) {
                         batchfix = '0' + batch.toString()
@@ -246,12 +249,13 @@ export class PurchasingorderPage {
                       }
                       let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
                       data[i]["batchno"] = batchno
+                      this.index = this.index + 1
+                      data[i]["index"] = this.index
                       this.infopo.push(data[i]);
                     }
                   }
                 });
             }
-            console.log(this.infopo)
             if (data.length == 0) {
               this.halamaninfopo = -1
             }
@@ -288,7 +292,7 @@ export class PurchasingorderPage {
                     let week1 = new Date(date.getFullYear(), 0, 4);
                     // Adjust to Thursday in week 1 and count number of weeks from date to week1.
                     let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                    - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                      - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
                     let batchfix = '';
                     if (batch < 10) {
                       batchfix = '0' + batch.toString()
@@ -298,6 +302,8 @@ export class PurchasingorderPage {
                     }
                     let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
                     data[i]["batchno"] = batchno
+                    this.index = this.index + 1
+                    data[i]["index"] = this.index
                     this.infopo.push(data[i]);
                   }
                   else if (this.porelease.length) {
@@ -312,7 +318,7 @@ export class PurchasingorderPage {
                       let week1 = new Date(date.getFullYear(), 0, 4);
                       // Adjust to Thursday in week 1 and count number of weeks from date to week1.
                       let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                      - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                        - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
                       let batchfix = '';
                       if (batch < 10) {
                         batchfix = '0' + batch.toString()
@@ -322,12 +328,13 @@ export class PurchasingorderPage {
                       }
                       let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
                       data[i]["batchno"] = batchno
+                      this.index = this.index + 1
+                      data[i]["index"] = this.index
                       this.infopo.push(data[i]);
                     }
                   }
                 });
             }
-            console.log(this.infopo)
             if (data.length == 0) {
               this.halamaninfopo = -1
             }
@@ -550,7 +557,7 @@ export class PurchasingorderPage {
                 let week1 = new Date(date.getFullYear(), 0, 4);
                 // Adjust to Thursday in week 1 and count number of weeks from date to week1.
                 let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                  - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
                 let batchfix = '';
                 if (batch < 10) {
                   batchfix = '0' + batch.toString()
@@ -560,6 +567,8 @@ export class PurchasingorderPage {
                 }
                 let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
                 data[i]["batchno"] = batchno
+                this.index = this.index + 1
+                data[i]["index"] = this.index
                 this.infopo.push(data[i]);
               }
               else if (this.porelease.length) {
@@ -574,7 +583,7 @@ export class PurchasingorderPage {
                   let week1 = new Date(date.getFullYear(), 0, 4);
                   // Adjust to Thursday in week 1 and count number of weeks from date to week1.
                   let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                  - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                    - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
                   let batchfix = '';
                   if (batch < 10) {
                     batchfix = '0' + batch.toString()
@@ -584,6 +593,8 @@ export class PurchasingorderPage {
                   }
                   let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
                   data[i]["batchno"] = batchno
+                  this.index = this.index + 1
+                  data[i]["index"] = this.index
                   this.infopo.push(data[i]);
                 }
               }
@@ -678,103 +689,79 @@ export class PurchasingorderPage {
   }
   doPostingInfoPO(info) {
     this.api.get("table/purchasing_order", { params: { filter: "order_no=" + "'" + info.No_ + "'" } })
-    .subscribe(val => {
-      this.porelease = val['data'];
-      if (this.porelease.length == 0) {
-        let alert = this.alertCtrl.create({
-          title: 'Perhatian',
-          subTitle: 'User PIC masih kosong',
-          buttons: ['OK']
-        });
-        alert.present();
-      }
-      else if (this.porelease.length != 0) {
-        if (this.porelease[0].batch_no == '') {
+      .subscribe(val => {
+        this.porelease = val['data'];
+        if (this.porelease.length == 0) {
           let alert = this.alertCtrl.create({
-            title: 'Confirm Posting',
-            message: 'Do you want to posting Order No ' + info.No_ + ' ?',
-            buttons: [
-              {
-                text: 'Cancel',
-                role: 'cancel',
-                handler: () => {
-      
-                }
-              },
-              {
-                text: 'Posting',
-                handler: () => {
-                  const headers = new HttpHeaders()
-                    .set("Content-Type", "application/json");
-                  let date = new Date(info["Order Date"]);
-                  date.setHours(0, 0, 0, 0);
-                  // Thursday in current week decides the year.
-                  date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-                  // January 4 is always in week 1.
-                  let week1 = new Date(date.getFullYear(), 0, 4);
-                  // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                  let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                  - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
-                  let batchfix = '';
-                  if (batch < 10) {
-                    batchfix = '0' + batch.toString()
+            title: 'Perhatian',
+            subTitle: 'User PIC masih kosong',
+            buttons: ['OK']
+          });
+          alert.present();
+        }
+        else if (this.porelease.length != 0) {
+          if (this.porelease[0].batch_no == '') {
+            let alert = this.alertCtrl.create({
+              title: 'Confirm Posting',
+              message: 'Do you want to posting Order No ' + info.No_ + ' ?',
+              buttons: [
+                {
+                  text: 'Cancel',
+                  role: 'cancel',
+                  handler: () => {
+
                   }
-                  else {
-                    batchfix = batch.toString()
-                  }
-                  let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
-                  this.api.put("table/purchasing_order",
-                    {
-                      "order_no": info.No_,
-                      "batch_no": batchno,
-                      "vendor_no": info["Buy-from Vendor No_"],
-                      "vendor_status": info["Gen_ Bus_ Posting Group"],
-                      "expected_receipt_date": info["Order Date"],
-                      "location_code": '81003',
-                      "status": 'INP2',
-                      "total_item_post": 0
-                    },
-                    { headers })
-                    .subscribe(
-                      (val) => {
-                        this.api.get("table/purchasing_order", { params: { filter: "order_no=" + "'" + info.No_ + "'" } })
-                          .subscribe(val => {
-                            this.porelease = val['data'];
-                            let pic = this.porelease[0].pic;
-                            this.doSendNotificationPic(pic)
-                            this.infopo = [];
-                            this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Purchase Header", filter: "Status=1 AND [Document Type]=1", sort: "[Order Date]" + " DESC " } })
-                              .subscribe(val => {
-                                let data = val['data'];
-                                for (let i = 0; i < data.length; i++) {
-                                  this.api.get("table/purchasing_order", { params: { filter: "order_no=" + "'" + data[i].No_ + "'" } })
-                                    .subscribe(val => {
-                                      this.porelease = val['data'];
-                                      if (this.porelease.length == 0) {
-                                        this.totaldatainfopo = val['count'];
-                                        this.searchinfopo = this.infopo;
-                                        let date = new Date(data[i]["Order Date"]);
-                                        date.setHours(0, 0, 0, 0);
-                                        // Thursday in current week decides the year.
-                                        date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-                                        // January 4 is always in week 1.
-                                        let week1 = new Date(date.getFullYear(), 0, 4);
-                                        // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                                        let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                                        - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
-                                        let batchfix = '';
-                                        if (batch < 10) {
-                                          batchfix = '0' + batch.toString()
-                                        }
-                                        else {
-                                          batchfix = batch.toString()
-                                        }
-                                        let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
-                                        data[i]["batchno"] = batchno
-                                        this.infopo.push(data[i]);
-                                      }
-                                      else if (this.porelease.length) {
-                                        if (this.porelease[0].batch_no == '') {
+                },
+                {
+                  text: 'Posting',
+                  handler: () => {
+                    const headers = new HttpHeaders()
+                      .set("Content-Type", "application/json");
+                    let date = new Date(info["Order Date"]);
+                    date.setHours(0, 0, 0, 0);
+                    // Thursday in current week decides the year.
+                    date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+                    // January 4 is always in week 1.
+                    let week1 = new Date(date.getFullYear(), 0, 4);
+                    // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+                    let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                      - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                    let batchfix = '';
+                    if (batch < 10) {
+                      batchfix = '0' + batch.toString()
+                    }
+                    else {
+                      batchfix = batch.toString()
+                    }
+                    let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
+                    this.api.put("table/purchasing_order",
+                      {
+                        "order_no": info.No_,
+                        "batch_no": batchno,
+                        "vendor_no": info["Buy-from Vendor No_"],
+                        "vendor_status": info["Gen_ Bus_ Posting Group"],
+                        "expected_receipt_date": info["Order Date"],
+                        "location_code": '81003',
+                        "status": 'INP2',
+                        "total_item_post": 0
+                      },
+                      { headers })
+                      .subscribe(
+                        (val) => {
+                          this.api.get("table/purchasing_order", { params: { filter: "order_no=" + "'" + info.No_ + "'" } })
+                            .subscribe(val => {
+                              this.porelease = val['data'];
+                              let pic = this.porelease[0].pic;
+                              this.doSendNotificationPic(pic)
+                              this.infopo = [];
+                              this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Purchase Header", filter: "Status=1 AND [Document Type]=1", sort: "[Order Date]" + " DESC " } })
+                                .subscribe(val => {
+                                  let data = val['data'];
+                                  for (let i = 0; i < data.length; i++) {
+                                    this.api.get("table/purchasing_order", { params: { filter: "order_no=" + "'" + data[i].No_ + "'" } })
+                                      .subscribe(val => {
+                                        this.porelease = val['data'];
+                                        if (this.porelease.length == 0) {
                                           this.totaldatainfopo = val['count'];
                                           this.searchinfopo = this.infopo;
                                           let date = new Date(data[i]["Order Date"]);
@@ -785,7 +772,7 @@ export class PurchasingorderPage {
                                           let week1 = new Date(date.getFullYear(), 0, 4);
                                           // Adjust to Thursday in week 1 and count number of weeks from date to week1.
                                           let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                                          - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                                            - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
                                           let batchfix = '';
                                           if (batch < 10) {
                                             batchfix = '0' + batch.toString()
@@ -795,137 +782,165 @@ export class PurchasingorderPage {
                                           }
                                           let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
                                           data[i]["batchno"] = batchno
+                                          this.index = this.index + 1
+                                          data[i]["index"] = this.index
                                           this.infopo.push(data[i]);
                                         }
-                                      }
-                                    });
-                                }
-                              });
-                            this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Purchase Line", filter: "[Document No_]=" + "'" + info.No_ + "'" } })
-                              .subscribe(val => {
-                                let data = val['data'];
-                                for (let i = 0; i < data.length; i++) {
-                                  const headers = new HttpHeaders()
-                                    .set("Content-Type", "application/json");
-                                  let uuid = UUID.UUID();
-                                  this.uuid = uuid;
-                                  let date = new Date(data[i]["Expected Receipt Date"]);
-                                  date.setHours(0, 0, 0, 0);
-                                  // Thursday in current week decides the year.
-                                  date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-                                  // January 4 is always in week 1.
-                                  let week1 = new Date(date.getFullYear(), 0, 4);
-                                  // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                                  let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                                  - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
-                                  let batchfix = '';
-                                  if (batch < 10) {
-                                    batchfix = '0' + batch.toString()
-                                  }
-                                  else {
-                                    batchfix = batch.toString()
-                                  }
-                                  let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
-                                  let code = data[i]["Document No_"] + data[i].No_
-                                  let qty = parseInt(data[i].Quantity)
-                                  this.api.post("table/purchasing_order_detail",
-                                    {
-                                      "code": code,
-                                      "order_no": data[i]["Document No_"],
-                                      "line_no": data[i]["Line No_"],
-                                      "batch_no": batchno,
-                                      "item_no": data[i].No_,
-                                      "location_code": '81003',
-                                      "expected_receipt_date": data[i]["Expected Receipt Date"],
-                                      "description": data[i].Description,
-                                      "unit": data[i]["Unit of Measure"],
-                                      "qty": qty,
-                                      "vendor_no": data[i]["Buy-from Vendor No_"],
-                                      "vendor_status": data[i]["Gen_ Bus_ Posting Group"],
-                                      "division": data[i].Division,
-                                      "item_category_code": data[i]["Item Category Code"],
-                                      "product_group_code": data[i]["Product Group Code"],
-                                      "status": 'OPEN',
-                                      "uuid": this.uuid
-                                    },
-                                    { headers })
-                                    .subscribe(
-                                      (val) => {
-                                      }, err => {
-                                        this.api.post("table/purchasing_order_detail",
-                                          {
-                                            "code": code,
-                                            "order_no": data[i]["Document No_"],
-                                            "line_no": data[i]["Line No_"],
-                                            "batch_no": batchno,
-                                            "item_no": data[i].No_,
-                                            "location_code": '81003',
-                                            "expected_receipt_date": data[i]["Expected Receipt Date"],
-                                            "description": data[i].Description,
-                                            "unit": data[i]["Unit of Measure"],
-                                            "qty": qty,
-                                            "vendor_no": data[i]["Buy-from Vendor No_"],
-                                            "vendor_status": data[i]["Gen_ Bus_ Posting Group"],
-                                            "division": data[i].Division,
-                                            "item_category_code": data[i]["Item Category Code"],
-                                            "product_group_code": data[i]["Product Group Code"],
-                                            "status": 'OPEN',
-                                            "uuid": this.uuid
-                                          },
-                                          { headers })
-                                          .subscribe(
-                                            (val) => {
-                                            }, err => {
-                                              this.api.post("table/purchasing_order_detail",
-                                                {
-                                                  "code": code,
-                                                  "order_no": data[i]["Document No_"],
-                                                  "line_no": data[i]["Line No_"],
-                                                  "batch_no": batchno,
-                                                  "item_no": data[i].No_,
-                                                  "location_code": '81003',
-                                                  "expected_receipt_date": data[i]["Expected Receipt Date"],
-                                                  "description": data[i].Description,
-                                                  "unit": data[i]["Unit of Measure"],
-                                                  "qty": qty,
-                                                  "vendor_no": data[i]["Buy-from Vendor No_"],
-                                                  "vendor_status": data[i]["Gen_ Bus_ Posting Group"],
-                                                  "division": data[i].Division,
-                                                  "item_category_code": data[i]["Item Category Code"],
-                                                  "product_group_code": data[i]["Product Group Code"],
-                                                  "status": 'OPEN',
-                                                  "uuid": this.uuid
-                                                },
-                                                { headers })
-                                                .subscribe(
-                                                  (val) => {
-                                                  }, err => {
-      
-                                                  });
-                                            });
+                                        else if (this.porelease.length) {
+                                          if (this.porelease[0].batch_no == '') {
+                                            this.totaldatainfopo = val['count'];
+                                            this.searchinfopo = this.infopo;
+                                            let date = new Date(data[i]["Order Date"]);
+                                            date.setHours(0, 0, 0, 0);
+                                            // Thursday in current week decides the year.
+                                            date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+                                            // January 4 is always in week 1.
+                                            let week1 = new Date(date.getFullYear(), 0, 4);
+                                            // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+                                            let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                                              - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                                            let batchfix = '';
+                                            if (batch < 10) {
+                                              batchfix = '0' + batch.toString()
+                                            }
+                                            else {
+                                              batchfix = batch.toString()
+                                            }
+                                            let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
+                                            data[i]["batchno"] = batchno
+                                            this.index = this.index + 1
+                                            data[i]["index"] = this.index
+                                            this.infopo.push(data[i]);
+                                          }
+                                        }
                                       });
-                                }
-                              });
+                                  }
+                                });
+                              this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Purchase Line", filter: "[Document No_]=" + "'" + info.No_ + "'" } })
+                                .subscribe(val => {
+                                  let data = val['data'];
+                                  for (let i = 0; i < data.length; i++) {
+                                    const headers = new HttpHeaders()
+                                      .set("Content-Type", "application/json");
+                                    let uuid = UUID.UUID();
+                                    this.uuid = uuid;
+                                    let date = new Date(data[i]["Expected Receipt Date"]);
+                                    date.setHours(0, 0, 0, 0);
+                                    // Thursday in current week decides the year.
+                                    date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+                                    // January 4 is always in week 1.
+                                    let week1 = new Date(date.getFullYear(), 0, 4);
+                                    // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+                                    let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                                      - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                                    let batchfix = '';
+                                    if (batch < 10) {
+                                      batchfix = '0' + batch.toString()
+                                    }
+                                    else {
+                                      batchfix = batch.toString()
+                                    }
+                                    let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
+                                    let code = data[i]["Document No_"] + data[i].No_
+                                    let qty = parseInt(data[i].Quantity)
+                                    this.api.post("table/purchasing_order_detail",
+                                      {
+                                        "code": code,
+                                        "order_no": data[i]["Document No_"],
+                                        "line_no": data[i]["Line No_"],
+                                        "batch_no": batchno,
+                                        "item_no": data[i].No_,
+                                        "location_code": '81003',
+                                        "expected_receipt_date": data[i]["Expected Receipt Date"],
+                                        "description": data[i].Description,
+                                        "unit": data[i]["Unit of Measure"],
+                                        "qty": qty,
+                                        "vendor_no": data[i]["Buy-from Vendor No_"],
+                                        "vendor_status": data[i]["Gen_ Bus_ Posting Group"],
+                                        "division": data[i].Division,
+                                        "item_category_code": data[i]["Item Category Code"],
+                                        "product_group_code": data[i]["Product Group Code"],
+                                        "status": 'OPEN',
+                                        "uuid": this.uuid
+                                      },
+                                      { headers })
+                                      .subscribe(
+                                        (val) => {
+                                        }, err => {
+                                          this.api.post("table/purchasing_order_detail",
+                                            {
+                                              "code": code,
+                                              "order_no": data[i]["Document No_"],
+                                              "line_no": data[i]["Line No_"],
+                                              "batch_no": batchno,
+                                              "item_no": data[i].No_,
+                                              "location_code": '81003',
+                                              "expected_receipt_date": data[i]["Expected Receipt Date"],
+                                              "description": data[i].Description,
+                                              "unit": data[i]["Unit of Measure"],
+                                              "qty": qty,
+                                              "vendor_no": data[i]["Buy-from Vendor No_"],
+                                              "vendor_status": data[i]["Gen_ Bus_ Posting Group"],
+                                              "division": data[i].Division,
+                                              "item_category_code": data[i]["Item Category Code"],
+                                              "product_group_code": data[i]["Product Group Code"],
+                                              "status": 'OPEN',
+                                              "uuid": this.uuid
+                                            },
+                                            { headers })
+                                            .subscribe(
+                                              (val) => {
+                                              }, err => {
+                                                this.api.post("table/purchasing_order_detail",
+                                                  {
+                                                    "code": code,
+                                                    "order_no": data[i]["Document No_"],
+                                                    "line_no": data[i]["Line No_"],
+                                                    "batch_no": batchno,
+                                                    "item_no": data[i].No_,
+                                                    "location_code": '81003',
+                                                    "expected_receipt_date": data[i]["Expected Receipt Date"],
+                                                    "description": data[i].Description,
+                                                    "unit": data[i]["Unit of Measure"],
+                                                    "qty": qty,
+                                                    "vendor_no": data[i]["Buy-from Vendor No_"],
+                                                    "vendor_status": data[i]["Gen_ Bus_ Posting Group"],
+                                                    "division": data[i].Division,
+                                                    "item_category_code": data[i]["Item Category Code"],
+                                                    "product_group_code": data[i]["Product Group Code"],
+                                                    "status": 'OPEN',
+                                                    "uuid": this.uuid
+                                                  },
+                                                  { headers })
+                                                  .subscribe(
+                                                    (val) => {
+                                                    }, err => {
+
+                                                    });
+                                              });
+                                        });
+                                  }
+                                });
+                            });
+                          let alert = this.alertCtrl.create({
+                            title: 'Sukses',
+                            subTitle: 'Posting Sukses',
+                            buttons: ['OK']
                           });
-                        let alert = this.alertCtrl.create({
-                          title: 'Sukses',
-                          subTitle: 'Posting Sukses',
-                          buttons: ['OK']
+                          alert.present();
+                        },
+                        response => {
+                        },
+                        () => {
                         });
-                        alert.present();
-                      },
-                      response => {
-                      },
-                      () => {
-                      });
+                  }
                 }
-              }
-            ]
-          });
-          alert.present();
+              ]
+            });
+            alert.present();
+          }
         }
-      }
-    });
+      });
   }
   doPostingPrepare(prepare) {
     let alert = this.alertCtrl.create({
@@ -1171,10 +1186,9 @@ export class PurchasingorderPage {
   }
   selectdateInfoPO(datearrivalInfoPO) {
     if (datearrivalInfoPO == '') {
-      this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Purchase Header", filter: "Status=1 AND [Document Type]=1", sort: "[Order Date]" + " DESC " } }).subscribe(val => {
-        this.infopo = val['data'];
-        this.totaldatainfopo = val['count'];
-      });
+      this.halaman = 0;
+      this.infopo = [];
+      this.getInfoPO()
     }
     else {
       this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Purchase Header", filter: "Status=1 AND [Document Type]=1" + " AND " + "[Order Date]=" + "'" + datearrivalInfoPO + "'" } }).subscribe(val => {
@@ -1277,7 +1291,7 @@ export class PurchasingorderPage {
                       let week1 = new Date(date.getFullYear(), 0, 4);
                       // Adjust to Thursday in week 1 and count number of weeks from date to week1.
                       let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                      - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                        - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
                       let batchfix = '';
                       if (batch < 10) {
                         batchfix = '0' + batch.toString()
@@ -1287,6 +1301,8 @@ export class PurchasingorderPage {
                       }
                       let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
                       data[i]["batchno"] = batchno
+                      this.index = this.index + 1
+                      data[i]["index"] = this.index
                       this.infopo.push(data[i]);
                     }
                     else if (this.porelease.length) {
@@ -1301,7 +1317,7 @@ export class PurchasingorderPage {
                         let week1 = new Date(date.getFullYear(), 0, 4);
                         // Adjust to Thursday in week 1 and count number of weeks from date to week1.
                         let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                        - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                          - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
                         let batchfix = '';
                         if (batch < 10) {
                           batchfix = '0' + batch.toString()
@@ -1311,6 +1327,8 @@ export class PurchasingorderPage {
                         }
                         let batchno = (date.getFullYear().toString().substr(-2)) + batchfix
                         data[i]["batchno"] = batchno
+                        this.index = this.index + 1
+                        data[i]["index"] = this.index
                         this.infopo.push(data[i]);
                       }
                     }

@@ -2,4 +2,14 @@ page-cekstock {
     .row-content-list {
         background: #fcfcfc;
     }
+    .col-content-ganjil {
+        background: #f5f5f5;
+        border: 1px solid;
+        border-color:#dedede;
+    }
+    .col-content-genap {
+        background: #fff;
+        border: 1px solid;
+        border-color:#dedede;
+    }
 }

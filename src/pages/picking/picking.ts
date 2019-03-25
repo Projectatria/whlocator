@@ -133,6 +133,7 @@ export class PickingPage {
         })
     });
     //this.getPickingSearch();
+    this.halaman = 0;
     this.getpicking();
     this.toggled = false;
     this.groupby = ""
@@ -163,26 +164,13 @@ export class PickingPage {
       }
       else {
         this.halaman++;
-        this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Delivery Management Header", offset: offsetpicking, filter: "Status=0", sort: "[Expected Receipt Date]" + " DESC " } })
+        this.api.get("table/delivery_order_header", { params: { limit: 30, offset: offsetpicking, filter: "Status='OPEN'", sort: "delivery_date DESC " } })
           .subscribe(val => {
             let data = val['data'];
             for (let i = 0; i < data.length; i++) {
-              this.api.get("table/picking_list", { params: { filter: "receipt_no=" + "'" + data[i]["Receipt No_"] + "'" } })
-                .subscribe(val => {
-                  this.pickingrelease = val['data'];
-                  if (this.pickingrelease.length == 0) {
-                    this.listpicking.push(data[i]);
-                    this.searchpicking.push(data[i]);
-                    this.totaldatalistpicking = val['count'];
-                  }
-                  else if (this.pickingrelease.length) {
-                    if (this.pickingrelease[0].status == 'OPEN') {
-                      this.listpicking.push(data[i]);
-                      this.searchpicking.push(data[i]);
-                      this.totaldatalistpicking = val['count'];
-                    }
-                  }
-                });
+              this.listpicking.push(data[i]);
+              this.searchpicking.push(data[i]);
+              this.totaldatalistpicking = val['count'];
             }
             if (data.length == 0) {
               this.halaman = -1
@@ -193,24 +181,7 @@ export class PickingPage {
     });
   }
   getPickingSearch() {
-    this.api.get("tablenav", { params: { limit: 10000, table: "CSB_LIVE$Delivery Management Header", filter: "Status=0", sort: "[Expected Receipt Date]" + " DESC " } })
-      .subscribe(val => {
-        let data = val['data'];
-        for (let i = 0; i < data.length; i++) {
-          this.api.get("table/picking_list", { params: { filter: "receipt_no=" + "'" + data[i]["Receipt No_"] + "'" } })
-            .subscribe(val => {
-              this.pickingreleasesearch = val['data'];
-              if (this.pickingreleasesearch.length == 0) {
-                this.listpickingsearch.push(data[i]);
-                this.totaldatalistpickingsearch = val['count'];
-                this.searchpicking = this.listpickingsearch;
-              }
-              else if (this.pickingreleasesearch.length) {
 
-              }
-            });
-        }
-      });
   }
   /*getSetGroupBy(groupby) {
     this.api.get('table/picking_list', { params: { limit: 30, filter: "status='OPEN'", group: groupby, groupSummary: "sum (qty) as qtysum" } })
@@ -339,7 +310,6 @@ export class PickingPage {
   doInfinite(infiniteScroll) {
     this.getpicking().then(response => {
       infiniteScroll.complete();
-
     })
   }
   toggleSearch() {
@@ -347,13 +317,11 @@ export class PickingPage {
   }
 
   doRefreshpicking(refresher) {
-    this.api.get('table/picking_list', { params: { limit: 30, filter: "status='OPEN'" } })
-      .subscribe(val => {
-        this.listpicking = val['data'];
-        this.totaldatapicking = val['count'];
-        this.searchpicking = this.listpicking;
-        refresher.complete();
-      });
+    this.listpicking = [];
+    this.halaman = 0;
+    this.getpicking().then(response => {
+      refresher.complete();
+    })
   }
   doRefreshpickingDetail(refresher) {
     this.api.get('table/picking_list', { params: { limit: 30, filter: "status='INP1'" } })
@@ -396,10 +364,10 @@ export class PickingPage {
     this.getUsers();
     this.getInfoPIC(listpick)
     document.getElementById("myModalPic").style.display = "block";
-    this.receiptno = listpick["Receipt No_"]
+    this.receiptno = listpick.receipt_no
   }
   getInfoPIC(listpick) {
-    this.api.get("table/picking_list", { params: { filter: "receipt_no=" + "'" + listpick["Receipt No_"] + "'" } })
+    this.api.get("table/picking_list", { params: { filter: "receipt_no=" + "'" + listpick.receipt_no + "'" } })
       .subscribe(val => {
         this.pickingrelease = val['data'];
         if (this.pickingrelease.length == 0) {
@@ -412,6 +380,18 @@ export class PickingPage {
       });
   }
   doSendToPic() {
+    this.api.get("table/picking_list", { params: { filter: "receipt_no=" + "'" + this.receiptno + "'" } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data.length == 0) {
+          this.doPostSendToPic()
+        }
+        else {
+          this.doPutSendToPic()
+        }
+      });
+  }
+  doPostSendToPic() {
     const headers = new HttpHeaders()
       .set("Content-Type", "application/json");
     let uuid = UUID.UUID();
@@ -421,6 +401,7 @@ export class PickingPage {
         "receipt_no": this.receiptno,
         "pic": this.myFormModal.value.pic,
         "status": 'OPEN',
+        "datetime": moment().format('YYYY-MM-DD HH:mm'),
         "uuid": this.uuid
       },
       { headers })
@@ -438,32 +419,46 @@ export class PickingPage {
             .subscribe(val => {
               this.pickingrelease = val['data'];
             });
-          this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Delivery Management Header", filter: "Status=0", sort: "[Expected Receipt Date]" + " DESC " } })
+          this.listpicking = [];
+          this.halaman = 0;
+          this.getpicking()
+        });
+  }
+  doPutSendToPic() {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    let uuid = UUID.UUID();
+    this.uuid = uuid;
+    this.api.put("table/picking_list",
+      {
+        "receipt_no": this.receiptno,
+        "pic": this.myFormModal.value.pic,
+        "status": 'OPEN',
+        "datetime": moment().format('YYYY-MM-DD HH:mm'),
+        "uuid": this.uuid
+      },
+      { headers })
+      .subscribe(
+        (val) => {
+          document.getElementById("myModalPic").style.display = "none";
+          this.myFormModal.reset()
+          let alert = this.alertCtrl.create({
+            title: 'Sukses',
+            subTitle: 'Save Sukses',
+            buttons: ['OK']
+          });
+          alert.present();
+          this.api.get("table/picking_list", { params: { filter: "receipt_no=" + "'" + this.receiptno + "'" } })
             .subscribe(val => {
-              let data = val['data'];
-              for (let i = 0; i < data.length; i++) {
-                this.api.get("table/picking_list", { params: { filter: "receipt_no=" + "'" + data[i]["Receipt No_"] + "'" } })
-                  .subscribe(val => {
-                    this.pickingrelease = val['data'];
-                    if (this.pickingrelease.length == 0) {
-                      this.listpicking.push(data[i]);
-                      this.totaldatalistpicking = val['count'];
-                      this.searchpicking = this.listpicking;
-                    }
-                    else if (this.pickingrelease.length) {
-                      if (this.pickingrelease[0].status == 'OPEN') {
-                        this.listpicking.push(data[i]);
-                        this.totaldatalistpicking = val['count'];
-                        this.searchpicking = this.listpicking;
-                      }
-                    }
-                  });
-              }
+              this.pickingrelease = val['data'];
             });
+          this.listpicking = [];
+          this.halaman = 0;
+          this.getpicking()
         });
   }
   doSendNotificationPic(listpick) {
-    this.api.get("table/picking_list", { params: { filter: "receipt_no=" + "'" + listpick["Receipt No_"] + "'" } })
+    this.api.get("table/picking_list", { params: { filter: "receipt_no=" + "'" + listpick.receipt_no + "'" } })
       .subscribe(val => {
         this.pickingrelease = val['data'];
         if (this.pickingrelease.length == 0) {
@@ -522,46 +517,28 @@ export class PickingPage {
                       .set("Content-Type", "application/json");
                     this.api.put("table/picking_list",
                       {
-                        "receipt_no": listpick["Receipt No_"],
-                        "receipt_date": listpick["Receipt Date"],
-                        "expected_receipt_date": listpick["Expected Receipt Date"],
-                        "store_no": listpick["Store No_"],
-                        "so_no": listpick["SO No_"],
+                        "receipt_no": listpick.receipt_no,
+                        "receipt_date": listpick.receipt_date,
+                        "expected_receipt_date": listpick.delivery_date,
+                        "store_no": listpick.store_no,
+                        "so_no": listpick.so_no,
+                        "datetime": moment().format('YYYY-MM-DD HH:mm'),
                         "status": 'INP1'
                       },
                       { headers })
                       .subscribe(val => {
-                        this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Delivery Management Line", filter: "[Receipt No_]=" + "'" + listpick["Receipt No_"] + "'" } })
+                        this.api.get("table/delivery_order_line", { params: { limit: 1000, filter: "receipt_no=" + "'" + listpick.receipt_no + "' AND line_no='10000'", sort: "line_no ASC, part_line_no ASC " } })
                           .subscribe(val => {
                             let data = val['data'];
                             for (let i = 0; i < data.length; i++) {
                               this.doPostPickingListDetail(data, i)
                             }
                           });
+                        this.doUpdateDOHeader(listpick)
                         this.doListPickingDetail();
                         this.listpicking = [];
-                        this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Delivery Management Header", filter: "Status=0", sort: "[Expected Receipt Date]" + " DESC " } })
-                          .subscribe(val => {
-                            let data = val['data'];
-                            for (let i = 0; i < data.length; i++) {
-                              this.api.get("table/picking_list", { params: { filter: "receipt_no=" + "'" + data[i]["Receipt No_"] + "'" } })
-                                .subscribe(val => {
-                                  this.pickingrelease = val['data'];
-                                  if (this.pickingrelease.length == 0) {
-                                    this.listpicking.push(data[i]);
-                                    this.totaldatalistpicking = val['count'];
-                                    this.searchpicking = this.listpicking;
-                                  }
-                                  else if (this.pickingrelease.length) {
-                                    if (this.pickingrelease[0].status == 'OPEN') {
-                                      this.listpicking.push(data[i]);
-                                      this.totaldatalistpicking = val['count'];
-                                      this.searchpicking = this.listpicking;
-                                    }
-                                  }
-                                });
-                            }
-                          });
+                        this.halaman = 0;
+                        this.getpicking()
                       });
                   }, (e) => {
                   });
@@ -571,6 +548,18 @@ export class PickingPage {
       });
 
   }
+  doUpdateDOHeader(listpick) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    this.api.put("table/delivery_order_header",
+      {
+        "uuid": listpick.uuid,
+        "status": 'PICKING'
+      },
+      { headers })
+      .subscribe(val => {
+      });
+  }
   doPostPickingListDetail(data, i) {
     const headers = new HttpHeaders()
       .set("Content-Type", "application/json");
@@ -578,31 +567,32 @@ export class PickingPage {
     this.uuid = uuid;
     this.api.post("table/picking_list_detail",
       {
-        "id": data[i]["Receipt No_"] + data[i]["Line No_"],
-        "receipt_no": data[i]["Receipt No_"],
-        "item_no": data[i]["Item No_"],
-        "description": data[i].Description,
-        "qty": data[i].Quantity,
-        "sent_by": data[i]["Sent By"],
-        "sjl_from": data[i]["SJL From"],
-        "UOM": data[i].UOM,
-        "retail_so_no": data[i]["Retail SO No_"],
+        "id": data[i].receipt_no + data[i].line_no,
+        "receipt_no": data[i].receipt_no,
+        "item_no": data[i].item_no,
+        "description": data[i].item_description,
+        "qty": data[i].item_qty,
+        "sent_by": data[i].sent_by,
+        "sjl_from": data[i].sjl_from,
+        "UOM": 'SET',
+        "retail_so_no": data[i].so_no,
         "status": 'OPEN',
+        "datetime": moment().format('YYYY-MM-DD HH:mm'),
         "uuid": this.uuid
       },
       { headers })
       .subscribe(val => {
-        this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Item", filter: "[No_]=" + "'" + data[i]["Item No_"] + "'" } }).subscribe(val => {
+        this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Item", filter: "[No_]=" + "'" + data[i].item_no + "'" } }).subscribe(val => {
           let dataitem = val['data']
           this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Production BOM Line", filter: "[Production BOM No_]=" + "'" + dataitem[0]["Production BOM No_"] + "'" } }).subscribe(val => {
             let datapart = val['data']
             if (datapart.length == 0) {
-              this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + data[i]["Item No_"] + "' AND location=" + "'" + this.rolecab + "'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
+              this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + data[i].item_no + "' AND location=" + "'" + this.rolecab + "'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
                 .subscribe(val => {
                   let totalqty = val['data'][0].qtysum
-                  if (data[i].Quantity <= totalqty) {
-                    for (let k = 0; k < data[i].Quantity; k++) {
-                      this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + data[i]["Item No_"] + "' AND location=" + "'" + this.rolecab + "' AND qty >= " + 1, sort: 'batch_no ASC, sub_location ASC' } })
+                  if (data[i].item_qty <= totalqty) {
+                    for (let k = 0; k < data[i].item_qty; k++) {
+                      this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + data[i].item_no + "' AND location=" + "'" + this.rolecab + "' AND qty >= " + 1, sort: 'batch_no ASC, sub_location ASC' } })
                         .subscribe(val => {
                           let datapickingresult = val['data']
                           if (datapickingresult.length != 0) {
@@ -633,8 +623,8 @@ export class PickingPage {
                 this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + datapart[j].No_ + "' AND location=" + "'" + this.rolecab + "'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
                   .subscribe(val => {
                     let totalqty = val['data'][0].qtysum
-                    if (data[i].Quantity <= totalqty) {
-                      for (let k = 0; k < data[i].Quantity; k++) {
+                    if (data[i].item_qty <= totalqty) {
+                      for (let k = 0; k < data[i].item_qty; k++) {
                         this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + datapart[j].No_ + "' AND location=" + "'" + this.rolecab + "' AND qty >=" + datapart[j].Quantity, sort: 'batch_no ASC, sub_location ASC' } })
                           .subscribe(val => {
                             let datapickingresult = val['data']
@@ -679,7 +669,7 @@ export class PickingPage {
   }
   viewDetail(listpick) {
     this.navCtrl.push('PickingdetailPage', {
-      receiptno: listpick["Receipt No_"]
+      receiptno: listpick.receipt_no
     });
   }
   viewDetailPicking(listpickdetail) {
@@ -698,10 +688,10 @@ export class PickingPage {
       .set("Content-Type", "application/json");
     this.api.post("table/picking_list_detail_part",
       {
-        "id": datai["Receipt No_"] + datai["Line No_"],
+        "id": datai.receipt_no + datai.line_no,
         "batch_no": datapicking.batch_no,
-        "receipt_no": datai["Receipt No_"],
-        "item_no": datai["Item No_"],
+        "receipt_no": datai.receipt_no,
+        "item_no": datai.item_no,
         "bom_no": dataj["Production BOM No_"],
         "part_no": dataj.No_,
         "line_no": dataj["Line No_"],
@@ -710,8 +700,9 @@ export class PickingPage {
         "location": datapicking.location,
         "sub_location": datapicking.sub_location,
         "UOM": dataj["Unit of Measure Code"],
-        "retail_so_no": datai["Retail SO No_"],
+        "retail_so_no": datai.so_no,
         "status": 'OPEN',
+        "datetime": moment().format('YYYY-MM-DD HH:mm'),
         "uuid": UUID.UUID()
       },
       { headers })
@@ -729,8 +720,8 @@ export class PickingPage {
       {
         "id": dataupd[0].id,
         "batch_no": datapicking.batch_no,
-        "receipt_no": datai["Receipt No_"],
-        "item_no": datai["Item No_"],
+        "receipt_no": datai.receipt_no,
+        "item_no": datai.item_no,
         "bom_no": dataj["Production BOM No_"],
         "part_no": dataj.No_,
         "line_no": dataj["Line No_"],
@@ -739,8 +730,9 @@ export class PickingPage {
         "location": datapicking.location,
         "sub_location": datapicking.sub_location,
         "UOM": dataj["Unit of Measure Code"],
-        "retail_so_no": datai["Retail SO No_"],
+        "retail_so_no": datai.so_no,
         "status": 'OPEN',
+        "datetime": moment().format('YYYY-MM-DD HH:mm'),
         "uuid": dataupd[0].uuid
       },
       { headers })
@@ -752,7 +744,7 @@ export class PickingPage {
       });
   }
   doPostPickingListDetailPart(k, datai, dataj, datapicking) {
-    this.api.get("table/picking_list_detail_part", { params: { limit: 100, filter: "receipt_no=" + "'" + datai["Receipt No_"] + "' AND item_no=" + "'" + datai["Item No_"] + "' AND part_no=" + "'" + dataj.No_ + "'" } })
+    this.api.get("table/picking_list_detail_part", { params: { limit: 100, filter: "receipt_no=" + "'" + datai.receipt_no + "' AND item_no=" + "'" + datai.item_no + "' AND part_no=" + "'" + dataj.No_ + "'" } })
       .subscribe(val => {
         let dataupd = val['data']
         if (dataupd.length != 0) {
@@ -775,20 +767,21 @@ export class PickingPage {
       .set("Content-Type", "application/json");
     this.api.post("table/picking_list_detail_part",
       {
-        "id": datai["Receipt No_"] + datai["Line No_"],
+        "id": datai.receipt_no + datai.line_no,
         "batch_no": datapicking.batch_no,
-        "receipt_no": datai["Receipt No_"],
-        "item_no": datai["Item No_"],
+        "receipt_no": datai.receipt_no,
+        "item_no": datai.item_no,
         "bom_no": 'NOT FOUND',
-        "part_no": datai["Item No_"],
+        "part_no": datai.item_no,
         "line_no": '10000',
-        "description": datai.Description,
+        "description": datai.item_description,
         "qty": 1,
         "location": datapicking.location,
         "sub_location": datapicking.sub_location,
         "UOM": datai.UOM,
-        "retail_so_no": datai["Retail SO No_"],
+        "retail_so_no": datai.so_no,
         "status": 'OPEN',
+        "datetime": moment().format('YYYY-MM-DD HH:mm'),
         "uuid": UUID.UUID()
       },
       { headers })
@@ -807,18 +800,19 @@ export class PickingPage {
       {
         "id": dataupd[0].id,
         "batch_no": datapicking.batch_no,
-        "receipt_no": datai["Receipt No_"],
-        "item_no": datai["Item No_"],
+        "receipt_no": datai.receipt_no,
+        "item_no": datai.item_no,
         "bom_no": 'NOT FOUND',
-        "part_no": datai["Item No_"],
+        "part_no": datai.item_no,
         "line_no": '10000',
-        "description": datai.Description,
+        "description": datai.item_description,
         "qty": parseInt(dataupd[0].qty) + 1,
         "location": datapicking.location,
         "sub_location": datapicking.sub_location,
         "UOM": datai.UOM,
-        "retail_so_no": datai["Retail SO No_"],
+        "retail_so_no": datai.so_no,
         "status": 'OPEN',
+        "datetime": moment().format('YYYY-MM-DD HH:mm'),
         "uuid": dataupd[0].uuid
       },
       { headers })
@@ -831,7 +825,7 @@ export class PickingPage {
       });
   }
   doPostPickingListDetailPartNull(datai, datapicking) {
-    this.api.get("table/picking_list_detail_part", { params: { limit: 100, filter: "receipt_no=" + "'" + datai["Receipt No_"] + "' AND batch_no=" + "'" + datapicking.batch_no + "' AND item_no=" + "'" + datai["Item No_"] + "' AND part_no=" + "'" + datai["Item No_"] + "' AND line_no=" + "'10000'" } })
+    this.api.get("table/picking_list_detail_part", { params: { limit: 100, filter: "receipt_no=" + "'" + datai.receipt_no + "' AND batch_no=" + "'" + datapicking.batch_no + "' AND item_no=" + "'" + datai.item_no + "' AND part_no=" + "'" + datai.item_no + "' AND line_no=" + "'10000'" } })
       .subscribe(val => {
         let dataupd = val['data']
         if (dataupd.length != 0) {

@@ -17,6 +17,14 @@ import { Storage } from '@ionic/storage';
 export class CekstockPage {
 
   public stock = [];
+  public name: any;
+  public userid: any;
+  public role = [];
+  public roleid: any;
+  public rolegroup: any;
+  public rolecab: any;
+  public roleiddetail = [];
+  public rolenamedetail: any;
 
   constructor(
     public navCtrl: NavController,
@@ -31,10 +39,28 @@ export class CekstockPage {
     public actionSheetCtrl: ActionSheetController,
     public storage: Storage,
     public loadingCtrl: LoadingController) {
-    this.doGetStock()
+    this.storage.get('name').then((val) => {
+      this.name = val;
+    });
+    this.storage.get('userid').then((val) => {
+      this.userid = val;
+      this.api.get('table/user_role', { params: { filter: "id_user=" + "'" + this.userid + "'" } })
+        .subscribe(val => {
+          this.role = val['data'];
+          this.roleid = this.role[0].id_role;
+          this.rolegroup = this.role[0].id_group;
+          this.rolecab = this.role[0].id_cab;
+          this.api.get('table/role', { params: { filter: "id_role=" + "'" + this.roleid + "'" } })
+            .subscribe(val => {
+              this.roleiddetail = val['data'];
+              this.rolenamedetail = this.roleiddetail[0].name;
+            });
+          this.doGetStock()
+        });
+    });
   }
   doGetStock() {
-    this.api.get('table/stock', { params: { limit: 100, filter: "qty !=0" } })
+    this.api.get('table/stock', { params: { limit: 100, filter: "qty !=0 AND location=" + "'" + this.rolecab + "'" } })
       .subscribe(val => {
         this.stock = val['data']
       });
@@ -43,7 +69,7 @@ export class CekstockPage {
     let value = ev;
     // if the value is an empty string don't filter the items
     if (value && value.trim() != '') {
-      this.api.get('table/stock', { params: { limit: 30, filter: "qty !=0 AND batch_no LIKE " + "'%" + value + "%'" } })
+      this.api.get('table/stock', { params: { limit: 30, filter: "qty !=0 AND batch_no LIKE " + "'%" + value + "%' AND location=" + "'" + this.rolecab + "'" } })
         .subscribe(val => {
           let datastock = val['data'];
           this.stock = datastock.filter(stock => {
@@ -60,7 +86,7 @@ export class CekstockPage {
     let value = ev;
     // if the value is an empty string don't filter the items
     if (value && value.trim() != '') {
-      this.api.get('table/stock', { params: { limit: 30, filter: "qty !=0 AND item_no LIKE " + "'%" + value + "%'" } })
+      this.api.get('table/stock', { params: { limit: 30, filter: "qty !=0 AND item_no LIKE " + "'%" + value + "%' AND location=" + "'" + this.rolecab + "'" } })
         .subscribe(val => {
           let datastock = val['data'];
           this.stock = datastock.filter(stock => {
@@ -77,7 +103,7 @@ export class CekstockPage {
     let value = ev;
     // if the value is an empty string don't filter the items
     if (value && value.trim() != '') {
-      this.api.get('table/stock', { params: { limit: 30, filter: "qty !=0 AND location LIKE " + "'%" + value + "%'" } })
+      this.api.get('table/stock', { params: { limit: 30, filter: "qty !=0 AND location LIKE " + "'%" + value + "%' AND location=" + "'" + this.rolecab + "'" } })
         .subscribe(val => {
           let datastock = val['data'];
           this.stock = datastock.filter(stock => {
@@ -94,7 +120,7 @@ export class CekstockPage {
     let value = ev;
     // if the value is an empty string don't filter the items
     if (value && value.trim() != '') {
-      this.api.get('table/stock', { params: { limit: 30, filter: "qty !=0 AND sub_location LIKE " + "'%" + value + "%'" } })
+      this.api.get('table/stock', { params: { limit: 30, filter: "qty !=0 AND sub_location LIKE " + "'%" + value + "%' AND location=" + "'" + this.rolecab + "'" } })
         .subscribe(val => {
           let datastock = val['data'];
           this.stock = datastock.filter(stock => {

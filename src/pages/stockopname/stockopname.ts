@@ -70,16 +70,16 @@ export class StockopnamePage {
           }
         });
     });
-    this.date = moment().format('dddd DD MM YYYY HH:mm:ss');
+    this.date = moment().format('dddd DD-MM-YYYY HH:mm:ss');
     var self = this;
     setInterval(function () {
-      self.date = moment().format('dddd DD MM YYYY HH:mm:ss');
+      self.date = moment().format('dddd DD-MM-YYYY HH:mm:ss');
     }, 1000);
   }
   doProses() {
     let alert = this.alertCtrl.create({
       title: 'Stock Opname',
-      message: 'Proses cut off ' + moment(this.date).format('dddd DD MM YYYY HH:mm') + '?',
+      message: 'Proses cut off ' + this.date + '?',
       buttons: [
         {
           text: 'Cancel',

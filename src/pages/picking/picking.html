@@ -80,41 +80,41 @@
           <ion-row>
             <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
               <ion-row style="border-bottom:1px solid;border-color:#dedede;">
-                <ion-col col-2 class="col-select" (click)="doSortPICK('Receipt No_')" style="padding-left:10px;">Receipt No
+                <ion-col col-2 class="col-select" (click)="doSortPICK('receipt_no')" style="padding-left:10px;">Receipt No
                   <ion-icon *ngIf="filter == 'invoice_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
                   <ion-icon *ngIf="filter == 'invoice_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
                 </ion-col>
-                <ion-col col-2 class="col-select" (click)="doSortPICK('Receipt Date')">Receipt Date
+                <ion-col col-2 class="col-select" (click)="doSortPICK('receipt_date')">Receipt Date
                   <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
                   <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
                 </ion-col>
-                <ion-col col-2 class="col-select" (click)="doSortPICK('Expected Receipt Date')">Expected Receipt Date
+                <ion-col col-2 class="col-select" (click)="doSortPICK('delivery_date')">Delivery Date
                   <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
                   <ion-icon *ngIf="filter == 'item_no' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
                 </ion-col>
-                <ion-col col-1 class="col-select" (click)="doSortPICK('Store No_')">Store No
+                <ion-col col-1 class="col-select" (click)="doSortPICK('store_no')">Store No
                   <ion-icon *ngIf="filter == 'qty' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
                   <ion-icon *ngIf="filter == 'qty' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
                 </ion-col>
-                <ion-col col-2 class="col-select" (click)="doSortPICK('SO No_')">So No
+                <ion-col col-2 class="col-select" (click)="doSortPICK('so_no')">So No
                   <ion-icon *ngIf="filter == 'room' && sortPUT == 'ASC'" name="md-arrow-dropdown"></ion-icon>
                   <ion-icon *ngIf="filter == 'room' && sortPUT == 'DESC'" name="md-arrow-dropup"></ion-icon>
                 </ion-col>
-                <ion-col col-1 class="col-select" (click)="doSortPICK('SO No_')">PIC
+                <ion-col col-1 class="col-select">PIC
                 </ion-col>
-                <ion-col col-1 class="col-select" (click)="doSortPICK('SO No_')">SEND
+                <ion-col col-1 class="col-select">SEND
                 </ion-col>
-                <ion-col col-1 class="col-select" (click)="doSortPICK('SO No_')">PRINT
+                <ion-col col-1 class="col-select">PRINT
                 </ion-col>
               </ion-row>
             </ion-col>
             <ion-col *ngFor="let listpick of listpicking" col-12>
               <ion-row class="row-content-list">
-                <ion-col col-2 padding class="col-content" (click)="viewDetail(listpick)">{{listpick["Receipt No_"]}}</ion-col>
-                <ion-col col-2 padding class="col-content" (click)="viewDetail(listpick)">{{listpick["Receipt Date"] | date: 'dd-MM-yyyy'}}</ion-col>
-                <ion-col col-2 padding class="col-content" (click)="viewDetail(listpick)">{{listpick["Expected Receipt Date"] | date: 'dd-MM-yyyy'}}</ion-col>
-                <ion-col col-1 padding class="col-content" (click)="viewDetail(listpick)">{{listpick["Store No_"]}}</ion-col>
-                <ion-col col-2 padding class="col-content" (click)="viewDetail(listpick)">{{listpick["SO No_"]}}</ion-col>
+                <ion-col col-2 padding class="col-content" (click)="viewDetail(listpick)">{{listpick.receipt_no}}</ion-col>
+                <ion-col col-2 padding class="col-content" (click)="viewDetail(listpick)">{{listpick.receipt_date | date: 'dd-MM-yyyy'}}</ion-col>
+                <ion-col col-2 padding class="col-content" (click)="viewDetail(listpick)">{{listpick.delivery_date | date: 'dd-MM-yyyy'}}</ion-col>
+                <ion-col col-1 padding class="col-content" (click)="viewDetail(listpick)">{{listpick.store_no}}</ion-col>
+                <ion-col col-2 padding class="col-content" (click)="viewDetail(listpick)">{{listpick.so_no}}</ion-col>
                 <ion-col col-1 padding class="col-content" (click)="doOpenToPIC(listpick)">
                   <ion-icon name="md-open" style="font-size:30px;color:#217481"></ion-icon>
                 </ion-col>
@@ -266,7 +266,7 @@
             <h2>
               <b>Receipt No : {{listpickdetail.receipt_no}}</b>
             </h2>
-            <p>Receipt Date : {{listpickdetail.receipt_date | date: "dd-MM-yyyy"}}</p>
+            <p>Delivery Date : {{listpickdetail.receipt_date | date: "dd-MM-yyyy"}}</p>
             <p>So No : {{listpickdetail.so_no}}</p>
             <ion-note *ngIf="roleid == 'ADMIN' || roleid == 'TL'">Pic : {{listpickdetail.pic}}</ion-note>
           </div>

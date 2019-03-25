@@ -90,14 +90,41 @@ export class PickingdetailpartPage {
     this.detailpicking = this.detailpicking ? false : true;
     this.getPickingResult(picking);
   }
+  dodetailpickingitem(picking) {
+    this.pickinglist = picking.item_no;
+    this.detailpicking = this.detailpicking ? false : true;
+    this.getPickingResultitem(picking);
+  }
+  dodetailpickingpart(picking) {
+    this.pickinglist = picking.part_no;
+    this.detailpicking = this.detailpicking ? false : true;
+    this.getPickingResultpart(picking);
+  }
+  dodetailpickinglocation(picking) {
+    this.pickinglist = picking.sub_location;
+    this.detailpicking = this.detailpicking ? false : true;
+    this.getPickingResultlocation(picking);
+  }
   getPickingResult(picking) {
-    // this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Item", filter: "[No_]=" + "'" + picking.item_no + "'" } }).subscribe(val => {
-    //   let dataitem = val['data']
-    //   this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Production BOM Line", filter: "[Production BOM No_]=" + "'" + dataitem[0]["Production BOM No_"] + "'" } }).subscribe(val => {
-    //     this.pickingresult = val['data']
-    //   });
-    // })
     this.api.get("table/picking_list_detail_part", { params: { limit: 1000, filter: "receipt_no=" + "'" + picking.receipt_no + "' AND item_no=" + "'" + picking.item_no + "' AND status = 'OPEN'", sort: 'line_no ASC' } })
+      .subscribe(val => {
+        this.pickingresult = val['data']
+      });
+  }
+  getPickingResultitem(picking) {
+    this.api.get("table/picking_list_detail_part", { params: { limit: 1000, filter: "receipt_no=" + "'" + this.receiptno + "' AND item_no=" + "'" + picking.item_no + "' AND status = 'OPEN'", sort: 'line_no ASC' } })
+      .subscribe(val => {
+        this.pickingresult = val['data']
+      });
+  }
+  getPickingResultpart(picking) {
+    this.api.get("table/picking_list_detail_part", { params: { limit: 1000, filter: "receipt_no=" + "'" + this.receiptno + "' AND part_no=" + "'" + picking.part_no + "' AND status = 'OPEN'", sort: 'line_no ASC' } })
+      .subscribe(val => {
+        this.pickingresult = val['data']
+      });
+  }
+  getPickingResultlocation(picking) {
+    this.api.get("table/picking_list_detail_part", { params: { limit: 1000, filter: "receipt_no=" + "'" + this.receiptno + "' AND sub_location=" + "'" + picking.sub_location + "' AND status = 'OPEN'", sort: 'line_no ASC' } })
       .subscribe(val => {
         this.pickingresult = val['data']
       });
@@ -124,21 +151,21 @@ export class PickingdetailpartPage {
       });
   }
   getDetailGroupByItems() {
-    this.api.get('table/picking_list_detail', { params: { limit: 30, filter: "receipt_no=" + "'" + this.receiptno + "' AND status = 'OPEN'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
+    this.api.get('table/picking_list_detail_part', { params: { limit: 30, filter: "receipt_no=" + "'" + this.receiptno + "' AND status = 'OPEN'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
       .subscribe(val => {
         this.picking_detail = val['data'];
         this.totaldata = val['count'];
       });
   }
   getDetailGroupByPart() {
-    this.api.get('table/picking_list_detail', { params: { limit: 30, filter: "receipt_no=" + "'" + this.receiptno + "' AND status = 'OPEN'", group: 'location_code', groupSummary: "sum (qty) as qtysum" } })
+    this.api.get('table/picking_list_detail_part', { params: { limit: 30, filter: "receipt_no=" + "'" + this.receiptno + "' AND status = 'OPEN'", group: 'part_no', groupSummary: "sum (qty) as qtysum" } })
       .subscribe(val => {
         this.picking_detail = val['data'];
         this.totaldata = val['count'];
       });
   }
   getDetailGroupByLocation() {
-    this.api.get('table/picking_list_detail', { params: { limit: 30, filter: "receipt_no=" + "'" + this.receiptno + "' AND status = 'OPEN'", group: 'location_code', groupSummary: "sum (qty) as qtysum" } })
+    this.api.get('table/picking_list_detail_part', { params: { limit: 30, filter: "receipt_no=" + "'" + this.receiptno + "' AND status = 'OPEN'", group: 'sub_location', groupSummary: "sum (qty) as qtysum" } })
       .subscribe(val => {
         this.picking_detail = val['data'];
         this.totaldata = val['count'];

@@ -114,16 +114,23 @@ ion-fab-list {
     color: #000000;
     cursor: pointer;
 }
-.col-content {
-    background:transparent;
+.col-content-genap {
+    background: #fff;
+    border: 1px solid;
+    border-color:#dedede;
     color:#000000;
-    border:0px;
     text-align:left;
-}
-.filter:hover {
     cursor: pointer;
 }
-.col-content {
+.col-content-ganjil {
+    background: #f5f5f5;
+    border: 1px solid;
+    border-color:#dedede;
+    color:#000000;
+    text-align:left;
+    cursor: pointer;
+}
+.filter:hover {
     cursor: pointer;
 }
 .closeModal {

@@ -48,10 +48,11 @@
           <img src="assets/imgs/noimage.jpg" alt="">
         </ion-avatar>
         <div no-padding>
-          <h2>No Item : {{picking["Item No_"]}}</h2>
-          <p>Description : {{picking.Description}}</p>
-          <p>Qty : {{picking.Quantity}} {{picking.UOM}}</p>
-          <p>Retail So No : {{picking["Retail SO No_"]}}</p>
+          <h2>No Item : {{picking.item_no}}</h2>
+          <h3>No Part : {{picking.part_no}} ({{picking.part_line_no}})</h3>
+          <p>{{picking.part_description}}</p>
+          <p>Qty : {{picking.part_qty}} {{picking.UOM}}</p>
+          <p>Retail So No : {{picking.so_no}}</p>
         </div>
       </ion-item>
     </ion-list>

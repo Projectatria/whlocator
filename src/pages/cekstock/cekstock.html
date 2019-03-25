@@ -14,38 +14,34 @@
 <ion-content>
   <ion-grid>
     <ion-row class="row-content">
-      <ion-col padding class="col-content">Batch No</ion-col>
-      <ion-col padding class="col-content">Item No</ion-col>
-      <ion-col padding class="col-content">Location</ion-col>
-      <ion-col padding class="col-content">Sub Location</ion-col>
-      <ion-col padding class="col-content">Qty</ion-col>
-      <ion-col padding class="col-content">Last Update</ion-col>
+      <ion-col col-3 padding class="col-content">Batch No</ion-col>
+      <ion-col col-3 padding class="col-content">Item No</ion-col>
+      <ion-col col-4 padding class="col-content">Sub Location</ion-col>
+      <ion-col col-2 padding class="col-content">Qty</ion-col>
     </ion-row>
     <ion-row>
-      <ion-col col-xl-2 style="padding-top:15px;">
-        <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchBatchNo($event.target.value)" (keyup)="getSearchBatchNo($event.target.value)"></ion-input>
+      <ion-col col-3 style="padding:0px;background: #fff;border: 1px solid;border-color:#dedede;border-top:0px;border-bottom:0px;">
+        <ion-input placeholder="Search" style="background: #fff;" (keydown)="getSearchBatchNo($event.target.value)" (keyup)="getSearchBatchNo($event.target.value)"></ion-input>
       </ion-col>
-      <ion-col col-xl-2 style="padding-top:15px;">
-        <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchItemNo($event.target.value)" (keyup)="getSearchItemNo($event.target.value)"></ion-input>
+      <ion-col col-3 style="padding:0px;background: #fff;border: 1px solid;border-color:#dedede;border-top:0px;border-bottom:0px;">
+        <ion-input placeholder="Search" style="background: #fff;" (keydown)="getSearchItemNo($event.target.value)" (keyup)="getSearchItemNo($event.target.value)"></ion-input>
       </ion-col>
-      <ion-col col-xl-2 style="padding-top:15px;">
-        <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchLocation($event.target.value)" (keyup)="getSearchLocation($event.target.value)"></ion-input>
+      <ion-col col-4 style="padding:0px;background: #fff;border: 1px solid;border-color:#dedede;border-top:0px;border-bottom:0px;">
+        <ion-input placeholder="Search" style="background: #fff;" (keydown)="getSearchSubLocation($event.target.value)" (keyup)="getSearchSubLocation($event.target.value)"></ion-input>
       </ion-col>
-      <ion-col col-xl-2 style="padding-top:15px;">
-        <ion-input style="border:1px solid;border-color:#dedede;" (keydown)="getSearchSubLocation($event.target.value)" (keyup)="getSearchSubLocation($event.target.value)"></ion-input>
-      </ion-col>
-      <ion-col col-xl-2 style="padding-top:15px;">
-      </ion-col>
-      <ion-col col-xl-2 style="padding-top:15px;">
+      <ion-col col-2 style="padding:0px;background: #fff;border: 1px solid;border-color:#dedede;border-top:0px;border-bottom:0px;">
       </ion-col>
     </ion-row>
     <ion-row *ngFor="let stok of stock" class="row-content-list">
-      <ion-col padding class="col-content">{{stok.batch_no}}</ion-col>
-      <ion-col padding class="col-content">{{stok.item_no}}</ion-col>
-      <ion-col padding class="col-content">{{stok.location}}</ion-col>
-      <ion-col padding class="col-content">{{stok.sub_location}}</ion-col>
-      <ion-col padding class="col-content">{{stok.qty}}</ion-col>
-      <ion-col padding class="col-content">{{stok.datetime | date: 'dd-MM-yyyy'}}</ion-col>
+      <ion-col *ngIf="stok.Row % 2 == 0" col-3 padding class="col-content-genap">{{stok.batch_no}}</ion-col>
+      <ion-col *ngIf="stok.Row % 2 == 0" col-3 padding class="col-content-genap">{{stok.item_no}}</ion-col>
+      <ion-col *ngIf="stok.Row % 2 == 0" col-4 padding class="col-content-genap">{{stok.sub_location}}</ion-col>
+      <ion-col *ngIf="stok.Row % 2 == 0" col-2 padding class="col-content-genap">{{stok.qty}}</ion-col>
+
+      <ion-col *ngIf="stok.Row % 2 != 0" col-3 padding class="col-content-ganjil">{{stok.batch_no}}</ion-col>
+      <ion-col *ngIf="stok.Row % 2 != 0" col-3 padding class="col-content-ganjil">{{stok.item_no}}</ion-col>
+      <ion-col *ngIf="stok.Row % 2 != 0" col-4 padding class="col-content-ganjil">{{stok.sub_location}}</ion-col>
+      <ion-col *ngIf="stok.Row % 2 != 0" col-2 padding class="col-content-ganjil">{{stok.qty}}</ion-col>
     </ion-row>
   </ion-grid>
 </ion-content>
