@@ -1,0 +1,81 @@
+<ion-header class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <button ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <div style="text-align:right;height:0px;">
+      <button class="btn-profile" ion-button clear style="color:#ffffff;background:transparent;font-size:18px;" (click)="doProfile()">
+        <ion-icon name="md-arrow-dropdown" style="margin-right:8px;"></ion-icon>
+        <h5 style="text-decoration: underline;">{{name}}</h5>
+      </button>
+    </div>
+    <ion-title class="side-title">
+      <div class="logo-atria">
+        <div style="height:45px;padding-top:10px;">Slot Installation {{calendar.day_id}} {{calendar.date}}-{{calendar.month_description}}-{{calendar.year}}</div>
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <div>
+    <ion-card style="width:98%;" padding>
+      <div class="right" style="height:0px;margin-left:46%;margin-top:0px;border:1px solid;border-color:#dedede;right:0px;width:54%;">
+        <div class="header" padding style="background: #217481;text-align:center;">
+          <h5 style="font-size:15px;font-weight: bold;color:#ffffff;">Slot Terpakai</h5>
+        </div>
+        <div class="body">
+          <ion-content style="padding-bottom:700px;border:1px solid;border-color:#eeeeee;">
+            <ion-item class="hoveritem" style="border-bottom: 1px solid;border-color:#eeeeee;margin-left:-15px;margin-top:-15px;width:111%;margin-bottom:15px;"
+              *ngFor="let slot of slotterpakaiall">
+              <div padding>
+                <h2>Receipt No : {{slot.receipt_no}}</h2>
+                <p>Location : {{slot.location_request}}</p>
+                <p>Date Request : {{slot.datetime | date:'dd-MM-yyyy'}}</p>
+              </div>
+            </ion-item>
+          </ion-content>
+        </div>
+      </div>
+      <div class="left-top" style="left:0px;width:45%;margin-top:-2px;">
+        <ion-row>
+          <ion-col col-6 style="margin-right:1px;margin-bottom:1px;background: #eeeeee;color:#217481;border-radius:2%;height:100px;font-weight: bold;">
+            <div style="text-align:center;">Total Slot</div>
+            <div style="text-align:center;font-size:50px;">{{calendar.slot_installation_total}}</div>
+          </ion-col>
+          <ion-col col-5.9 style="margin-bottom:1px;background: #eeeeee;color:#217481;border-radius:2%;height:100px;font-weight: bold;">
+            <div style="text-align:center;">Slot Terpakai</div>
+            <div style="text-align:center;font-size:50px;">{{slotterpakai}}</div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col col-6 style="margin-right:1px;background: #eb0303;border-radius:2%;color:#ffffff;height:100px;font-weight: bold;">
+            <div style="text-align:center;">Slot Tersedia</div>
+            <div style="text-align:center;font-size:50px;">{{calendar.slot_installation_available}}</div>
+          </ion-col>
+          <ion-col col-5.9 style="background: #16bd00;border-radius:2%;color:#ffffff;height:100px;font-weight: bold;" class="slotadd">
+            <div style="text-align:center;">Tambah Slot</div>
+            <div style="text-align:center;font-size:50px;">
+              <ion-icon class="hoverbutton" name="md-add" (click)="doAddSlot()"></ion-icon>
+            </div>
+          </ion-col>
+        </ion-row>
+      </div>
+      <div class="left-bottom" style="margin-top:10px;border:1px solid;border-color:#dedede;left:0px;width:45%;">
+        <div class="header" padding style="background: #217481;">
+          <h5 style="font-size:15px;font-weight: bold;color:#ffffff;text-align: center;">Slot Terakhir Ditambah</h5>
+        </div>
+        <ion-content style="padding-bottom:489px;">
+          <ion-item class="hoveritem" style="border-bottom: 1px solid;border-color:#eeeeee;margin-left:-15px;margin-top:-15px;width:111%;margin-bottom:15px;"
+            *ngFor="let history of historyslot">
+            <div padding>
+              <h2>Tanggal Buat Slot : {{history.datetime | date:'dd-MM-yyyy HH:mm'}}</h2>
+              <p>PIC Buat : {{history.pic_create}}</p>
+              <p>Slot : {{history.total_slot}}</p>
+            </div>
+          </ion-item>
+        </ion-content>
+      </div>
+    </ion-card>
+  </div>
+</ion-content>

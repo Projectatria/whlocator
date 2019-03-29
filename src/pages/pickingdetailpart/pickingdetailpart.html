@@ -106,7 +106,7 @@
         <ion-card *ngFor="let picking of picking_detail">
           <ion-item text-wrap>
             <h3 style="font-weight:bold;padding-bottom:5px;">ITEM NO - {{picking.item_no}}</h3>
-            <ion-note style="color:red" item-end>{{picking.qtysum}}</ion-note>
+            <ion-note style="font-size:18px;color:red" item-end>{{picking.qtysum}}</ion-note>
           </ion-item>
           <ion-row (click)="dodetailpickingitem(picking)" style="border-top:1px solid;border-color:#dedede;background: #dedede;">
             <ion-col style="text-align: center;">
@@ -154,7 +154,7 @@
         <ion-card *ngFor="let picking of picking_detail">
           <ion-item text-wrap>
             <h3 style="font-weight:bold;padding-bottom:5px;">PART NO - {{picking.part_no}}</h3>
-            <ion-note style="color:red" item-end>{{picking.qtysum}}</ion-note>
+            <ion-note style="font-size:18px;color:red" item-end>{{picking.qtysum}}</ion-note>
           </ion-item>
           <ion-row (click)="dodetailpickingpart(picking)" style="border-top:1px solid;border-color:#dedede;background: #dedede;">
             <ion-col style="text-align: center;">
@@ -202,7 +202,7 @@
         <ion-card *ngFor="let picking of picking_detail">
           <ion-item text-wrap>
             <h3 style="font-weight:bold;padding-bottom:5px;">LOCATION NO - {{picking.sub_location}}</h3>
-            <ion-note style="color:red" item-end>{{picking.qtysum}}</ion-note>
+            <ion-note style="font-size:18px;color:red" item-end>{{picking.qtysum}}</ion-note>
           </ion-item>
           <ion-row (click)="dodetailpickinglocation(picking)" style="border-top:1px solid;border-color:#dedede;background: #dedede;">
             <ion-col style="text-align: center;">

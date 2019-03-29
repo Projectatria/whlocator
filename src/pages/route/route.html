@@ -1,0 +1,294 @@
+<ion-header class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <button ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <div style="text-align:right;height:0px;">
+      <button *ngIf="vehicleshow == false" class="btn-profile" ion-button clear style="color:#ffffff;background:transparent;font-size:18px;"
+        (click)="doProfile()">
+        <ion-icon name="md-arrow-dropdown" style="margin-right:8px;"></ion-icon>
+        <h5 style="text-decoration: underline;">{{name}}</h5>
+      </button>
+      <button *ngIf="vehicleshow == true" class="btn-profile" ion-button clear style="color:#ffffff;background:transparent;font-size:18px;"
+        (click)="doHideVehicle()">
+        <ion-icon name="md-close" style="margin-right:8px;font-size:30px;"></ion-icon>
+      </button>
+    </div>
+    <ion-title class="side-title">
+      <div class="logo-atria">
+        <div style="height:45px;padding-top:10px;">Create Route</div>
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <div>
+    <ion-slides style="height:100%;" freeMode="true" spaceBetween="-10" slidesPerView="6.2" loop="false">
+      <div *ngFor="let date of calendar">
+        <ion-slide style="height:100%;">
+          <ion-card *ngIf="slot != date.fulldate && date.total_vehicle > 0" class="slidecard" (click)="doCreateVehicle(date)">
+            <div class="container">
+              <div class="container-inside"></div>
+              <div class="centered">{{date.date}}</div>
+              <div class="bottom">{{date.day_id}}</div>
+              <div class="top">{{date.month_description}} {{date.year}}</div>
+            </div>
+            <div col-12 style="text-align: center;background: transparent;font-size:15px;font-weight: bold;">
+              JUMLAH KENDARAAN
+            </div>
+            <div col-12 style="background: transparent;font-size:30px;font-weight: bold;text-align: center;border-top:1px solid;border-bottom:1px solid;border-color:#fff;">{{date.total_vehicle}}</div>
+          </ion-card>
+
+          <ion-card *ngIf="slot != date.fulldate && date.total_vehicle == 0" class="slidecardfull" (click)="doCreateVehicle(date)">
+            <div class="container">
+              <div class="container-inside"></div>
+              <div class="centered">{{date.date}}</div>
+              <div class="bottom">{{date.day_id}}</div>
+              <div class="top">{{date.month_description}} {{date.year}}</div>
+            </div>
+            <div col-12 style="text-align: center;background: transparent;font-size:15px;font-weight: bold;">
+              JUMLAH KENDARAAN
+            </div>
+            <div col-12 style="background: transparent;font-size:30px;font-weight: bold;text-align: center;border-top:1px solid;border-bottom:1px solid;border-color:#fff;">{{date.total_vehicle}}</div>
+          </ion-card>
+
+          <ion-card *ngIf="slot == date.fulldate" class="slidecardselect">
+            <div class="container">
+              <div class="container-inside"></div>
+              <div class="centered">{{date.date}}</div>
+              <div class="bottom">{{date.day_id}}</div>
+              <div class="top">{{date.month_description}} {{date.year}}</div>
+            </div>
+            <div col-12 style="text-align: center;background: transparent;font-size:15px;font-weight: bold;">
+              JUMLAH KENDARAAN
+            </div>
+            <div col-12 style="background: transparent;font-size:30px;font-weight: bold;text-align: center;border-top:1px solid;border-bottom:1px solid;border-color:#fff;">{{date.total_vehicle}}</div>
+          </ion-card>
+
+          <ion-row style="padding:0px;">
+            <ion-col style="padding:0px;">
+              <button *ngIf="slot != date.fulldate" ion-button full (click)="doGetSlot(date)" color="greenlake">
+                <ion-icon style="font-size:30px;" name="arrow-dropdown"></ion-icon>
+              </button>
+              <button *ngIf="slot == date.fulldate" ion-button full (click)="doHideSlot(date)" color="greenlake">
+                <ion-icon style="font-size:30px;" name="arrow-dropup"></ion-icon>
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-slide>
+      </div>
+    </ion-slides>
+    <ion-slides *ngIf="routeall && routeall.length != 0" style="height:100%;" freeMode="true" spaceBetween="-10" slidesPerView="6.2"
+      loop="false">
+      <div *ngFor="let route of routeall">
+        <ion-slide style="height:100%;">
+          <ion-card class="slideselect" (click)="doCreateVehicle(date)">
+            <div class="container">
+              <div class="container-inside"></div>
+              <div class="centeredplat">{{route.plat_no}}</div>
+              <div class="bottom">RUTE : {{route.total_route}}</div>
+              <div class="top">{{route.type_vehicle}}</div>
+            </div>
+            <div col-12 style="text-align: center;background: transparent;font-size:15px;font-weight: bold;">
+              NAMA DRIVER
+            </div>
+            <div *ngIf="route.nama_driver != ''" col-12 style="background: transparent;font-size:30px;font-weight: bold;text-align: center;border-top:1px solid;border-bottom:1px solid;border-color:#fff;">{{route.nama_driver}}</div>
+            <div *ngIf="route.nama_driver == ''" col-12 style="background: transparent;font-size:30px;font-weight: bold;text-align: center;border-top:1px solid;border-bottom:1px solid;border-color:#fff;">-</div>
+            <div col-12 style="text-align: center;background: transparent;font-size:15px;font-weight: bold;">
+              NAMA INSTALLER
+            </div>
+            <div *ngIf="route.nama_installer != ''" col-12 style="background: transparent;font-size:18px;font-weight: bold;text-align: center;">{{route.nama_installer}}</div>
+            <div *ngIf="route.nama_installer == ''" col-12 style="background: transparent;font-size:18px;font-weight: bold;text-align: center;">-</div>
+          </ion-card>
+          <ion-row style="padding:0px;">
+            <ion-col style="padding:0px;">
+              <button *ngIf="platno != route.plat_no" ion-button full (click)="doGetSlotRoute(route)" color="greenlake">
+                <ion-icon style="font-size:30px;" name="arrow-dropdown"></ion-icon>
+              </button>
+              <button *ngIf="platno == route.plat_no" ion-button full (click)="doHideSlotRoute(route)" color="greenlake">
+                <ion-icon style="font-size:30px;" name="arrow-dropup"></ion-icon>
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-slide>
+      </div>
+    </ion-slides>
+  </div>
+</ion-content>
+<div *ngIf="vehicleshow == true" id="myModalItems" class="modal-items">
+  <ion-content padding class="modal-content-items">
+    <ion-searchbar placeholder="Search Plat Number" (ionInput)="getSearch($event)"></ion-searchbar>
+    <ion-grid padding>
+      <ion-row class="row-content">
+        <ion-col padding class="col-content">Plat No</ion-col>
+        <ion-col padding class="col-content">Jenis Kendaraan</ion-col>
+        <ion-col padding class="col-content">Location</ion-col>
+      </ion-row>
+      <ion-row *ngFor="let vehicle of vehicleall" class="row-content-list" (click)="doSelectVehicle(vehicle)">
+        <ion-col padding class="col-content-genap">{{vehicle.no_plat}}</ion-col>
+        <ion-col padding class="col-content-genap">{{vehicle.type}}</ion-col>
+        <ion-col padding class="col-content-genap">{{vehicle.location_code}}</ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-content>
+</div>
+<div *ngIf="showdriver == true" class="quality" style="background:#fff;border:3px solid;border-color:#dedede;">
+  <ion-header>
+    <ion-toolbar color="darkgrey" style="border:1px solid;border-color:#fff;">
+      <ion-title>
+        Create Group
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-list style="margin-top:60px;background:#fff;color:#26262d;">
+    <ion-content style="height:500px;">
+      <ion-item>
+        <h2>Planning Date</h2>
+        <h1>{{dateselect.day_id}} {{dateselect.date}}-{{dateselect.month_description}}-{{dateselect.year}}</h1>
+      </ion-item>
+      <ion-item>
+        <h2>Plat No</h2>
+        <h1>{{vehicle.no_plat}}</h1>
+      </ion-item>
+      <ion-item>
+        <h2>Tipe Kendaraan</h2>
+        <h1>{{vehicle.type}}</h1>
+      </ion-item>
+      <ion-item>
+        <h2>Tipe Group</h2>
+        <h1 class="all" (click)="doSelectTipeGroup()">{{tipegroup}}</h1>
+        <button class="all" ion-button clear item-end>
+          <ion-icon (click)="doSelectTipeGroup()" style="font-size:40px;" name="md-arrow-dropdown"></ion-icon>
+        </button>
+      </ion-item>
+      <ion-item *ngIf="tipegroup == 'Delivery & Installation' || tipegroup == 'Delivery'">
+        <h2>Driver</h2>
+        <h1 class="all" (click)="doSelectDriver()">{{driver}}</h1>
+        <button class="all" ion-button clear item-end>
+          <ion-icon (click)="doSelectDriver()" style="font-size:40px;" name="md-arrow-dropdown"></ion-icon>
+        </button>
+      </ion-item>
+      <ion-item *ngIf="tipegroup == 'Delivery & Installation' || tipegroup == 'Installation'">
+        <h2>Installer</h2>
+        <h1 class="all" (click)="doSelectInstaller()">{{installer}}</h1>
+        <button class="all" ion-button clear item-end>
+          <ion-icon (click)="doSelectInstaller()" style="font-size:40px;" name="md-arrow-dropdown"></ion-icon>
+        </button>
+      </ion-item>
+      <ion-item *ngIf="tipegroup == 'Delivery & Installation' || tipegroup == 'Installation'">
+        <h2>Installer 2</h2>
+        <h1 class="all" (click)="doSelectInstaller2()">{{installerother}}</h1>
+        <button class="all" ion-button clear item-end>
+          <ion-icon (click)="doSelectInstaller2()" style="font-size:40px;" name="md-arrow-dropdown"></ion-icon>
+        </button>
+      </ion-item>
+    </ion-content>
+  </ion-list>
+  <ion-footer>
+    <ion-row>
+      <ion-col col-6>
+        <button ion-button full color="greenlake" style="font-weight: bold;font-size:15px;" (click)="doGetNextNo()">
+          <ion-icon name="checkmark"></ion-icon>&nbsp;&nbsp;&nbsp;Submit</button>
+      </ion-col>
+      <ion-col col-6>
+        <button ion-button full color="danger" style="font-weight: bold;font-size:15px;" (click)="doCloseDriver()">
+          <ion-icon name="md-close"></ion-icon>&nbsp;&nbsp;&nbsp;Cancel</button>
+      </ion-col>
+    </ion-row>
+  </ion-footer>
+</div>
+
+<div *ngIf="tipegroupselect == true" class="qualitytipe" style="background:#fff;border:3px solid;border-color:#dedede;">
+  <ion-header>
+    <ion-toolbar color="darkgrey" style="border:1px solid;border-color:#fff;">
+      <ion-title>
+        List Tipe
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-list style="margin-top:60px;background:#fff;color:#26262d;">
+    <ion-row>
+      <ion-col col-12 padding class="listype" (click)="selectTipeGroup('DI')">Delivery & Installation</ion-col>
+      <ion-col col-12 padding class="listype" (click)="selectTipeGroup('D')">Delivery</ion-col>
+      <ion-col col-12 padding class="listype" (click)="selectTipeGroup('I')">Installation</ion-col>
+    </ion-row>
+  </ion-list>
+  <ion-footer>
+    <ion-row>
+      <ion-col col-12>
+        <button ion-button full color="danger" style="font-weight: bold;font-size:15px;" (click)="doCloseSelectTipeGroup()">
+          <ion-icon name="md-close"></ion-icon>&nbsp;&nbsp;&nbsp;Cancel</button>
+      </ion-col>
+    </ion-row>
+  </ion-footer>
+</div>
+
+<div *ngIf="listdriver == true" class="qualitytipe" style="background:#fff;border:3px solid;border-color:#dedede;">
+  <ion-header>
+    <ion-toolbar color="darkgrey" style="border:1px solid;border-color:#fff;">
+      <ion-title>
+        List Driver
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-list style="margin-top:60px;background:#fff;color:#26262d;">
+    <ion-row>
+      <ion-col *ngFor="let driver of driverall" col-12 padding class="listype" (click)="selectDriver(driver)">{{driver.id_user}}</ion-col>
+    </ion-row>
+  </ion-list>
+  <ion-footer>
+    <ion-row>
+      <ion-col col-12>
+        <button ion-button full color="danger" style="font-weight: bold;font-size:15px;" (click)="doCloseSelectDriver()">
+          <ion-icon name="md-close"></ion-icon>&nbsp;&nbsp;&nbsp;Cancel</button>
+      </ion-col>
+    </ion-row>
+  </ion-footer>
+</div>
+
+<div *ngIf="listinstaller == true" class="qualitytipe" style="background:#fff;border:3px solid;border-color:#dedede;">
+  <ion-header>
+    <ion-toolbar color="darkgrey" style="border:1px solid;border-color:#fff;">
+      <ion-title>
+        List Installer
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-list style="margin-top:60px;background:#fff;color:#26262d;">
+    <ion-row>
+      <ion-col *ngFor="let installer of installerall" col-12 padding class="listype" (click)="selectInstaller(installer)">{{installer.id_user}}</ion-col>
+    </ion-row>
+  </ion-list>
+  <ion-footer>
+    <ion-row>
+      <ion-col col-12>
+        <button ion-button full color="danger" style="font-weight: bold;font-size:15px;" (click)="doCloseSelectInstaller()">
+          <ion-icon name="md-close"></ion-icon>&nbsp;&nbsp;&nbsp;Cancel</button>
+      </ion-col>
+    </ion-row>
+  </ion-footer>
+</div>
+
+<div *ngIf="listinstaller2 == true" class="qualitytipe" style="background:#fff;border:3px solid;border-color:#dedede;">
+  <ion-header>
+    <ion-toolbar color="darkgrey" style="border:1px solid;border-color:#fff;">
+      <ion-title>
+        List Installer 2
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-list style="margin-top:60px;background:#fff;color:#26262d;">
+    <ion-row>
+      <ion-col *ngFor="let installer of installerall" col-12 padding class="listype" (click)="selectInstaller2(installer)">{{installer.id_user}}</ion-col>
+    </ion-row>
+  </ion-list>
+  <ion-footer>
+    <ion-row>
+      <ion-col col-12>
+        <button ion-button full color="danger" style="font-weight: bold;font-size:15px;" (click)="doCloseSelectInstaller2()">
+          <ion-icon name="md-close"></ion-icon>&nbsp;&nbsp;&nbsp;Cancel</button>
+      </ion-col>
+    </ion-row>
+  </ion-footer>
+</div>

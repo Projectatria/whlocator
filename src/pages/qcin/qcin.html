@@ -134,7 +134,7 @@
         <ion-row>
           <ion-col *ngFor="let foto of photos" col-4 style="padding:0px;margin-bottom:-4px;border:1px solid;border-color:#e3e4e6;">
             <div class="container">
-              <img *ngIf="foto.img_src == ''" src="http://10.10.10.7/qctesting/img/noimage" style="width:100%;" />
+              <img *ngIf="foto.img_src == ''" src="http://101.255.60.202/qctesting/img/noimage" style="width:100%;" />
               <img *ngIf="foto.img_src != ''" src="{{foto.img_src}}" style="width:100%;" imageViewer />
               <div *ngIf="(foto.img_src == '') || (foto.img_src != '' && qcstatus == 'REJECT')" class="centered" (click)="doCamera(foto)">
                 <ion-icon name="md-add" style="font-size:40px;font-weight:bold;color:#217481;"></ion-icon>

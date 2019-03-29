@@ -1,0 +1,135 @@
+<ion-header class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <button ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <div style="text-align:right;height:0px;">
+      <button *ngIf="invoiceshow == false" class="btn-profile" ion-button clear style="color:#ffffff;background:transparent;font-size:18px;"
+        (click)="doProfile()">
+        <ion-icon name="md-arrow-dropdown" style="margin-right:8px;"></ion-icon>
+        <h5 style="text-decoration: underline;">{{name}}</h5>
+      </button>
+      <button *ngIf="invoiceshow == true" class="btn-profile" ion-button clear style="color:#ffffff;background:transparent;font-size:18px;"
+        (click)="doCloseInvoice()">
+        <ion-icon name="md-close" style="margin-right:8px;font-size:30px;"></ion-icon>
+      </button>
+    </div>
+    <ion-title class="side-title">
+      <div class="logo-atria">
+        <div style="height:45px;padding-top:10px;">Schedule Installation</div>
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <div>
+    <ion-slides (ionSlideDidChange)="slideChanged()" style="height:100%;" freeMode="true" spaceBetween="-10" slidesPerView="6.2"
+      loop="false">
+      <div *ngFor="let date of calendar">
+        <ion-slide style="height:100%;">
+          <ion-card *ngIf="date.slot_installation_available >= 5" class="slidecard" (click)="doSlot(date)">
+            <div class="container">
+              <div class="container-inside"></div>
+              <div class="centered">{{date.date}}</div>
+              <div class="bottom">{{date.day_id}}</div>
+              <div class="top">{{date.month_description}} {{date.year}}</div>
+            </div>
+            <div col-12 style="text-align: center;background: transparent;font-size:15px;font-weight: bold;">
+              SLOT TERSISA
+            </div>
+            <div col-12 style="background: transparent;font-size:30px;font-weight: bold;text-align: center;border-top:1px solid;border-bottom:1px solid;border-color:#fff;">{{date.slot_installation_available}}</div>
+            <div col-12 style="text-align: center;background: transparent;font-size:15px;font-weight: bold;">
+              TOTAL SLOT
+            </div>
+            <div col-12 style="background: transparent;font-size:18px;font-weight: bold;text-align: center;">{{date.slot_installation_total}}</div>
+          </ion-card>
+
+          <ion-card *ngIf="date.slot_installation_available < 5 && date.slot_installation_available > 0" class="slidecardalmostfull"
+            (click)="doSlot(date)">
+            <div class="container">
+              <div class="container-inside"></div>
+              <div class="centered">{{date.date}}</div>
+              <div class="bottom">{{date.day_id}}</div>
+              <div class="top">{{date.month_description}} {{date.year}}</div>
+            </div>
+            <div col-12 style="text-align: center;background: transparent;font-size:15px;font-weight: bold;">
+              SLOT TERSISA
+            </div>
+            <div col-12 style="background: transparent;font-size:30px;font-weight: bold;text-align: center;border-top:1px solid;border-bottom:1px solid;border-color:#fff;">{{date.slot_installation_available}}</div>
+            <div col-12 style="text-align: center;background: transparent;font-size:15px;font-weight: bold;">
+              TOTAL SLOT
+            </div>
+            <div col-12 style="background: transparent;font-size:18px;font-weight: bold;text-align: center;">{{date.slot_installation_total}}</div>
+          </ion-card>
+
+          <ion-card *ngIf="date.slot_installation_available == 0" class="slidecardfull" (click)="doSlot(date)">
+            <div class="container">
+              <div class="container-inside"></div>
+              <div class="centered">{{date.date}}</div>
+              <div class="bottom">{{date.day_id}}</div>
+              <div class="top">{{date.month_description}} {{date.year}}</div>
+            </div>
+            <div col-12 style="text-align: center;background: transparent;font-size:15px;font-weight: bold;">
+              SLOT TERSISA
+            </div>
+            <div col-12 style="background: transparent;font-size:30px;font-weight: bold;text-align: center;border-top:1px solid;border-bottom:1px solid;border-color:#fff;">{{date.slot_installation_available}}</div>
+            <div col-12 style="text-align: center;background: transparent;font-size:15px;font-weight: bold;">
+              TOTAL SLOT
+            </div>
+            <div col-12 style="background: transparent;font-size:18px;font-weight: bold;text-align: center;">{{date.slot_installation_total}}</div>
+          </ion-card>
+          <ion-row style="padding:0px;">
+            <ion-col style="padding:0px;">
+              <button *ngIf="slot != date.fulldate" ion-button full (click)="doGetSlot(date)" color="greenlake">
+                <ion-icon style="font-size:30px;" name="arrow-dropdown"></ion-icon>
+              </button>
+              <button *ngIf="slot == date.fulldate" ion-button full (click)="doHideSlot(date)" color="greenlake">
+                <ion-icon style="font-size:30px;" name="arrow-dropup"></ion-icon>
+              </button>
+            </ion-col>
+          </ion-row>
+          <div style="border:1px solid;border-color:#dedede;padding:0px;padding-bottom:10px;background: #fff;">
+            <ion-content style="height:500px;padding:0px;background: #fff;">
+              <div *ngFor="let slot of slotall" style="padding:0px;background: #fff;">
+                <ion-row class="slothover" *ngIf="slot.date_installation == date.fulldate && slot.receipt_no != ''" style="border:1px solid;border-color:#dedede;background: #ac0e16;">
+                  <ion-col padding col-3 style="font-size:15px;font-weight: bold;background: transparent;color:#fff;">{{slot.Row}}</ion-col>
+                  <ion-col padding col-9 style="font-size:15px;font-weight: bold;background: transparent;color:#fff;">{{slot.receipt_no}}</ion-col>
+                </ion-row>
+                <ion-row class="slothover" *ngIf="slot.date_installation == date.fulldate && slot.receipt_no == ''" style="border:1px solid;border-color:#dedede;background: #15a302;"
+                  (click)="doSearchInvoice(slot)">
+                  <ion-col padding col-3 style="font-size:15px;font-weight: bold;background: transparent;color:#fff;">{{slot.Row}}</ion-col>
+                  <ion-col padding col-9 style="font-size:15px;font-weight: bold;background: transparent;color:#fff;">{{slot.status}}</ion-col>
+                </ion-row>
+              </div>
+            </ion-content>
+          </div>
+        </ion-slide>
+      </div>
+    </ion-slides>
+  </div>
+</ion-content>
+<div *ngIf="invoiceshow == true" id="myModalItems" class="modal-items">
+  <ion-content padding class="modal-content-items">
+    <ion-searchbar placeholder="Search Receipt Number" (ionInput)="getSearch($event)"></ion-searchbar>
+    <ion-grid padding>
+      <ion-row class="row-content">
+        <ion-col padding class="col-content">Receipt No</ion-col>
+        <ion-col padding class="col-content">Store No</ion-col>
+        <ion-col padding class="col-content">Receipt Date</ion-col>
+        <ion-col padding class="col-content">Customer Code</ion-col>
+      </ion-row>
+      <ion-row *ngFor="let dod of deliveryorder" class="row-content-list" (click)="doSelectDeliveryOrder(dod)">
+        <ion-col *ngIf="dod.Row % 2 == 0" padding class="col-content-genap">{{dod.receipt_no}}</ion-col>
+        <ion-col *ngIf="dod.Row % 2 == 0" padding class="col-content-genap">{{dod.store_no}}</ion-col>
+        <ion-col *ngIf="dod.Row % 2 == 0" padding class="col-content-genap">{{dod.date | date:'dd-MM-yyyy'}}</ion-col>
+        <ion-col *ngIf="dod.Row % 2 == 0" padding class="col-content-genap">{{dod.customer_code}}</ion-col>
+
+        <ion-col *ngIf="dod.Row % 2 != 0" padding class="col-content-ganjil">{{dod.receipt_no}}</ion-col>
+        <ion-col *ngIf="dod.Row % 2 != 0" padding class="col-content-ganjil">{{dod.store_no}}</ion-col>
+        <ion-col *ngIf="dod.Row % 2 != 0" padding class="col-content-ganjil">{{dod.date | date:'dd-MM-yyyy'}}</ion-col>
+        <ion-col *ngIf="dod.Row % 2 != 0" padding class="col-content-ganjil">{{dod.customer_code}}</ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-content>
+</div>

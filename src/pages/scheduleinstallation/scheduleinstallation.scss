@@ -1,0 +1,147 @@
+page-scheduleinstallation {
+    .modal-items {
+        display: block; /* Hidden by default */
+        position: absolute; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: #fefefe;
+        }
+  
+  /* Modal Content/Box */
+      .modal-content-items {
+        background-color: #fefefe;
+        width: 100%; /* Could be more or less, depending on screen size */
+        height: 100%;
+        margin-top:70px;
+        }
+      .container {
+          position: relative;
+          text-align: center;
+          background: transparent;
+        }
+        .col-content-genap {
+          background: transparent;
+        }
+        .col-content-ganjil {
+          background: transparent;
+        }
+        .col-content {
+          background: #fefefe;
+          font-size: 15px;
+          font-weight: bold;
+        }
+        .row-content {
+          background: #fefefe;
+        }
+        .row-content-list:hover {
+          background: #b7c400;
+        }
+        .container-out {
+          position: relative;
+          text-align: center;
+        }
+        .container-outside{
+          height:100%;
+          width:100%;
+          background: #fff;
+        }
+  
+        .bottom {
+          position: absolute;
+          bottom: 0px;
+          left:50%;
+          transform: translate(-50%, -20%);
+          font-size:20px;
+          background:transparent;
+        }
+        
+        .top {
+          position: absolute;
+          top: 20px;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size:20px;
+          background:transparent;
+        }
+        
+        /* Top right text */
+        .top-right {
+          position: absolute;
+          top: 8px;
+          right: 16px;
+        }
+        
+        /* Bottom right text */
+        .bottom-right {
+          position: absolute;
+          bottom: 8px;
+          right: 16px;
+        }
+        
+        /* Centered text */
+        .centered {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size:60px;
+          font-weight: bold;
+          background:transparent;
+        }
+        .container-inside{
+          height:130px;
+          width:100%;
+          background: transparent;
+        }
+        .centered:hover {
+          cursor: pointer;
+          font-size:25px;
+        }
+        .slidecard {
+          background: #15a302;
+          color:#fff;
+        }
+        .slidecard:hover {
+          cursor: pointer;
+          background: #1d7ed8;
+          color:#fff;
+        }
+        .slidecardalmostfull {
+          background: #FFA500;
+          color:#fff;
+        }
+        .slidecardalmostfull:hover {
+          cursor: pointer;
+          background: #1d7ed8;
+          color:#fff;
+        }
+        .slidecardfull {
+          background: #ac0e16;
+          color:#fff;
+        }
+        .slidecardfull:hover {
+          cursor: pointer;
+          background: #1d7ed8;
+          color:#fff;
+        }
+        .slothover:hover {
+          cursor: pointer;
+          background: #1d7ed8;
+        }
+        html {
+          overflow: scroll;
+          overflow-x: hidden;
+      }
+      ::-webkit-scrollbar {
+          width: 0px;  /* remove scrollbar space */
+          background: transparent;  /* optional: just make scrollbar invisible */
+      }
+      /* optional: show position indicator in red */
+      ::-webkit-scrollbar-thumb {
+          background: #FF0000;
+      }
+}

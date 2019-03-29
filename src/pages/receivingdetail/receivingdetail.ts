@@ -664,7 +664,7 @@ export class ReceivingdetailPage {
   doPostReceiving(cek) {
     const headers = new HttpHeaders()
       .set("Content-Type", "application/json");
-    this.http.post("http://10.10.10.7/posapi/api/poreceive",
+    this.http.post("http://101.255.60.202/posapi/api/poreceive",
       {
         "PONo": cek.order_no
       },

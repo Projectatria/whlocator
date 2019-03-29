@@ -140,4 +140,22 @@ export class HomePage {
       userid: this.userid
     });
   }
+  doScheduleDelivery() {
+    this.navCtrl.push('ScheduledeliveryPage', {
+      rolecab: this.rolecab,
+      userid: this.userid
+    });
+  }
+  doScheduleInstallation() {
+    this.navCtrl.push('ScheduleinstallationPage', {
+      rolecab: this.rolecab,
+      userid: this.userid
+    });
+  }
+  doRoute() {
+    this.navCtrl.push('RoutePage', {
+      rolecab: this.rolecab,
+      userid: this.userid
+    });
+  }
 }
