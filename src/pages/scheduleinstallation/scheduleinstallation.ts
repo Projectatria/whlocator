@@ -31,6 +31,15 @@ export class ScheduleinstallationPage {
   public slotselect = [];
   public dateselect = [];
   public loaderproses: any;
+  public showdetail: boolean = false;
+  public namecust = ''
+  public address = ''
+  public address1 = ''
+  public kota = ''
+  public telp = ''
+  public postcode = ''
+  public addressfull = ''
+  public itemsall = [];
 
   constructor(
     public navCtrl: NavController,
@@ -52,6 +61,7 @@ export class ScheduleinstallationPage {
     });
     this.loader.present();
     this.invoiceshow = false;
+    this.showdetail = false;
     this.rolecab = this.navParams.get('rolecab')
     platform.ready().then(() => {
       this.width = platform.width();
@@ -318,6 +328,64 @@ export class ScheduleinstallationPage {
       }, err => {
         this.doGetCalendarAfterUpdate()
       });
+  }
+  doViewDetail(dod) {
+    this.doGetInfoCust(dod)
+    this.doGetItems(dod)
+    this.showdetail = true;
+  }
+  doViewDetailFromSlot(slot) {
+    this.doGetDOD(slot)
+    this.doGetItemsFromSlot(slot)
+    this.showdetail = true;
+  }
+  doCloseDetail() {
+    this.showdetail = false;
+  }
+  doGetInfoCust(dod) {
+    this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Sales Header Archive", filter: "[No_]=" + "'" + dod.so_no + "'" } })
+    .subscribe(val => {
+      let detailsales = val['data']
+      this.namecust = detailsales[0]['Ship-to Name']
+      this.address = detailsales[0]['Ship-to Address']
+      this.address1 = detailsales[0]['Ship-to Address 2']
+      this.kota = detailsales[0]['Ship-to City']
+      this.telp = detailsales[0]['Ship-to Phone No_']
+      this.postcode = detailsales[0]['Ship-to Post Code']
+      this.addressfull = detailsales[0]['Ship-to Address'] + " " + detailsales[0]['Ship-to Address 2'] + " " + detailsales[0]['Ship-to City']
+    });
+  }
+  doGetItems(dod) {
+    this.api.get("table/delivery_order_line", { params: { limit: 100, filter: "receipt_no='" + dod.receipt_no + "'", sort: "part_no" + " ASC " } })
+    .subscribe(val => {
+      this.itemsall = val['data']
+    });
+  }
+  doGetDOD(slot) {
+    this.api.get("table/delivery_order_header", { params: { limit: 100, filter: "receipt_no='" + slot.receipt_no + "'"} })
+    .subscribe(val => {
+      let data = val['data'][0]
+      this.doGetInfoCustFromSlot(data)
+    });
+  }
+  doGetInfoCustFromSlot(data) {
+    this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Sales Header Archive", filter: "[No_]=" + "'" + data.so_no + "'" } })
+    .subscribe(val => {
+      let detailsales = val['data']
+      this.namecust = detailsales[0]['Ship-to Name']
+      this.address = detailsales[0]['Ship-to Address']
+      this.address1 = detailsales[0]['Ship-to Address 2']
+      this.kota = detailsales[0]['Ship-to City']
+      this.telp = detailsales[0]['Ship-to Phone No_']
+      this.postcode = detailsales[0]['Ship-to Post Code']
+      this.addressfull = detailsales[0]['Ship-to Address'] + " " + detailsales[0]['Ship-to Address 2'] + " " + detailsales[0]['Ship-to City']
+    });
+  }
+  doGetItemsFromSlot(slot) {
+    this.api.get("table/delivery_order_line", { params: { limit: 100, filter: "receipt_no='" + slot.receipt_no + "'", sort: "part_no" + " ASC " } })
+    .subscribe(val => {
+      this.itemsall = val['data']
+    });
   }
 
 }

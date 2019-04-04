@@ -48,6 +48,7 @@ export class RoutePage {
   public namainstaller = '';
   public namainstaller2 = '';
   public platno = ''
+  public routeline = [];
 
   constructor(
     public navCtrl: NavController,
@@ -112,6 +113,8 @@ export class RoutePage {
   }
   ionViewDidEnter() {
     this.doGetAllCalendar()
+    this.doHideSlot()
+    this.doHideSlotRoute()
   }
   doGetAllCalendar() {
     this.api.get("table/calendar", { params: { limit: 31, filter: "fulldate >=" + "'" + moment().format('YYYY-MM-DD') + "'", sort: 'week ASC, year ASC, month ASC, date ASC' } })
@@ -136,6 +139,7 @@ export class RoutePage {
   doHideSlot() {
     this.slot = ''
     this.routeall = [];
+    this.doHideSlotRoute()
   }
   doGetRoute(date) {
     this.api.get('table/route_header', { params: { filter: "date_delivery=" + "'" + date.fulldate + "'" } })
@@ -420,9 +424,22 @@ export class RoutePage {
   }
   doGetSlotRoute(route) {
     this.platno = route.plat_no
+    this.doGetLine(route)
   }
   doHideSlotRoute() {
     this.platno = ''
+    this.routeline = [];
+  }
+  doCreateRoute(route) {
+    this.navCtrl.push('RoutedetailPage', {
+      route: route
+    })
+  }
+  doGetLine(route) {
+    this.api.get('table/route_line', { params: { filter: "date_route=" + "'" + this.dateselect['fulldate'] + "' AND plat_no=" + "'" + route.plat_no + "'", sort: 'no_urut_group ASC' } })
+    .subscribe(val => {
+      this.routeline = val['data']
+    });
   }
 }
 

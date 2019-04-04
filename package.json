@@ -41,7 +41,7 @@
     "angular2-fontawesome": "^5.2.1",
     "angular2-qrcode": "^2.0.1",
     "angular2-uuid": "^1.1.1",
-    "cordova-android": "6.3.0",
+    "cordova-android": "6.4.0",
     "cordova-honeywell": "git+https://github.com/andreujuanc/cordova-honeywell.git",
     "cordova-plugin-advanced-http": "^1.11.1",
     "cordova-plugin-camera": "^2.4.1",

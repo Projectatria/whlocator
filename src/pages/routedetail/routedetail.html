@@ -1,0 +1,150 @@
+<ion-header class="header-menu">
+  <ion-navbar class="header-navbar" style="width:100%;">
+    <button ion-button menuToggle color="light">
+      <ion-icon name="menu" style="font-size:30px;"></ion-icon>
+    </button>
+    <div style="text-align:right;height:0px;">
+      <button *ngIf="doshow == false" class="btn-profile" ion-button clear style="color:#ffffff;background:transparent;font-size:18px;"
+        (click)="doProfile()">
+        <ion-icon name="md-arrow-dropdown" style="margin-right:8px;"></ion-icon>
+        <h5 style="text-decoration: underline;">{{name}}</h5>
+      </button>
+      <button *ngIf="doshow == true" class="btn-profile" ion-button clear style="color:#ffffff;background:transparent;font-size:18px;"
+        (click)="doHideDO()">
+        <ion-icon name="md-close" style="margin-right:8px;font-size:30px;"></ion-icon>
+      </button>
+    </div>
+    <ion-title class="side-title">
+      <div class="logo-atria">
+        <div style="height:45px;padding-top:10px;">Slot Route</div>
+      </div>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <div>
+    <ion-card style="width:98%;" padding>
+      <div class="right" style="height:0px;margin-left:46%;margin-top:0px;border:1px solid;border-color:#dedede;right:0px;width:54%;">
+        <div class="header" padding style="background: #217481;text-align:center;">
+          <h5 style="font-size:15px;font-weight: bold;color:#ffffff;">Detail Route</h5>
+        </div>
+        <div class="body">
+          <ion-content style="padding-bottom:700px;border:1px solid;border-color:#eeeeee;">
+            <ion-item class="hoveritem" style="border-bottom: 1px solid;border-color:#eeeeee;margin-left:-15px;margin-top:-15px;width:111%;margin-bottom:15px;"
+              *ngFor="let slot of slotterpakaiall">
+              <div padding>
+                <h2>Receipt No : {{slot.receipt_no}}</h2>
+                <p>Location : {{slot.location_request}}</p>
+                <p>Date Request : {{slot.datetime | date:'dd-MM-yyyy'}}</p>
+              </div>
+            </ion-item>
+          </ion-content>
+        </div>
+      </div>
+      <div class="left-top" style="left:0px;width:45%;margin-top:-2px;">
+        <ion-row>
+          <ion-col col-6 style="margin-right:1px;margin-bottom:1px;background: #eeeeee;color:#217481;border-radius:2%;height:100px;font-weight: bold;">
+            <div style="text-align:center;">Total Route</div>
+            <div style="text-align:center;font-size:50px;">{{route.total_route}}</div>
+          </ion-col>
+          <ion-col col-5.9 style="background: #16bd00;border-radius:2%;color:#ffffff;height:100px;font-weight: bold;" class="slotadd">
+            <div style="text-align:center;">Add Route</div>
+            <div style="text-align:center;font-size:50px;">
+              <ion-icon class="hoverbutton" name="md-add" (click)="doShowCreateRoute()"></ion-icon>
+            </div>
+          </ion-col>
+        </ion-row>
+      </div>
+      <div class="left-bottom" style="margin-top:10px;border:1px solid;border-color:#dedede;left:0px;width:45%;">
+        <div class="header" padding style="background: #217481;">
+          <h5 style="font-size:15px;font-weight: bold;color:#ffffff;text-align: center;">No Urut Route</h5>
+        </div>
+        <ion-content style="padding-bottom:489px;">
+          <ion-item class="hoveritem" style="border-bottom: 1px solid;border-color:#eeeeee;margin-left:-15px;margin-top:-15px;width:111%;margin-bottom:15px;"
+            *ngFor="let route of routeline">
+            <div padding>
+              <h2>No Urut : {{route.no_urut_group}}</h2>
+              <p>Slot Delivery ID : {{route.slot_delivery}}</p>
+              <p>Slot Installation ID : {{route.slot_installation}}</p>
+            </div>
+          </ion-item>
+        </ion-content>
+      </div>
+    </ion-card>
+  </div>
+</ion-content>
+<div *ngIf="doshow == true" id="myModalItems" class="modal-items">
+  <ion-content padding class="modal-content-items">
+    <ion-searchbar placeholder="Search Receipt No" (ionInput)="getSearch($event)"></ion-searchbar>
+    <ion-grid padding>
+      <ion-row class="row-content">
+        <ion-col padding class="col-content">Receipt No</ion-col>
+        <ion-col padding class="col-content">Location Request</ion-col>
+        <ion-col padding class="col-content">Nama</ion-col>
+        <ion-col padding class="col-content">Address</ion-col>
+        <ion-col padding class="col-content">Post Code</ion-col>
+      </ion-row>
+      <ion-row *ngFor="let dod of doslot" class="row-content-list" (click)="doSelectDO(dod)">
+        <ion-col padding class="col-content-genap">{{dod.receipt_no}}</ion-col>
+        <ion-col padding class="col-content-genap">{{dod.location_request}}</ion-col>
+        <ion-col padding class="col-content-genap">{{dod.to_name}}</ion-col>
+        <ion-col padding class="col-content-genap">{{dod.to_address}} {{dod.to_address_1}} {{dod.to_city}}</ion-col>
+        <ion-col padding class="col-content-genap">{{dod.to_code_post}}</ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-content>
+</div>
+<div *ngIf="showroute == true" class="quality" style="background:#fff;border:3px solid;border-color:#dedede;">
+  <ion-header>
+    <ion-toolbar color="darkgrey" style="border:1px solid;border-color:#fff;">
+      <ion-title>
+        Create Route
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-list style="margin-top:60px;background:#fff;color:#26262d;">
+    <ion-content style="height:540px;">
+      <ion-item>
+        <h2>Planning Date</h2>
+        <h1>{{route.date_delivery}}</h1>
+      </ion-item>
+      <ion-item>
+        <h2>Plat No</h2>
+        <h1>{{route.plat_no}}</h1>
+      </ion-item>
+      <ion-item>
+        <h2>Tipe Kendaraan</h2>
+        <h1>{{route.type}}</h1>
+      </ion-item>
+      <ion-item>
+        <h2>Group Route No</h2>
+        <h1>{{route.group_route_no}}</h1>
+      </ion-item>
+      <ion-item *ngIf="route.type == 'Delivery & Installation' || route.type == 'Delivery'">
+        <h2>Slot Delivery</h2>
+        <h1 class="all" (click)="doShowDO()">{{slotdo}}</h1>
+        <button class="all" ion-button clear item-end>
+          <ion-icon (click)="doShowDO()" style="font-size:40px;" name="md-arrow-dropdown"></ion-icon>
+        </button>
+      </ion-item>
+      <ion-item *ngIf="route.type == 'Installation' || datain.length != 0">
+        <h2>Slot Installation</h2>
+        <h1 class="all" (click)="doShowIN()">{{slotinstallation}}</h1>
+        <button class="all" ion-button clear item-end>
+          <ion-icon (click)="doShowIN()" style="font-size:40px;" name="md-arrow-dropdown"></ion-icon>
+        </button>
+      </ion-item>
+      <ion-row>
+        <ion-col col-6>
+          <button ion-button full color="greenlake" style="font-weight: bold;font-size:15px;" (click)="doGetRouteLine()">
+            <ion-icon name="checkmark"></ion-icon>&nbsp;&nbsp;&nbsp;Submit</button>
+        </ion-col>
+        <ion-col col-6>
+          <button ion-button full color="danger" style="font-weight: bold;font-size:15px;" (click)="doHideCreateRoute()">
+            <ion-icon name="md-close"></ion-icon>&nbsp;&nbsp;&nbsp;Cancel</button>
+        </ion-col>
+      </ion-row>
+    </ion-content>
+  </ion-list>
+</div>

@@ -83,17 +83,17 @@
       loop="false">
       <div *ngFor="let route of routeall">
         <ion-slide style="height:100%;">
-          <ion-card class="slideselect" (click)="doCreateVehicle(date)">
+          <ion-card class="slideselect" (click)="doCreateRoute(route)">
             <div class="container">
               <div class="container-inside"></div>
               <div class="centeredplat">{{route.plat_no}}</div>
-              <div class="bottom">RUTE : {{route.total_route}}</div>
+              <div class="bottom">{{route.nama_driver}}</div>
               <div class="top">{{route.type_vehicle}}</div>
             </div>
             <div col-12 style="text-align: center;background: transparent;font-size:15px;font-weight: bold;">
-              NAMA DRIVER
+              RUTE
             </div>
-            <div *ngIf="route.nama_driver != ''" col-12 style="background: transparent;font-size:30px;font-weight: bold;text-align: center;border-top:1px solid;border-bottom:1px solid;border-color:#fff;">{{route.nama_driver}}</div>
+            <div *ngIf="route.nama_driver != ''" col-12 style="background: transparent;font-size:30px;font-weight: bold;text-align: center;border-top:1px solid;border-bottom:1px solid;border-color:#fff;">{{route.total_route}}</div>
             <div *ngIf="route.nama_driver == ''" col-12 style="background: transparent;font-size:30px;font-weight: bold;text-align: center;border-top:1px solid;border-bottom:1px solid;border-color:#fff;">-</div>
             <div col-12 style="text-align: center;background: transparent;font-size:15px;font-weight: bold;">
               NAMA INSTALLER
@@ -111,6 +111,32 @@
               </button>
             </ion-col>
           </ion-row>
+        </ion-slide>
+      </div>
+    </ion-slides>
+    <ion-slides *ngIf="routeline && routeline.length != 0" style="height:100%;" freeMode="true" spaceBetween="-10" slidesPerView="6.2"
+      loop="false">
+      <div *ngFor="let route of routeline">
+        <ion-slide style="height:100%;">
+          <ion-card class="slideselect">
+            <div class="container">
+              <div class="container-inside"></div>
+              <div class="centeredplat">{{route.no_urut_group}}</div>
+              <div *ngIf="route.slot_delivery != ''" class="bottom">{{route.slot_delivery}}</div>
+              <div *ngIf="route.slot_delivery == ''" class="bottom">{{route.slot_installation}}</div>
+              <div class="top">{{route.plat_no}}</div>
+            </div>
+            <div col-12 style="text-align: center;background: transparent;font-size:15px;font-weight: bold;">
+              NAMA DRIVER
+            </div>
+            <div *ngIf="route.nama_driver != ''" col-12 style="background: transparent;font-size:30px;font-weight: bold;text-align: center;border-top:1px solid;border-bottom:1px solid;border-color:#fff;">{{route.nama_driver}}</div>
+            <div *ngIf="route.nama_driver == ''" col-12 style="background: transparent;font-size:30px;font-weight: bold;text-align: center;border-top:1px solid;border-bottom:1px solid;border-color:#fff;">-</div>
+            <div col-12 style="text-align: center;background: transparent;font-size:15px;font-weight: bold;">
+              NAMA INSTALLER
+            </div>
+            <div *ngIf="route.nama_installer != ''" col-12 style="background: transparent;font-size:18px;font-weight: bold;text-align: center;">{{route.nama_installer}}</div>
+            <div *ngIf="route.nama_installer == ''" col-12 style="background: transparent;font-size:18px;font-weight: bold;text-align: center;">-</div>
+          </ion-card>
         </ion-slide>
       </div>
     </ion-slides>
@@ -183,20 +209,18 @@
           <ion-icon (click)="doSelectInstaller2()" style="font-size:40px;" name="md-arrow-dropdown"></ion-icon>
         </button>
       </ion-item>
+      <ion-row>
+        <ion-col col-6>
+          <button ion-button full color="greenlake" style="font-weight: bold;font-size:15px;" (click)="doGetNextNo()">
+            <ion-icon name="checkmark"></ion-icon>&nbsp;&nbsp;&nbsp;Submit</button>
+        </ion-col>
+        <ion-col col-6>
+          <button ion-button full color="danger" style="font-weight: bold;font-size:15px;" (click)="doCloseDriver()">
+            <ion-icon name="md-close"></ion-icon>&nbsp;&nbsp;&nbsp;Cancel</button>
+        </ion-col>
+      </ion-row>
     </ion-content>
   </ion-list>
-  <ion-footer>
-    <ion-row>
-      <ion-col col-6>
-        <button ion-button full color="greenlake" style="font-weight: bold;font-size:15px;" (click)="doGetNextNo()">
-          <ion-icon name="checkmark"></ion-icon>&nbsp;&nbsp;&nbsp;Submit</button>
-      </ion-col>
-      <ion-col col-6>
-        <button ion-button full color="danger" style="font-weight: bold;font-size:15px;" (click)="doCloseDriver()">
-          <ion-icon name="md-close"></ion-icon>&nbsp;&nbsp;&nbsp;Cancel</button>
-      </ion-col>
-    </ion-row>
-  </ion-footer>
 </div>
 
 <div *ngIf="tipegroupselect == true" class="qualitytipe" style="background:#fff;border:3px solid;border-color:#dedede;">

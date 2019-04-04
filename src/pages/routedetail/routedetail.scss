@@ -1,4 +1,7 @@
-page-scheduleinstallation {
+page-routedetail {
+    .slotadd{
+        cursor: pointer;
+    }
     .modal-items {
         display: block; /* Hidden by default */
         position: absolute; /* Stay in place */
@@ -92,6 +95,19 @@ page-scheduleinstallation {
           font-weight: bold;
           background:transparent;
         }
+        .centeredplat {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size:40px;
+          font-weight: bold;
+          background:transparent;
+        }
+        .centeredplat:hover {
+          cursor: pointer;
+          font-size:25px;
+        }
         .container-inside{
           height:130px;
           width:100%;
@@ -132,6 +148,15 @@ page-scheduleinstallation {
           cursor: pointer;
           background: #1d7ed8;
         }
+        .slidecardselect {
+            background: #217481;
+            color:#fff;
+        }
+        .slideselect {
+          cursor: pointer;
+          background: #217481;
+          color:#fff;
+      }
         html {
           overflow: scroll;
           overflow-x: hidden;
@@ -147,12 +172,43 @@ page-scheduleinstallation {
       .quality {
         position: fixed; /* Stay in place */
         z-index: 999; /* Sit on top */
-        left: 10%;
-        top: 10%;
-        width: 80%; /* Full width */
-        height: 80%; /* Full height */
+        left: 25%;
+        top: 15%;
+        width: 50%; /* Full width */
+        height: 70%; /* Full height */
         overflow: auto; /* Enable scroll if needed */
         background-color: rgb(0,0,0); /* Fallback color */
         background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+    .qualitytipe {
+      position: fixed; /* Stay in place */
+      z-index: 999; /* Sit on top */
+      left: 35%;
+      top: 25%;
+      width: 30%; /* Full width */
+      height: 50%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0,0,0); /* Fallback color */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+      z-index: 999;
+  }
+    .user:hover {
+      cursor: pointer;
+      background: #b7c400;
+      color:#fff;
+    }
+    .listype {
+      border-bottom:1px solid;
+      border-color:#dedede;
+      font-size:17px;
+    }
+    .listype:hover {
+      cursor: pointer;
+      background: #b7c400;
+      color:#fff;
+      font-weight: bold;
+    }
+    .all:hover {
+      cursor: pointer;
     }
 }
