@@ -62,7 +62,7 @@
         </div>
         <ion-content style="padding-bottom:489px;">
           <ion-item class="hoveritem" style="border-bottom: 1px solid;border-color:#eeeeee;margin-left:-15px;margin-top:-15px;width:111%;margin-bottom:15px;"
-            *ngFor="let route of routeline">
+            *ngFor="let route of routeline" (click)="doViewDetailSlotRoute(route)">
             <div padding>
               <h2>No Urut : {{route.no_urut_group}}</h2>
               <p>Slot Delivery ID : {{route.slot_delivery}}</p>
@@ -84,13 +84,19 @@
         <ion-col padding class="col-content">Nama</ion-col>
         <ion-col padding class="col-content">Address</ion-col>
         <ion-col padding class="col-content">Post Code</ion-col>
+        <ion-col padding class="col-content">Tools</ion-col>
       </ion-row>
-      <ion-row *ngFor="let dod of doslot" class="row-content-list" (click)="doSelectDO(dod)">
-        <ion-col padding class="col-content-genap">{{dod.receipt_no}}</ion-col>
-        <ion-col padding class="col-content-genap">{{dod.location_request}}</ion-col>
-        <ion-col padding class="col-content-genap">{{dod.to_name}}</ion-col>
-        <ion-col padding class="col-content-genap">{{dod.to_address}} {{dod.to_address_1}} {{dod.to_city}}</ion-col>
-        <ion-col padding class="col-content-genap">{{dod.to_code_post}}</ion-col>
+      <ion-row *ngFor="let dod of doslot" class="row-content-list">
+        <ion-col padding class="col-content-genap" (click)="doSelectDO(dod)">{{dod.receipt_no}}</ion-col>
+        <ion-col padding class="col-content-genap" (click)="doSelectDO(dod)">{{dod.location_request}}</ion-col>
+        <ion-col padding class="col-content-genap" (click)="doSelectDO(dod)">{{dod.to_name}}</ion-col>
+        <ion-col padding class="col-content-genap" (click)="doSelectDO(dod)">{{dod.to_address}} {{dod.to_address_1}} {{dod.to_city}}</ion-col>
+        <ion-col padding class="col-content-genap" (click)="doSelectDO(dod)">{{dod.to_code_post}}</ion-col>
+        <ion-col class="col-content-genap" (click)="doViewDetail(dod)">
+          <button style="padding:0px;" full ion-button color="greenlake">
+            <ion-icon style="font-size:20px;" name="eye"></ion-icon>
+          </button>
+        </ion-col>
       </ion-row>
     </ion-grid>
   </ion-content>
@@ -147,4 +153,66 @@
       </ion-row>
     </ion-content>
   </ion-list>
+</div>
+<div *ngIf="showdetail == true" class="quality-detail" style="background:#fff;border:3px solid;border-color:#dedede;">
+  <ion-header>
+    <ion-toolbar color="darkgrey" style="border:1px solid;border-color:#fff;">
+      <ion-title>
+        Info Detail
+      </ion-title>
+    </ion-toolbar>
+    <ion-row>
+      <ion-col col-3 style="text-align: left;font-size:16px;font-weight: bold;background: #fff;">RECEIPT NO</ion-col>
+      <ion-col col-1 style="text-align: center;background: #fff;font-size:16px;font-weight: bold;">:</ion-col>
+      <ion-col col-8 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;">{{receiptno}} - ({{showroom}})</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col-3 style="text-align: left;font-size:16px;font-weight: bold;background: #fff;">NAMA</ion-col>
+      <ion-col col-1 style="text-align: center;background: #fff;font-size:16px;font-weight: bold;">:</ion-col>
+      <ion-col col-8 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;">{{namecust}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col-3 style="text-align: left;font-size:16px;font-weight: bold;background: #fff;">ALAMAT</ion-col>
+      <ion-col col-1 style="text-align: center;background: #fff;font-size:16px;font-weight: bold;">:</ion-col>
+      <ion-col col-8 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;">{{address}}</ion-col>
+      <ion-col col-3 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;"></ion-col>
+      <ion-col col-1 style="text-align: center;background: #fff;font-size:16px;font-weight: bold;"></ion-col>
+      <ion-col col-8 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;">{{address1}}</ion-col>
+      <ion-col col-3 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;"></ion-col>
+      <ion-col col-1 style="text-align: center;background: #fff;font-size:16px;font-weight: bold;"></ion-col>
+      <ion-col col-8 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;">{{kota}}</ion-col>
+      <ion-col col-3 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;"></ion-col>
+      <ion-col col-1 style="text-align: center;background: #fff;font-size:16px;font-weight: bold;"></ion-col>
+      <ion-col col-8 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;">{{postcode}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col-3 style="text-align: left;font-size:16px;font-weight: bold;background: #fff;">TELP</ion-col>
+      <ion-col col-1 style="text-align: center;background: #fff;font-size:16px;font-weight: bold;">:</ion-col>
+      <ion-col col-8 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;">{{telp}}</ion-col>
+    </ion-row>
+    <ion-content style="height:400px;margin-top:0px;">
+      <ion-grid>
+        <ion-row class="row-content">
+          <ion-col padding class="col-content">Line No</ion-col>
+          <ion-col padding class="col-content">Part No</ion-col>
+          <ion-col padding class="col-content">Description</ion-col>
+          <ion-col padding class="col-content">Qty</ion-col>
+        </ion-row>
+        <ion-row *ngFor="let part of itemsall" class="row-content-list">
+          <ion-col padding class="col-content-genap">{{part.part_line_no}}</ion-col>
+          <ion-col padding class="col-content-genap">{{part.part_no}}</ion-col>
+          <ion-col padding class="col-content-genap">{{part.part_description}}</ion-col>
+          <ion-col padding class="col-content-genap">{{part.part_qty}}</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+  </ion-header>
+  <ion-footer>
+    <ion-row>
+      <ion-col col-12>
+        <button ion-button full color="danger" style="font-weight: bold;font-size:15px;" (click)="doCloseDetail()">
+          <ion-icon name="md-close"></ion-icon>&nbsp;&nbsp;&nbsp;Close</button>
+      </ion-col>
+    </ion-row>
+  </ion-footer>
 </div>

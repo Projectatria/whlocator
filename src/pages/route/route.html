@@ -118,7 +118,7 @@
       loop="false">
       <div *ngFor="let route of routeline">
         <ion-slide style="height:100%;">
-          <ion-card class="slideselect">
+          <ion-card class="slideselect" (click)="doViewDetailSlotRoute(route)">
             <div class="container">
               <div class="container-inside"></div>
               <div class="centeredplat">{{route.no_urut_group}}</div>
@@ -312,6 +312,68 @@
       <ion-col col-12>
         <button ion-button full color="danger" style="font-weight: bold;font-size:15px;" (click)="doCloseSelectInstaller2()">
           <ion-icon name="md-close"></ion-icon>&nbsp;&nbsp;&nbsp;Cancel</button>
+      </ion-col>
+    </ion-row>
+  </ion-footer>
+</div>
+<div *ngIf="showdetail == true" class="quality-detail" style="background:#fff;border:3px solid;border-color:#dedede;">
+  <ion-header>
+    <ion-toolbar color="darkgrey" style="border:1px solid;border-color:#fff;">
+      <ion-title>
+        Info Detail
+      </ion-title>
+    </ion-toolbar>
+    <ion-row>
+      <ion-col col-3 style="text-align: left;font-size:16px;font-weight: bold;background: #fff;">RECEIPT NO</ion-col>
+      <ion-col col-1 style="text-align: center;background: #fff;font-size:16px;font-weight: bold;">:</ion-col>
+      <ion-col col-8 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;">{{receiptno}} - ({{showroom}})</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col-3 style="text-align: left;font-size:16px;font-weight: bold;background: #fff;">NAMA</ion-col>
+      <ion-col col-1 style="text-align: center;background: #fff;font-size:16px;font-weight: bold;">:</ion-col>
+      <ion-col col-8 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;">{{namecust}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col-3 style="text-align: left;font-size:16px;font-weight: bold;background: #fff;">ALAMAT</ion-col>
+      <ion-col col-1 style="text-align: center;background: #fff;font-size:16px;font-weight: bold;">:</ion-col>
+      <ion-col col-8 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;">{{address}}</ion-col>
+      <ion-col col-3 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;"></ion-col>
+      <ion-col col-1 style="text-align: center;background: #fff;font-size:16px;font-weight: bold;"></ion-col>
+      <ion-col col-8 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;">{{address1}}</ion-col>
+      <ion-col col-3 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;"></ion-col>
+      <ion-col col-1 style="text-align: center;background: #fff;font-size:16px;font-weight: bold;"></ion-col>
+      <ion-col col-8 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;">{{kota}}</ion-col>
+      <ion-col col-3 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;"></ion-col>
+      <ion-col col-1 style="text-align: center;background: #fff;font-size:16px;font-weight: bold;"></ion-col>
+      <ion-col col-8 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;">{{postcode}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col-3 style="text-align: left;font-size:16px;font-weight: bold;background: #fff;">TELP</ion-col>
+      <ion-col col-1 style="text-align: center;background: #fff;font-size:16px;font-weight: bold;">:</ion-col>
+      <ion-col col-8 style="text-align: left;background: #fff;font-size:16px;font-weight: bold;">{{telp}}</ion-col>
+    </ion-row>
+    <ion-content style="height:400px;margin-top:0px;">
+      <ion-grid>
+        <ion-row class="row-content">
+          <ion-col padding class="col-content">Line No</ion-col>
+          <ion-col padding class="col-content">Part No</ion-col>
+          <ion-col padding class="col-content">Description</ion-col>
+          <ion-col padding class="col-content">Qty</ion-col>
+        </ion-row>
+        <ion-row *ngFor="let part of itemsall" class="row-content-list">
+          <ion-col padding class="col-content-genap">{{part.part_line_no}}</ion-col>
+          <ion-col padding class="col-content-genap">{{part.part_no}}</ion-col>
+          <ion-col padding class="col-content-genap">{{part.part_description}}</ion-col>
+          <ion-col padding class="col-content-genap">{{part.part_qty}}</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+  </ion-header>
+  <ion-footer>
+    <ion-row>
+      <ion-col col-12>
+        <button ion-button full color="danger" style="font-weight: bold;font-size:15px;" (click)="doCloseDetail()">
+          <ion-icon name="md-close"></ion-icon>&nbsp;&nbsp;&nbsp;Close</button>
       </ion-col>
     </ion-row>
   </ion-footer>

@@ -40,6 +40,8 @@ export class ScheduleinstallationPage {
   public postcode = ''
   public addressfull = ''
   public itemsall = [];
+  public showroom = '';
+  public receiptno = '';
 
   constructor(
     public navCtrl: NavController,
@@ -346,6 +348,8 @@ export class ScheduleinstallationPage {
     this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Sales Header Archive", filter: "[No_]=" + "'" + dod.so_no + "'" } })
     .subscribe(val => {
       let detailsales = val['data']
+      this.showroom = dod.store_no
+      this.receiptno = dod.receipt_no
       this.namecust = detailsales[0]['Ship-to Name']
       this.address = detailsales[0]['Ship-to Address']
       this.address1 = detailsales[0]['Ship-to Address 2']
@@ -372,6 +376,8 @@ export class ScheduleinstallationPage {
     this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Sales Header Archive", filter: "[No_]=" + "'" + data.so_no + "'" } })
     .subscribe(val => {
       let detailsales = val['data']
+      this.showroom = data.store_no
+      this.receiptno = data.receipt_no
       this.namecust = detailsales[0]['Ship-to Name']
       this.address = detailsales[0]['Ship-to Address']
       this.address1 = detailsales[0]['Ship-to Address 2']

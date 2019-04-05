@@ -49,6 +49,17 @@ export class RoutePage {
   public namainstaller2 = '';
   public platno = ''
   public routeline = [];
+  public showdetail: boolean = false;
+  public namecust = ''
+  public address = ''
+  public address1 = ''
+  public kota = ''
+  public telp = ''
+  public postcode = ''
+  public addressfull = ''
+  public itemsall = [];
+  public showroom = '';
+  public receiptno = '';
 
   constructor(
     public navCtrl: NavController,
@@ -437,9 +448,52 @@ export class RoutePage {
   }
   doGetLine(route) {
     this.api.get('table/route_line', { params: { filter: "date_route=" + "'" + this.dateselect['fulldate'] + "' AND plat_no=" + "'" + route.plat_no + "'", sort: 'no_urut_group ASC' } })
-    .subscribe(val => {
-      this.routeline = val['data']
-    });
+      .subscribe(val => {
+        this.routeline = val['data']
+      });
+  }
+  doViewDetailSlotRoute(route) {
+    if (route.slot_delivery != '') {
+      this.api.get('table/slot_delivery', { params: { filter: "request_no=" + "'" + route.slot_delivery + "'" } })
+        .subscribe(val => {
+          let data = val['data']
+          this.showroom = data[0].location_request
+          this.receiptno = data[0].receipt_no
+          this.namecust = data[0].to_name
+          this.address = data[0].to_address
+          this.address1 = data[0].to_address_1
+          this.kota = data[0].to_to_city
+          this.telp = data[0].to_telp
+          this.postcode = data[0].to_code_post
+          this.doGetItemsFromSlot(data)
+          this.showdetail = true;
+        });
+    }
+    else {
+      this.api.get('table/slot_installation', { params: { filter: "request_no=" + "'" + route.slot_installation + "'" } })
+        .subscribe(val => {
+          let data = val['data']
+          this.showroom = data[0].location_request
+          this.receiptno = data[0].receipt_no
+          this.namecust = data[0].to_name
+          this.address = data[0].to_address
+          this.address1 = data[0].to_address_1
+          this.kota = data[0].to_to_city
+          this.telp = data[0].to_telp
+          this.postcode = data[0].to_code_post
+          this.doGetItemsFromSlot(data)
+          this.showdetail = true;
+        });
+    }
+  }
+  doCloseDetail() {
+    this.showdetail = false;
+  }
+  doGetItemsFromSlot(data) {
+    this.api.get("table/delivery_order_line", { params: { limit: 100, filter: "receipt_no='" + data[0].receipt_no + "'", sort: "part_no" + " ASC " } })
+      .subscribe(val => {
+        this.itemsall = val['data']
+      });
   }
 }
 

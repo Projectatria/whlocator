@@ -38,6 +38,17 @@ export class RoutedetailPage {
   public installationslot = [];
   public datain = [];
   public routeline = [];
+  public showdetail: boolean = false;
+  public namecust = ''
+  public address = ''
+  public address1 = ''
+  public kota = ''
+  public telp = ''
+  public postcode = ''
+  public addressfull = ''
+  public itemsall = [];
+  public showroom = '';
+  public receiptno = ''
 
   constructor(
     public navCtrl: NavController,
@@ -62,6 +73,7 @@ export class RoutedetailPage {
     this.doshow = false;
     this.installationshow = false;
     this.showroute = false;
+    this.showdetail = false;
     this.slotdo = 'Pilih Slot Delivery';
     this.slotinstallation = 'Pilih Slot Installation';
     platform.ready().then(() => {
@@ -542,9 +554,66 @@ export class RoutedetailPage {
       });
   }
   doGetLine() {
-    this.api.get('table/route_line', { params: { filter: "date_route=" + "'" + this.route['date_delivery'] + "'", sort: 'no_urut_group ASC' } })
+    this.api.get('table/route_line', { params: { filter: "date_route=" + "'" + this.route['date_delivery'] + "' AND group_route_no=" + "'" + this.route['group_route_no'] + "'", sort: 'no_urut_group ASC' } })
       .subscribe(val => {
         this.routeline = val['data']
       });
+  }
+  doViewDetail(dod) {
+    this.showroom = dod.location_request
+    this.receiptno = dod.receipt_no
+    this.namecust = dod.to_name
+    this.address = dod.to_address
+    this.address1 = dod.to_address_1
+    this.kota = dod.to_to_city
+    this.telp = dod.to_telp
+    this.postcode = dod.to_code_post
+    this.doGetItemsFromSlot(dod)
+    this.showdetail = true;
+  }
+  doCloseDetail() {
+    this.showdetail = false;
+  }
+  doGetItemsFromSlot(dod) {
+    this.api.get("table/delivery_order_line", { params: { limit: 100, filter: "receipt_no='" + dod.receipt_no + "'", sort: "part_no" + " ASC " } })
+      .subscribe(val => {
+        this.itemsall = val['data']
+      });
+  }
+  doViewDetailSlotRoute(route) {
+    if (route.slot_delivery != '') {
+      this.api.get('table/slot_delivery', { params: { filter: "request_no=" + "'" + route.slot_delivery + "'" } })
+        .subscribe(val => {
+          let data = val['data']
+          this.showroom = data[0].location_request
+          this.receiptno = data[0].receipt_no
+          this.namecust = data[0].to_name
+          this.address = data[0].to_address
+          this.address1 = data[0].to_address_1
+          this.kota = data[0].to_to_city
+          this.telp = data[0].to_telp
+          this.postcode = data[0].to_code_post
+          let dod = data[0]
+          this.doGetItemsFromSlot(dod)
+          this.showdetail = true;
+        });
+    }
+    else {
+      this.api.get('table/slot_installation', { params: { filter: "request_no=" + "'" + route.slot_installation + "'" } })
+        .subscribe(val => {
+          let data = val['data']
+          this.showroom = data[0].location_request
+          this.receiptno = data[0].receipt_no
+          this.namecust = data[0].to_name
+          this.address = data[0].to_address
+          this.address1 = data[0].to_address_1
+          this.kota = data[0].to_to_city
+          this.telp = data[0].to_telp
+          this.postcode = data[0].to_code_post
+          let dod = data[0]
+          this.doGetItemsFromSlot(dod)
+          this.showdetail = true;
+        });
+    }
   }
 }
