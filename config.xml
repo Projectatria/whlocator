@@ -101,5 +101,5 @@
     <plugin name="cordova-plugin-advanced-http" spec="^1.11.1" />
     <plugin name="dff-cordova-plugin-honeywell" spec="https://github.com/dff-solutions/dff-cordova-plugin-honeywell.git" />
     <plugin name="phonegap-plugin-barcodescanner" spec="^7.1.0" />
-    <engine name="android" spec="~6.4.0" />
+    <engine name="android" spec="6.4.0" />
 </widget>

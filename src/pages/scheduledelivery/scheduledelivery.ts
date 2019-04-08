@@ -212,27 +212,52 @@ export class ScheduledeliveryPage {
     rawFile.send(null);
   }
   doGetDetailAlamat(dod) {
-    this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Sales Header Archive", filter: "[No_]=" + "'" + dod.so_no + "'" } })
-      .subscribe(val => {
-        let detailsales = val['data']
-        let name = detailsales[0]['Ship-to Name']
-        let address = detailsales[0]['Ship-to Address']
-        let address1 = detailsales[0]['Ship-to Address 2']
-        let kota = detailsales[0]['Ship-to City']
-        let telp = detailsales[0]['Ship-to Phone No_']
-        let postcode = detailsales[0]['Ship-to Post Code']
-        let addressfull = detailsales[0]['Ship-to Address'] + " " + detailsales[0]['Ship-to Address 2'] + " " + detailsales[0]['Ship-to City']
-        let dataurl = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + addressfull + '&key=AIzaSyCyS0sAM18a1JhzYSwZEBkfyE5--qFoN1U'
-        var self = this;
-        this.readTextFile(dataurl, function (text) {
-          var datalatlon = JSON.parse(text);
-          let latitude = datalatlon.results[0].geometry.location.lat
-          let longitude = datalatlon.results[0].geometry.location.lng
-          self.doGetNextNo(dod, name, address, address1, kota, telp, postcode, latitude, longitude)
+    if (dod.type_doc == 'TO') {
+      this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Location", filter: "[Code]=" + "'" + dod.store_no + "'" } })
+        .subscribe(val => {
+          let detailsales = val['data']
+          let name = detailsales[0]['Name']
+          let address = detailsales[0]['Address']
+          let address1 = detailsales[0]['Address 2']
+          let kota = detailsales[0]['City']
+          let telp = detailsales[0]['Phone No_']
+          let postcode = detailsales[0]['Post Code']
+          let addressfull = detailsales[0]['Address'] + " " + detailsales[0]['Address 2'] + " " + detailsales[0]['City']
+          let dataurl = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + addressfull + '&key=AIzaSyCyS0sAM18a1JhzYSwZEBkfyE5--qFoN1U'
+          var self = this;
+          this.readTextFile(dataurl, function (text) {
+            var datalatlon = JSON.parse(text);
+            let latitude = datalatlon.results[0].geometry.location.lat
+            let longitude = datalatlon.results[0].geometry.location.lng
+            self.doGetNextNo(dod, name, address, address1, kota, telp, postcode, latitude, longitude)
+          });
+        }, err => {
+          this.doGetDetailAlamat(dod)
         });
-      }, err => {
-        this.doGetDetailAlamat(dod)
-      });
+    }
+    else {
+      this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Sales Header Archive", filter: "[No_]=" + "'" + dod.so_no + "'" } })
+        .subscribe(val => {
+          let detailsales = val['data']
+          let name = detailsales[0]['Ship-to Name']
+          let address = detailsales[0]['Ship-to Address']
+          let address1 = detailsales[0]['Ship-to Address 2']
+          let kota = detailsales[0]['Ship-to City']
+          let telp = detailsales[0]['Ship-to Phone No_']
+          let postcode = detailsales[0]['Ship-to Post Code']
+          let addressfull = detailsales[0]['Ship-to Address'] + " " + detailsales[0]['Ship-to Address 2'] + " " + detailsales[0]['Ship-to City']
+          let dataurl = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + addressfull + '&key=AIzaSyCyS0sAM18a1JhzYSwZEBkfyE5--qFoN1U'
+          var self = this;
+          this.readTextFile(dataurl, function (text) {
+            var datalatlon = JSON.parse(text);
+            let latitude = datalatlon.results[0].geometry.location.lat
+            let longitude = datalatlon.results[0].geometry.location.lng
+            self.doGetNextNo(dod, name, address, address1, kota, telp, postcode, latitude, longitude)
+          });
+        }, err => {
+          this.doGetDetailAlamat(dod)
+        });
+    }
   }
   getNextNo() {
     return this.api.get('nextno/slot_delivery/request_no')
@@ -345,53 +370,87 @@ export class ScheduledeliveryPage {
     this.showdetail = false;
   }
   doGetInfoCust(dod) {
-    this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Sales Header Archive", filter: "[No_]=" + "'" + dod.so_no + "'" } })
-    .subscribe(val => {
-      let detailsales = val['data']
-      this.showroom = dod.store_no
-      this.receiptno = dod.receipt_no
-      this.namecust = detailsales[0]['Ship-to Name']
-      this.address = detailsales[0]['Ship-to Address']
-      this.address1 = detailsales[0]['Ship-to Address 2']
-      this.kota = detailsales[0]['Ship-to City']
-      this.telp = detailsales[0]['Ship-to Phone No_']
-      this.postcode = detailsales[0]['Ship-to Post Code']
-      this.addressfull = detailsales[0]['Ship-to Address'] + " " + detailsales[0]['Ship-to Address 2'] + " " + detailsales[0]['Ship-to City']
-    });
+    if (dod.type_doc == 'TO') {
+      this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Location", filter: "[Code]=" + "'" + dod.store_no + "'" } })
+        .subscribe(val => {
+          let detailsales = val['data']
+          this.showroom = dod.store_no
+          this.receiptno = dod.receipt_no
+          this.namecust = detailsales[0]['Name']
+          this.address = detailsales[0]['Address']
+          this.address1 = detailsales[0]['Address 2']
+          this.kota = detailsales[0]['City']
+          this.telp = detailsales[0]['Phone No_']
+          this.postcode = detailsales[0]['Post Code']
+          this.addressfull = detailsales[0]['Address'] + " " + detailsales[0]['Address 2'] + " " + detailsales[0]['City']
+        });
+    }
+    else {
+      this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Sales Header Archive", filter: "[No_]=" + "'" + dod.so_no + "'" } })
+        .subscribe(val => {
+          let detailsales = val['data']
+          this.showroom = dod.store_no
+          this.receiptno = dod.receipt_no
+          this.namecust = detailsales[0]['Ship-to Name']
+          this.address = detailsales[0]['Ship-to Address']
+          this.address1 = detailsales[0]['Ship-to Address 2']
+          this.kota = detailsales[0]['Ship-to City']
+          this.telp = detailsales[0]['Ship-to Phone No_']
+          this.postcode = detailsales[0]['Ship-to Post Code']
+          this.addressfull = detailsales[0]['Ship-to Address'] + " " + detailsales[0]['Ship-to Address 2'] + " " + detailsales[0]['Ship-to City']
+        });
+    }
   }
   doGetItems(dod) {
     this.api.get("table/delivery_order_line", { params: { limit: 100, filter: "receipt_no='" + dod.receipt_no + "'", sort: "part_no" + " ASC " } })
-    .subscribe(val => {
-      this.itemsall = val['data']
-    });
+      .subscribe(val => {
+        this.itemsall = val['data']
+      });
   }
   doGetDOD(slot) {
-    this.api.get("table/delivery_order_header", { params: { limit: 100, filter: "receipt_no='" + slot.receipt_no + "'"} })
-    .subscribe(val => {
-      let data = val['data'][0]
-      this.doGetInfoCustFromSlot(data)
-    });
+    this.api.get("table/delivery_order_header", { params: { limit: 100, filter: "receipt_no='" + slot.receipt_no + "'" } })
+      .subscribe(val => {
+        let data = val['data'][0]
+        this.doGetInfoCustFromSlot(data)
+      });
   }
   doGetInfoCustFromSlot(data) {
-    this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Sales Header Archive", filter: "[No_]=" + "'" + data.so_no + "'" } })
-    .subscribe(val => {
-      let detailsales = val['data']
-      this.showroom = data.store_no
-      this.receiptno = data.receipt_no
-      this.namecust = detailsales[0]['Ship-to Name']
-      this.address = detailsales[0]['Ship-to Address']
-      this.address1 = detailsales[0]['Ship-to Address 2']
-      this.kota = detailsales[0]['Ship-to City']
-      this.telp = detailsales[0]['Ship-to Phone No_']
-      this.postcode = detailsales[0]['Ship-to Post Code']
-      this.addressfull = detailsales[0]['Ship-to Address'] + " " + detailsales[0]['Ship-to Address 2'] + " " + detailsales[0]['Ship-to City']
-    });
+    if (data.type_doc == 'TO') {
+      this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Location", filter: "[Code]=" + "'" + data.store_no + "'" } })
+        .subscribe(val => {
+          let detailsales = val['data']
+          this.showroom = data.store_no
+          this.receiptno = data.receipt_no
+          this.namecust = detailsales[0]['Name']
+          this.address = detailsales[0]['Address']
+          this.address1 = detailsales[0]['Address 2']
+          this.kota = detailsales[0]['City']
+          this.telp = detailsales[0]['Phone No_']
+          this.postcode = detailsales[0]['Post Code']
+          this.addressfull = detailsales[0]['Address'] + " " + detailsales[0]['Address 2'] + " " + detailsales[0]['City']
+        });
+    }
+    else {
+      this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Sales Header Archive", filter: "[No_]=" + "'" + data.so_no + "'" } })
+        .subscribe(val => {
+          let detailsales = val['data']
+          this.showroom = data.store_no
+          this.receiptno = data.receipt_no
+          this.namecust = detailsales[0]['Ship-to Name']
+          this.address = detailsales[0]['Ship-to Address']
+          this.address1 = detailsales[0]['Ship-to Address 2']
+          this.kota = detailsales[0]['Ship-to City']
+          this.telp = detailsales[0]['Ship-to Phone No_']
+          this.postcode = detailsales[0]['Ship-to Post Code']
+          this.addressfull = detailsales[0]['Ship-to Address'] + " " + detailsales[0]['Ship-to Address 2'] + " " + detailsales[0]['Ship-to City']
+        });
+    }
   }
   doGetItemsFromSlot(slot) {
     this.api.get("table/delivery_order_line", { params: { limit: 100, filter: "receipt_no='" + slot.receipt_no + "'", sort: "part_no" + " ASC " } })
-    .subscribe(val => {
-      this.itemsall = val['data']
-    });
+      .subscribe(val => {
+        this.itemsall = val['data']
+      });
   }
 
 }

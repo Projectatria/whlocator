@@ -158,4 +158,16 @@ export class HomePage {
       userid: this.userid
     });
   }
+  doPrintDocument() {
+    this.navCtrl.push('DocumentprintPage', {
+      rolecab: this.rolecab,
+      userid: this.userid
+    });
+  }
+  doPrintScanner() {
+    this.navCtrl.push('PrintscannerPage', {
+      rolecab: this.rolecab,
+      userid: this.userid
+    });
+  }
 }

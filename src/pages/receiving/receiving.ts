@@ -5,6 +5,8 @@ import { AlertController } from 'ionic-angular';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpHeaders } from "@angular/common/http";
 import { Storage } from '@ionic/storage';
+import { BarcodeScanner, BarcodeScannerOptions } from "@ionic-native/barcode-scanner";
+import moment from 'moment';
 
 @IonicPage()
 @Component({
@@ -14,17 +16,20 @@ import { Storage } from '@ionic/storage';
 export class ReceivingPage {
   myFormModal: FormGroup;
   private purchasing_order = [];
+  private purchasing_order_history = [];
   searchpo: any;
   items = [];
   halaman = 0;
+  halamanhistory = 0;
   totaldata: any;
+  totaldatahistory: any;
   totaldataitem: any;
   public toggled: boolean = false;
   orderno = '';
   rcv: string = "receiving";
   private width: number;
   private height: number;
-  private token:any;
+  private token: any;
   public loader: any;
   public userid: any;
   public name: any;
@@ -44,6 +49,7 @@ export class ReceivingPage {
     public platform: Platform,
     public viewCtrl: ViewController,
     public storage: Storage,
+    private barcodeScanner: BarcodeScanner,
     public loadingCtrl: LoadingController
 
   ) {
@@ -54,6 +60,7 @@ export class ReceivingPage {
     this.loader.present();
     this.rolecab = this.navParams.get('rolecab')
     this.getPO();
+    this.getPOHistory();
     this.toggled = false;
     this.rcv = "receiving"
     platform.ready().then(() => {
@@ -116,6 +123,31 @@ export class ReceivingPage {
 
   }
 
+  getPOHistory() {
+    return new Promise(resolve => {
+      let offset = 30 * this.halamanhistory
+      if (this.halamanhistory == -1) {
+        resolve();
+      }
+      else {
+        this.halamanhistory++;
+        this.api.get('table/purchasing_order', { params: { limit: 30, offset: offset, filter: "status='CLSD'" } })
+          .subscribe(val => {
+            let data = val['data'];
+            for (let i = 0; i < data.length; i++) {
+              this.purchasing_order_history.push(data[i]);
+              this.totaldatahistory = val['count'];
+            }
+            if (data.length == 0) {
+              this.halamanhistory = -1
+            }
+            resolve();
+          });
+      }
+    })
+
+  }
+
   getSearchPO(ev: any) {
     // set val to the value of the searchbar
     let val = ev.target.value;
@@ -150,6 +182,12 @@ export class ReceivingPage {
 
     })
   }
+  doInfiniteHistory(infiniteScroll) {
+    this.getPOHistory().then(response => {
+      infiniteScroll.complete();
+
+    })
+  }
   toggleSearch() {
     this.toggled = this.toggled ? false : true;
   }
@@ -159,6 +197,14 @@ export class ReceivingPage {
       this.purchasing_order = val['data'];
       this.totaldata = val['count'];
       this.searchpo = this.purchasing_order;
+      refresher.complete();
+    });
+  }
+
+  doRefreshHistory(refresher) {
+    this.api.get("table/purchasing_order", { params: { limit: 30, filter: "status='CLSD'" } }).subscribe(val => {
+      this.purchasing_order_history = val['data'];
+      this.totaldatahistory = val['count'];
       refresher.complete();
     });
   }
@@ -213,6 +259,58 @@ export class ReceivingPage {
       ]
     });
     alert.present();
+  }
+  doOpenScanner(po) {
+    this.barcodeScanner.scan().then(barcodeData => {
+      var barcodeno = barcodeData.text;
+      this.doPostAutoPrinter(barcodeno, po)
+    });
+  }
+  doPostAutoPrinter(barcodeno, po) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    this.api.post("table/auto_printer_scanner",
+      {
+        "type_doc": po.po_id,
+        "doc_no": po.order_no,
+        "barcode_no": barcodeno,
+        "datetime": moment().format('YYYY-MM-DD HH:mm'),
+        "id_user": this.userid,
+        "status": 'OPEN'
+      },
+      { headers })
+      .subscribe(
+        (val) => {
+          this.loader = this.loadingCtrl.create({
+            // cssClass: 'transparent',
+            content: 'Please Wait...'
+          });
+          this.loader.present().then(() => {
+            this.doGetAutoPrinter(barcodeno)
+          })
+        }, err => {
+          this.doPostAutoPrinter(barcodeno, po)
+        });
+  }
+  doGetAutoPrinter(barcodeno) {
+    this.api.get("table/auto_printer_scanner", { params: { limit: 30, filter: "barcode_no=" + "'" + barcodeno + "' AND status='INPG'" } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data.length == 0) {
+          this.doGetAutoPrinter(barcodeno)
+        }
+        else {
+          let alert = this.alertCtrl.create({
+            title: 'Sukses',
+            subTitle: 'Print Document Sukses',
+            buttons: ['OK']
+          });
+          alert.present();
+          this.loader.dismiss()
+        }
+      }, err => {
+        this.doGetAutoPrinter(barcodeno)
+      });
   }
 
 }

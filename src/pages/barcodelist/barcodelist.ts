@@ -16,15 +16,15 @@ export class BarcodelistPage {
   qty = null;
   i = null;
   arr = [];
-  private token:any;
+  private token: any;
 
   private barcode = [];
   private totaldata: any;
   constructor(
-    public api: ApiProvider, 
-    public navCtrl: NavController, 
-    public navParams: NavParams, 
-    private barcodeScanner: BarcodeScanner, 
+    public api: ApiProvider,
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    private barcodeScanner: BarcodeScanner,
     private viewCtrl: ViewController,
     public storage: Storage
   ) {
@@ -35,7 +35,7 @@ export class BarcodelistPage {
     this.getItems();
     for (this.i = 0; this.i < this.qty; this.i++) {
       this.arr.push(this.i);
-    }    
+    }
   }
   ionViewCanEnter() {
     this.storage.get('token').then((val) => {
@@ -69,16 +69,23 @@ export class BarcodelistPage {
   }
   doPrint() {
     var divHeaders = document.getElementById("printareaheader").innerHTML;
+    var divHeadersBarcode = document.getElementById('printareaheaderbarcode').innerHTML;
     var divContents = document.getElementById("printarea").innerHTML;
     var printWindow = window.open();
     printWindow.document.write('<html><head><title>Barcode Print</title>');
     printWindow.document.write('</head><body>');
-    printWindow.document.write('<div style="padding-top:10px;padding-bottom:10px;text-align:center;border:1px solid;border-color:#dedede">');
-    printWindow.document.write(divHeaders);
-    printWindow.document.write('</div>');
+    printWindow.document.write('<div style="margin-top:10px;text-align:center;border:1px solid;border-color:transparent">');
+    for (let i = 0; i < 2; i++) {
+      printWindow.document.write('<div style="text-align:center;float:left;padding-top:10px;width:48%;margin-bottom:5px;margin-right:5px;">');
+      printWindow.document.write(divHeadersBarcode);
+      printWindow.document.write('</div>');
+    }
+    // printWindow.document.write('<div style="padding-top:10px;padding-bottom:10px;text-align:center;border:1px solid;border-color:#dedede">');
+    // printWindow.document.write(divHeaders);
+    // printWindow.document.write('</div>');
     printWindow.document.write('<div style="margin-top:10px;text-align:center;border:1px solid;border-color:transparent">');
     for (let i = 0; i < this.qty; i++) {
-      printWindow.document.write('<div style="text-align:center;float:left;padding-top:10px;width:24%;margin-bottom:5px;margin-right:5px;border:1px solid;border-color:#dedede"">');
+      printWindow.document.write('<div style="text-align:center;float:left;padding-top:10px;width:48%;margin-bottom:5px;margin-right:5px;">');
       printWindow.document.write(divContents);
       printWindow.document.write('</div>');
     }
@@ -90,6 +97,6 @@ export class BarcodelistPage {
   }
   openfolder() {
     var thePath = 'C:\\Windows';
-		window.open('file://' + thePath, 'explorer');
+    window.open('file://' + thePath, 'explorer');
   }
 }

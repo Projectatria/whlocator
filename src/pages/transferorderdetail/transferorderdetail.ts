@@ -77,6 +77,11 @@ export class TransferorderdetailPage {
       userid: this.userid
     });
   }
+  ionViewDidEnter() {
+    this.halamantodetail = 0;
+    this.transferorderdetail = [];
+    this.getTODetail()
+  }
   getTODetail() {
     return new Promise(resolve => {
       let offsetprepare = 30 * this.halamantodetail

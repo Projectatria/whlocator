@@ -16,12 +16,15 @@
   <ion-card>
     <ion-card-header id="printareaheader" style="text-align:center;">
       No Order : {{orderno}} - Batch Number : {{batchno}} - Item No : {{itemno}} Qty : {{qty}}
+      <ngx-barcode id="printareaheaderbarcode"
+        [bc-value]="orderno" [bc-display-value]="true" [bc-width]="1.2" [bc-height]="20" [bc-font-size]="10" [bc-margin]="0"></ngx-barcode>
     </ion-card-header>
     <ion-grid style="margin-left:5px;">
-      <ion-row >
+      <ion-row>
         <ion-col style="border:1px solid;border-color:#dedede;margin-right:10px;margin-bottom:10px;text-align:center;" *ngFor="let i of arr">
           <!-- <qr-code [(value)]="batchno+itemno" size="250" [level]="H"></qr-code> -->
-          <ngx-barcode id="printarea" [bc-value]="batchno+itemno" [bc-display-value]="true" [bc-width]="1.2" [bc-height]="20" [bc-font-size]="10" [bc-margin]="0"></ngx-barcode>
+          <ngx-barcode id="printarea" [bc-value]="batchno+itemno" [bc-display-value]="true" [bc-width]="1.2" [bc-height]="20" [bc-font-size]="10"
+            [bc-margin]="0"></ngx-barcode>
         </ion-col>
       </ion-row>
     </ion-grid>

@@ -69,21 +69,29 @@
         <i class="fas fa-retweet imgfa"></i>
         <h5 class="textfa">Cek Stock</h5>
       </ion-col>
-      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-6 (click)="doStockOpname()">
+      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'"  class="col" col-12 col-md-12 col-xl-6 (click)="doStockOpname()">
         <i class="fas fa-chart-pie imgfa"></i>
         <h5 class="textfa">Stock Opname</h5>
       </ion-col>
-      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-4 (click)="doScheduleDelivery()">
+      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'"  col-12 col-md-12 col-xl-4 (click)="doScheduleDelivery()">
         <i class="fas fa-truck imgfa"></i>
         <h5 class="textfa">Schedule Delivery</h5>
       </ion-col>
-      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-4 (click)="doScheduleInstallation()">
+      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM' || rolearea == 'HO'"  col-12 col-md-12 col-xl-4 (click)="doScheduleInstallation()">
         <i class="fas fa-tools imgfa"></i>
         <h5 class="textfa">Schedule Installation</h5>
       </ion-col>
       <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-4 (click)="doRoute()">
         <i class="fas fa-route imgfa"></i>
         <h5 class="textfa">Create Rute</h5>
+      </ion-col>
+      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-8 (click)="doPrintDocument()">
+        <i class="fas fa-print imgfa"></i>
+        <h5 class="textfa">Print Document</h5>
+      </ion-col>
+      <ion-col padding *ngIf="rolearea == 'INBOUND' || rolearea == 'HO'" class="col" col-12 col-md-12 col-xl-4 (click)="doPrintScanner()">
+        <i class="fas fa-qrcode imgfa"></i>
+        <h5 class="textfa">Print Document (Scanner)</h5>
       </ion-col>
     </ion-row>
   </ion-grid>
