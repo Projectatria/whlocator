@@ -562,6 +562,7 @@ export class ReceivingdetailPage {
                       .subscribe(val => {
                         this.getRCV();
                         this.getRCVChecked();
+                        this.detailrcv = 'receivingsubmit'
                       });
                   }
                   this.itemdata = [];

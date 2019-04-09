@@ -1663,4 +1663,9 @@ export class QcinPage {
           this.doInsertfoto(datai, uuidreject);
         });
   }
+  doPrintBA(myqc) {
+    this.navCtrl.push('BeritaacaraqcPage', {
+      myqc: myqc
+    })
+  }
 }

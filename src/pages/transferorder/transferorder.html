@@ -193,8 +193,8 @@
               </button>
             </ion-col>
             <ion-col col-xl-1 class="col-content">
-              <button [disabled]="tolist.from_location != rolecab || (tolist.from_location == rolecab && tolist.status_picking != '')" item-end
-                ion-button clear color="greenlake" (click)="doSendNotificationPic(tolist)">
+              <button [disabled]="tolist.from_location != rolecab || (tolist.from_location == rolecab && tolist.status_picking != '')"
+                item-end ion-button clear color="greenlake" (click)="doSendNotificationPic(tolist)">
                 <ion-icon name="md-send" style="font-size:30px;"></ion-icon>
               </button>
             </ion-col>
@@ -297,25 +297,25 @@
       </ion-infinite-scroll>
     </ion-list>
   </div>
-  <div id="myModalPic" class="modal">
-    <div class="modal-content">
-      <span class="closeModal" (click)="doOffToPIC()">&times;</span>
-      <form [formGroup]="myFormModalPic">
-        <ion-list no-lines>
-          <ion-item class="item-rcv" style="border-bottom:1px solid;border-color:#dedede;">
-            <ion-label floating>PIC</ion-label>
-            <ion-select formControlName="pic">
-              <ion-option *ngFor="let user of users" value="{{user.id_user}}" (ionSelect)="onChange(user)">{{user.id_user}} {{user.name}} {{user.id_role}}</ion-option>
-            </ion-select>
-          </ion-item>
-        </ion-list>
-      </form>
-      <ion-buttons end>
-        <button ion-button color="greenlake" (click)="doSendToPic();">Send</button>
-      </ion-buttons>
-    </div>
-  </div>
 </ion-content>
+<div id="myModalPic" class="modal">
+  <div class="modal-content">
+    <span class="closeModal" (click)="doOffToPIC()">&times;</span>
+    <form [formGroup]="myFormModalPic">
+      <ion-list no-lines>
+        <ion-item class="item-rcv" style="border-bottom:1px solid;border-color:#dedede;">
+          <ion-label floating>PIC</ion-label>
+          <ion-select formControlName="pic">
+            <ion-option *ngFor="let user of users" value="{{user.id_user}}" (ionSelect)="onChange(user)">{{user.id_user}} {{user.name}} {{user.id_role}}</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+    </form>
+    <ion-buttons end>
+      <button ion-button color="greenlake" (click)="doSendToPic();">Send</button>
+    </ion-buttons>
+  </div>
+</div>
 <div [ngSwitch]="to">
   <ion-fab *ngSwitchCase="'transferorder'" class="fixed-div" bottom right>
     <button ion-fab color="greenlake" (click)="doAddTO()">

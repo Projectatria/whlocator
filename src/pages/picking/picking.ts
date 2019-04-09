@@ -598,12 +598,12 @@ export class PickingPage {
                           if (datapickingresult.length != 0) {
                             let datai = data[i]
                             let datapicking = datapickingresult[0]
-                            this.doPostPickingListDetailPartNull(datai, datapicking)
+                            this.doPostPickingListDetailPartNull(k, datai, datapicking)
                           }
                           else {
                             let datai = data[i]
                             let datapicking = { 'batch_no': 'NOT FOUND', 'location': 'NOT FOUND', 'sub_location': 'NOT FOUND' }
-                            this.doPostPickingListDetailPartNull(datai, datapicking)
+                            this.doPostPickingListDetailPartNull(k, datai, datapicking)
                           }
                         });
                     }
@@ -824,7 +824,7 @@ export class PickingPage {
         this.doPostPickingListDetailPartNullUpdate(datai, datapicking, dataupd)
       });
   }
-  doPostPickingListDetailPartNull(datai, datapicking) {
+  doPostPickingListDetailPartNull(k, datai, datapicking) {
     this.api.get("table/picking_list_detail_part", { params: { limit: 100, filter: "receipt_no=" + "'" + datai.receipt_no + "' AND batch_no=" + "'" + datapicking.batch_no + "' AND item_no=" + "'" + datai.item_no + "' AND part_no=" + "'" + datai.item_no + "' AND line_no=" + "'10000'" } })
       .subscribe(val => {
         let dataupd = val['data']
@@ -832,10 +832,15 @@ export class PickingPage {
           this.doPostPickingListDetailPartNullUpdate(datai, datapicking, dataupd)
         }
         else {
-          this.doPostPickingListDetailPartNullInsert(datai, datapicking, dataupd)
+          if (k > 0) {
+            this.doPostPickingListDetailPartNull(k, datai, datapicking)
+          }
+          else {
+            this.doPostPickingListDetailPartNullInsert(datai, datapicking, dataupd)
+          }
         }
       }, err => {
-        this.doPostPickingListDetailPartNull(datai, datapicking)
+        this.doPostPickingListDetailPartNull(k, datai, datapicking)
       });
   }
   doGetStock(datai, dataj, datapicking, qtytotal) {

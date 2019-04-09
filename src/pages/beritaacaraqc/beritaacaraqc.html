@@ -1,0 +1,96 @@
+<ion-header class="header-menu">
+  <ion-toolbar class="header-navbar" style="width:100%;">
+    <div *ngIf="!toggled" class="logo-search" style="text-align:right;height:0px;">
+      <button ion-button clear color="light" (click)="doPrint()">
+        <ion-icon name="md-print" style="font-size:35px;"></ion-icon>
+      </button>
+    </div>
+    <button ion-button clear color="light" (click)="closeModal()">
+      Close
+    </button>
+    <ion-title class="side-title">
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding class="content-pickingnote">
+  <div id="printarea">
+    <h4 style="text-align: center;font-weight: bold;font-family: Calibri;padding-top:30px;">FORM QC IN DISTRIBUTION CENTER</h4>
+    <div padding>
+      <ion-grid>
+        <ion-row>
+          <ion-col col-4 style="font-size:15px;text-align: left;font-style: italic;font-weight: bold;background: #fff;">Nama Supplier
+          </ion-col>
+          <ion-col col-8 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;">:&nbsp;&nbsp;{{myqc.vendorname}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col col-4 style="font-size:15px;text-align: left;font-style: italic;font-weight: bold;background: #fff;">Tgl Penerimaan
+          </ion-col>
+          <ion-col col-8 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;">:&nbsp;&nbsp;{{myqc.receiveddate}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col col-4 style="font-size:15px;text-align: left;font-style: italic;font-weight: bold;background: #fff;">Tgl Pengerjaan
+          </ion-col>
+          <ion-col col-8 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;">:&nbsp;&nbsp;{{myqc.checkingdate}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col col-4 style="font-size:15px;text-align: left;font-style: italic;font-weight: bold;background: #fff;">Nomor PO
+          </ion-col>
+          <ion-col col-4 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;">:&nbsp;&nbsp;{{myqc.order_no}}</ion-col>
+          <ion-col *ngIf="myqc.vendorstatus == 'IMPORT'" col-1 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;border:1px solid;text-align: center;">V</ion-col>
+          <ion-col *ngIf="myqc.vendorstatus != 'IMPORT'" col-1 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;border:1px solid;text-align: center;"></ion-col>
+          <ion-col col-3 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;">Import</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col col-4 style="font-size:15px;text-align: left;font-style: italic;font-weight: bold;background: #fff;">Nomor PL
+          </ion-col>
+          <ion-col col-4 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;">:&nbsp;&nbsp;</ion-col>
+          <ion-col *ngIf="myqc.vendorstatus != 'IMPORT'" col-1 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;border:1px solid;text-align: center;">V</ion-col>
+          <ion-col *ngIf="myqc.vendorstatus == 'IMPORT'" col-1 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;border:1px solid;text-align: center;"></ion-col>
+          <ion-col col-3 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;">Lokal</ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-grid style="padding-top:10px;">
+        <ion-row>
+          <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">No</ion-col>
+          <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Kode Barang</ion-col>
+          <ion-col col-3 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Nama Barang</ion-col>
+          <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Qty PL</ion-col>
+          <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Qty Fisik</ion-col>
+          <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Qty Sampling</ion-col>
+          <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Passed</ion-col>
+          <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Reject</ion-col>
+          <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Keterangan</ion-col>
+          <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">PIC Checker</ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{myqc.Row}}</ion-col>
+            <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{myqc.item_no}}</ion-col>
+            <ion-col col-3 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{myqc.description}}</ion-col>
+            <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{myqc.qty_receiving}}</ion-col>
+            <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{myqc.qty_receiving}}</ion-col>
+            <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{qtysampling}}</ion-col>
+            <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{myqc.passed}}</ion-col>
+            <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{myqc.reject}}</ion-col>
+            <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">-</ion-col>
+            <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{myqc.pic}}</ion-col>
+          </ion-row>
+      </ion-grid>
+      <ion-grid style="padding-top:20px;">
+        <ion-row>
+          <ion-col col-6 style="text-align:center;font-weight: bold;background: #fff;">Diperiksa Oleh</ion-col>
+          <ion-col col-6 style="text-align:center;font-weight: bold;background: #fff;">Diketahui Oleh</ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-grid style="padding-top:50px;">
+        <ion-row>
+          <ion-col col-6 style="text-align:center;font-weight: bold;background: #fff;">(......................................)
+            <div style="font-style: italic;font-weight: bold;">Checker</div>
+          </ion-col>
+          <ion-col col-6 style="text-align:center;font-weight: bold;background: #fff;">(......................................)
+            <div style="font-style: italic;font-weight: bold;">Supervisor Checker</div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </div>
+</ion-content>

@@ -16,7 +16,8 @@
         <ion-note style="color:#ffffff;">{{rolenamedetail}}</ion-note>
       </div>
     </ion-item>
-    <ion-item *ngIf="rolegroup == 'ADMIN'" no-lines style="border-bottom:1px solid;border-color:#dedede;" (click)="doDashboard()">
+    <ion-item *ngIf="rolegroup == 'ADMIN'|| rolegroup == 'TL'" no-lines style="border-bottom:1px solid;border-color:#dedede;"
+      (click)="doDashboard()">
       <ion-thumbnail padding item-left>
         <ion-icon name="md-clipboard" style="font-size:50px;"></ion-icon>
       </ion-thumbnail>
@@ -27,7 +28,8 @@
         <ion-icon name="ios-arrow-forward" style="font-size:30px;color:#217481;"></ion-icon>
       </button>
     </ion-item>
-    <ion-item *ngIf="rolegroup == 'ADMIN'" no-lines style="border-bottom:1px solid;border-color:#dedede;" (click)="doUsers()">
+    <ion-item *ngIf="rolegroup == 'ADMIN' || rolegroup == 'TL'" no-lines style="border-bottom:1px solid;border-color:#dedede;"
+      (click)="doUsers()">
       <ion-thumbnail padding item-left>
         <ion-icon name="md-people" style="font-size:50px;"></ion-icon>
       </ion-thumbnail>

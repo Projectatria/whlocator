@@ -66,11 +66,14 @@
         </ion-refresher-content>
       </ion-refresher>
       <ion-card *ngFor="let myqc of quality_control">
-        <ion-item (click)="doDetailQC(myqc)">
-          <h3 style="font-weight:bold;padding-bottom:5px;">ITEM NO - {{myqc.item_no}}</h3>
-          <p>Batch No : {{myqc.batch_no}}</p>
-          <p>Qty : {{myqc.qty}}</p>
-          <ion-note item-end>Staging : {{myqc.staging}}</ion-note>
+        <ion-item>
+          <h3 (click)="doDetailQC(myqc)" style="font-weight:bold;padding-bottom:5px;">ITEM NO - {{myqc.item_no}}</h3>
+          <p (click)="doDetailQC(myqc)">Batch No : {{myqc.batch_no}}</p>
+          <p (click)="doDetailQC(myqc)">Qty : {{myqc.qty}}</p>
+          <ion-note (click)="doDetailQC(myqc)" item-end>Staging : {{myqc.staging}}</ion-note>
+          <button ion-button item-end clear color="greenlake" (click)="doPrintBA(myqc)">
+            <i style="font-size:25px;" class="fas fa-print"></i>
+          </button>
         </ion-item>
         <div *ngIf="detailqc && myqc.item_no == qclist && myqc.batch_no == batchnolist" style="border-top:1px solid;border-color:#dedede;background:#ffffff;">
           <div padding style="font-weight:bold;">

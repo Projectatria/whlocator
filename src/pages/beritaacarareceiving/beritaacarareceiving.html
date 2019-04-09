@@ -1,0 +1,94 @@
+<ion-header class="header-menu">
+  <ion-toolbar class="header-navbar" style="width:100%;">
+    <div *ngIf="!toggled" class="logo-search" style="text-align:right;height:0px;">
+      <button ion-button clear color="light" (click)="doPrint()">
+        <ion-icon name="md-print" style="font-size:35px;"></ion-icon>
+      </button>
+    </div>
+    <button ion-button clear color="light" (click)="closeModal()">
+      Close
+    </button>
+    <ion-title class="side-title">
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding class="content-pickingnote">
+  <div id="printarea">
+    <h4 style="text-align: center;font-weight: bold;font-family: Calibri;padding-top:30px;">FORM BERITA ACARA KEDATANGAN BARANG</h4>
+    <div padding>
+      <ion-grid>
+        <ion-row>
+          <ion-col col-4 style="font-size:15px;text-align: left;font-style: italic;font-weight: bold;background: #fff;">Nama Supplier
+            <div style="font-size:12px;font-style: italic;background: #fff;">Supplier Name</div>
+          </ion-col>
+          <ion-col col-8 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;">:&nbsp;&nbsp;{{vendorname}} - {{tipevendor}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col col-4 style="font-size:15px;text-align: left;font-style: italic;font-weight: bold;background: #fff;">No Surat Jalan
+            <div style="font-size:12px;font-style: italic;background: #fff;">Permit Number</div>
+          </ion-col>
+          <ion-col col-8 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;">: </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col col-4 style="font-size:15px;text-align: left;font-style: italic;font-weight: bold;background: #fff;">No PO
+            <div style="font-size:12px;font-style: italic;background: #fff;">PO Number</div>
+          </ion-col>
+          <ion-col col-8 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;">:&nbsp;&nbsp;{{orderno}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col col-4 style="font-size:15px;text-align: left;font-style: italic;font-weight: bold;background: #fff;">No Packing List
+            <div style="font-size:12px;font-style: italic;background: #fff;">Packing List Number</div>
+          </ion-col>
+          <ion-col col-8 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;">: </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col col-4 style="font-size:15px;text-align: left;font-style: italic;font-weight: bold;background: #fff;">Tgl Penerimaan
+            <div style="font-size:12px;font-style: italic;background: #fff;">Received Date</div>
+          </ion-col>
+          <ion-col col-8 style="font-size:15px;text-align: left;font-weight: bold;background: #fff;">:&nbsp;&nbsp;{{datereceived}}</ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-grid style="padding-top:10px;">
+        <ion-row>
+          <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">No</ion-col>
+          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Item Code</ion-col>
+          <ion-col col-3 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Description</ion-col>
+          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Qty PO</ion-col>
+          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Qty Physical</ion-col>
+          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Note</ion-col>
+        </ion-row>
+        <ion-row *ngFor="let rec of receiving">
+          <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{rec.Row}}</ion-col>
+          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{rec.item_no}}</ion-col>
+          <ion-col col-3 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{rec.description}}</ion-col>
+          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{rec.qty}}</ion-col>
+          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{rec.qty_receiving}}</ion-col>
+          <ion-col *ngIf="rec.qty == rec.qty_receiving" col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">OK QTY</ion-col>
+          <ion-col *ngIf="rec.qty > rec.qty_receiving" col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">PARTIAL QTY</ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-grid style="padding-top:20px;">
+        <ion-row>
+          <ion-col col-6 style="text-align:center;font-weight: bold;background: #fff;">Created By</ion-col>
+          <ion-col col-6 style="text-align:center;font-weight: bold;background: #fff;">Approved By</ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-grid style="padding-top:50px;">
+        <ion-row>
+          <ion-col col-3 style="text-align:center;font-weight: bold;background: #fff;">(......................................)
+            <div style="font-style: italic;font-weight: bold;">Receiving</div>
+          </ion-col>
+          <ion-col col-3 style="text-align:center;font-weight: bold;background: #fff;">(......................................)
+            <div style="font-style: italic;font-weight: bold;">Admin Receiving</div>
+          </ion-col>
+          <ion-col col-3 style="text-align:center;font-weight: bold;background: #fff;">(......................................)
+            <div style="font-style: italic;font-weight: bold;">Supervisor</div>
+          </ion-col>
+          <ion-col col-3 style="text-align:center;font-weight: bold;background: #fff;">(......................................)
+            <div style="font-style: italic;font-weight: bold;">Assistance Manager / Logistic Manager</div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </div>
+</ion-content>

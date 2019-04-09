@@ -260,6 +260,11 @@ export class ReceivingPage {
     });
     alert.present();
   }
+  doPrintBA(po) {
+    this.navCtrl.push('BeritaacarareceivingPage', {
+      po: po
+    })
+  }
   doOpenScanner(po) {
     this.barcodeScanner.scan().then(barcodeData => {
       var barcodeno = barcodeData.text;

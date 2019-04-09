@@ -48,6 +48,7 @@ export class TransferorderPage {
   public rolecab: any;
   public userid: any;
   public datastok = [];
+  public qtytemp = 0;
 
   constructor(
     public navCtrl: NavController,
@@ -73,15 +74,12 @@ export class TransferorderPage {
       });
       this.api.get('table/transfer_order', { params: { limit: 30, filter: "status='OPEN' AND to_location=" + "'" + this.rolecab + "'" } }).subscribe(val => {
         this.transferorder = val['data']
-        console.log(this.transferorder)
       });
       this.api.get('table/transfer_order', { params: { limit: 30, filter: "status='INPG' AND from_location=" + "'" + this.rolecab + "'" } }).subscribe(val => {
         this.transferorderlist = val['data']
-        console.log(this.transferorderlist)
       });
       this.api.get('table/transfer_order', { params: { limit: 30, filter: "status='CLS1' AND to_location=" + "'" + this.rolecab + "'" } }).subscribe(val => {
         this.transferorderreceiving = val['data']
-        console.log(this.transferorderreceiving)
       });
     })
     this.getUsers()
@@ -149,12 +147,11 @@ export class TransferorderPage {
     })
   }
   doRefreshTO(refresher) {
-    this.api.get("table/transfer_order", { params: { limit: 30, filter: "status='OPEN' AND to_location=" + "'" + this.rolecab + "'" } }).subscribe(val => {
-      this.transferorder = val['data'];
-      this.totaldatato = val['count'];
-      this.searchto = this.transferorder;
+    this.halamanto = 0;
+    this.transferorder = [];
+    this.getTO().then(response => {
       refresher.complete();
-    });
+    })
   }
   doSortTO(filter) {
     if (this.sortTO == 'ASC') {
@@ -170,8 +167,10 @@ export class TransferorderPage {
     });
   }
   doAddTO() {
-    let locationModal = this.modalCtrl.create('TransferorderaddPage', { rolecab: this.rolecab, userid: this.userid }, { cssClass: "modal-fullscreen" });
-    locationModal.present();
+    this.navCtrl.push('TransferorderaddPage', {
+      rolecab: this.rolecab,
+      userid: this.userid
+    })
   }
   viewDetailTO(to) {
     this.navCtrl.push('TransferorderdetailPage', {
@@ -278,12 +277,11 @@ export class TransferorderPage {
     })
   }
   doRefreshTOList(refresher) {
-    this.api.get("table/transfer_order", { params: { limit: 30, filter: "status='INPG' AND from_location=" + "'" + this.rolecab + "'" } }).subscribe(val => {
-      this.transferorderlist = val['data'];
-      this.totaldatatolist = val['count'];
-      this.searchtolist = this.transferorderlist;
+    this.halamantolist = 0;
+    this.transferorderlist = [];
+    this.getTOList().then(response => {
       refresher.complete();
-    });
+    })
   }
   doSortTOList(filter) {
     if (this.sortTOList == 'ASC') {
@@ -530,12 +528,11 @@ export class TransferorderPage {
     })
   }
   doRefreshTOReceiving(refresher) {
-    this.api.get("table/transfer_order", { params: { limit: 30, filter: "status='CLS1' AND to_location=" + "'" + this.rolecab + "'" } }).subscribe(val => {
-      this.transferorderreceiving = val['data'];
-      this.totaldatatoreceiving = val['count'];
-      this.searchtoreceiving = this.transferorderreceiving;
+    this.halamantoreceiving = 0;
+    this.transferorderreceiving = [];
+    this.getTOReceiving().then(response => {
       refresher.complete();
-    });
+    })
   }
   doSortTOReceiving(filter) {
     if (this.sortTOReceiving == 'ASC') {
@@ -626,7 +623,6 @@ export class TransferorderPage {
     this.api.get("table/picking_list", { params: { filter: "receipt_no=" + "'" + tolist.to_no + "'" } })
       .subscribe(val => {
         this.pickingrelease = val['data'];
-        console.log(this.pickingrelease)
         if (this.pickingrelease.length == 0) {
           document.getElementById("myModalPic").style.display = "block";
         }
@@ -778,7 +774,6 @@ export class TransferorderPage {
             if (datapart.length == 0) {
               this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + data[i].item_no + "' AND location=" + "'" + this.rolecab + "'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
                 .subscribe(val => {
-                  console.log('part tidak ada', data[i], val['data'])
                   let totalqty = val['data'][0].qtysum
                   if (data[i].qty <= totalqty) {
                     for (let k = 0; k < data[i].qty; k++) {
@@ -788,12 +783,12 @@ export class TransferorderPage {
                           if (datapickingresult.length != 0) {
                             let datai = data[i]
                             let datapicking = datapickingresult[0]
-                            this.doPostPickingListDetailPartNull(tolist, datai, datapicking)
+                            this.doPostPickingListDetailPartNull(k, tolist, datai, datapicking)
                           }
                           else {
                             let datai = data[i]
                             let datapicking = { 'batch_no': 'NOT FOUND', 'location': 'NOT FOUND', 'sub_location': 'NOT FOUND' }
-                            this.doPostPickingListDetailPartNull(tolist, datai, datapicking)
+                            this.doPostPickingListDetailPartNull(k, tolist, datai, datapicking)
                           }
                         });
                     }
@@ -812,7 +807,6 @@ export class TransferorderPage {
               for (let j = 0; j < datapart.length; j++) {
                 this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + datapart[j].No_ + "' AND location=" + "'" + this.rolecab + "'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
                   .subscribe(val => {
-                    console.log('part ada', data[i], val['data'])
                     let totalqty = val['data'][0].qtysum
                     if (data[i].qty <= totalqty) {
                       for (let k = 0; k < data[i].qty; k++) {
@@ -987,12 +981,13 @@ export class TransferorderPage {
       .subscribe(val => {
         let dataj = { 'Quantity': 1 }
         let qtytotal = 1
+        this.qtytemp = dataupd[0].qty
         this.doGetStock(tolist, datai, dataj, datapicking, qtytotal)
       }, err => {
         this.doPostPickingListDetailPartNullUpdate(tolist, datai, datapicking, dataupd)
       });
   }
-  doPostPickingListDetailPartNull(tolist, datai, datapicking) {
+  doPostPickingListDetailPartNull(k, tolist, datai, datapicking) {
     this.api.get("table/picking_list_detail_part", { params: { limit: 100, filter: "receipt_no=" + "'" + datai.to_no + "' AND batch_no=" + "'" + datapicking.batch_no + "' AND item_no=" + "'" + datai.item_no + "' AND part_no=" + "'" + datai.item_no + "' AND line_no=" + "'10000'" } })
       .subscribe(val => {
         let dataupd = val['data']
@@ -1000,10 +995,15 @@ export class TransferorderPage {
           this.doPostPickingListDetailPartNullUpdate(tolist, datai, datapicking, dataupd)
         }
         else {
-          this.doPostPickingListDetailPartNullInsert(tolist, datai, datapicking, dataupd)
+          if (k > 0) {
+            this.doPostPickingListDetailPartNull(k, tolist, datai, datapicking)
+          }
+          else {
+            this.doPostPickingListDetailPartNullInsert(tolist, datai, datapicking, dataupd)
+          }
         }
       }, err => {
-        this.doPostPickingListDetailPartNull(tolist, datai, datapicking)
+        this.doPostPickingListDetailPartNull(k, tolist, datai, datapicking)
       });
   }
   doGetStock(tolist, datai, dataj, datapicking, qtytotal) {
@@ -1040,42 +1040,42 @@ export class TransferorderPage {
   }
   doUpdateTOPicking(tolist) {
     const headers = new HttpHeaders()
-    .set("Content-Type", "application/json");
-  this.api.put("table/transfer_order",
-    {
-      "to_no": tolist.to_no,
-      "status_picking": '1',
-    },
-    { headers })
-    .subscribe(val => {
-      this.doUpdateTO(tolist)
-    }, err => {
-      this.doUpdateTOPicking(tolist)
-    });
+      .set("Content-Type", "application/json");
+    this.api.put("table/transfer_order",
+      {
+        "to_no": tolist.to_no,
+        "status_picking": '1',
+      },
+      { headers })
+      .subscribe(val => {
+        this.doUpdateTO(tolist)
+      }, err => {
+        this.doUpdateTOPicking(tolist)
+      });
   }
   doUpdateTO(tolist) {
     const headers = new HttpHeaders()
-    .set("Content-Type", "application/json");
-  this.api.put("table/picking_list",
-    {
-      "receipt_no": tolist.to_no,
-      "receipt_date": tolist.transfer_date,
-      "expected_receipt_date": tolist.transfer_date,
-      "store_no": tolist.from_location,
-      "so_no": '',
-      "status": 'INP1'
-    },
-    { headers })
-    .subscribe(val => {
-      let alert = this.alertCtrl.create({
-        title: 'Sukses',
-        subTitle: 'Pekerjaan Picking Sukses di kirim',
-        buttons: ['OK']
+      .set("Content-Type", "application/json");
+    this.api.put("table/picking_list",
+      {
+        "receipt_no": tolist.to_no,
+        "receipt_date": tolist.transfer_date,
+        "expected_receipt_date": tolist.transfer_date,
+        "store_no": tolist.from_location,
+        "so_no": '',
+        "status": 'INP1'
+      },
+      { headers })
+      .subscribe(val => {
+        let alert = this.alertCtrl.create({
+          title: 'Sukses',
+          subTitle: 'Pekerjaan Picking Sukses di kirim',
+          buttons: ['OK']
+        });
+        alert.present();
+      }, err => {
+        this.doUpdateTO(tolist)
       });
-      alert.present();
-    }, err => {
-      this.doUpdateTO(tolist)
-    });
   }
   doPrint(tolist) {
     let locationModal = this.modalCtrl.create('PickingnotePage', {

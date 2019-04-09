@@ -70,7 +70,7 @@
           <h2>PO No : {{po.order_no}}</h2>
           <div style="color:#4a4a4a;">Expected Receiving Date : {{po.expected_receipt_date | date: "dd-MM-yyyy"}}</div>
         </div>
-        <button ion-button item-end clear color="greenlake" (click)="doOpenScanner(po)">
+        <button ion-button item-end clear color="greenlake" (click)="doPrintBA(po)">
           <i style="font-size:25px;" class="fas fa-print"></i>
         </button>
       </ion-item>
