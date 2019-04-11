@@ -113,8 +113,6 @@ export class TaskPage {
           this.api.get('table/transfer_order', { params: { limit: 30, filter: "(from_location=" + "'" + this.rolecab + "'" + " AND " + "status='INPG') OR (to_location=" + "'" + this.rolecab + "'" + " AND " + "status='OPEN') OR (to_location=" + "'" + this.rolecab + "'" + " AND " + "status='CLS1')" } })
             .subscribe(val => {
               this.transferorder = val['data'];
-              console.log('cab', this.rolecab)
-              console.log(this.transferorder)
             });
           this.api.get('table/picking_list', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" + " AND " + "status='INP1'" } })
             .subscribe(val => {

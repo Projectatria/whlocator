@@ -51,7 +51,6 @@ export class MyApp {
         else {
           this.storage.get('userid').then((val) => {
             this.userid = val;
-            this.doGetTaskPO()
           });
         }
       });
@@ -64,6 +63,7 @@ export class MyApp {
               this.rolearea = this.role[0].id_area
               this.rolegroup = this.role[0].id_group
               this.rolecab = this.role[0].id_cab
+              this.doGetTaskPO()
             }
           })
       });

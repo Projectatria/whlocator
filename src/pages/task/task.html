@@ -14,7 +14,7 @@
       pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
     </ion-refresher-content>
   </ion-refresher>
-  <ion-list *ngIf="rolearea == 'INBOUND'">
+  <ion-list *ngIf="rolearea == 'INBOUND' && preparation.length > 0">
     <div style="font-weight: bold;font-size:15px;border-bottom:1px solid;border-color:#dedede;text-align:center;">PO</div>
     <ion-row>
       <ion-col col-4 style="border:1px solid;border-color:#dedede;">Order No</ion-col>
@@ -29,7 +29,7 @@
       </ion-col>
     </ion-row>
   </ion-list>
-  <ion-list *ngIf="rolegroup != 'STAFF' && rolearea == 'INBOUND'">
+  <ion-list *ngIf="rolegroup != 'STAFF' && rolearea == 'INBOUND' && receiving.length > 0">
     <div style="font-weight: bold;font-size:15px;border-bottom:1px solid;border-color:#dedede;text-align:center;">RECEIVING</div>
     <ion-row>
       <ion-col col-4 style="border:1px solid;border-color:#dedede;">Order No</ion-col>
@@ -44,7 +44,7 @@
       </ion-col>
     </ion-row>
   </ion-list>
-  <ion-list *ngIf="rolearea == 'OUTBOUND'">
+  <ion-list *ngIf="rolearea == 'OUTBOUND' && quality_control.length > 0">
     <div style="font-weight: bold;font-size:15px;border-bottom:1px solid;border-color:#dedede;text-align:center;">QC IN</div>
     <ion-row>
       <ion-col col-4 style="border:1px solid;border-color:#dedede;">Item No</ion-col>
@@ -86,22 +86,40 @@
       </div>
     </ion-row>
   </ion-list>
-  <ion-list *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM'">
+  <ion-list *ngIf="(rolearea == 'INBOUND' || rolearea == 'SHOWROOM') && transferorder.length > 0">
     <div style="font-weight: bold;font-size:15px;border-bottom:1px solid;border-color:#dedede;text-align:center;">TRANSFER ORDER</div>
     <ion-row>
-      <ion-col col-4 style="border:1px solid;border-color:#dedede;">Lokasi Tujuan</ion-col>
-      <ion-col col-8 style="border:1px solid;border-color:#dedede;">Transfer Date</ion-col>
+      <ion-col col-2 style="border:1px solid;border-color:#dedede;">TO No</ion-col>
+      <ion-col col-1 style="border:1px solid;border-color:#dedede;">Lokasi Tujuan</ion-col>
+      <ion-col col-2 style="border:1px solid;border-color:#dedede;">Transfer Date</ion-col>
+      <ion-col col-4 style="border:1px solid;border-color:#dedede;">Description</ion-col>
+      <ion-col col-3 style="border:1px solid;border-color:#dedede;">Status</ion-col>
     </ion-row>
     <ion-row class="rowhover" item-start no-padding *ngFor="let to of transferorder" (click)="viewDetailTO(to)">
-      <ion-col col-4 style="border:1px solid;border-color:#dedede;background:transparent;">
+      <ion-col col-2 style="border:1px solid;border-color:#dedede;background:transparent;">
+        {{to.to_no}}
+      </ion-col>
+      <ion-col col-1 style="border:1px solid;border-color:#dedede;background:transparent;">
         {{to.to_location}}
       </ion-col>
-      <ion-col col-8 style="border:1px solid;border-color:#dedede;background:transparent;">
+      <ion-col col-2 style="border:1px solid;border-color:#dedede;background:transparent;">
         {{to.transfer_date | date: "dd MMMM yyyy"}}
+      </ion-col>
+      <ion-col col-4 style="border:1px solid;border-color:#dedede;background:transparent;">
+        {{to.description}}
+      </ion-col>
+      <ion-col *ngIf="to.status == 'OPEN'" col-3 style="border:1px solid;border-color:#dedede;background:transparent;">
+        WAITING RELEASE
+      </ion-col>
+      <ion-col *ngIf="to.status == 'INPG'" col-3 style="border:1px solid;border-color:#dedede;background:transparent;">
+        PROGRESS BY {{to.to_location}}
+      </ion-col>
+      <ion-col *ngIf="to.status == 'CLS1'" col-3 style="border:1px solid;border-color:#dedede;background:transparent;">
+        SHIPMENT
       </ion-col>
     </ion-row>
   </ion-list>
-  <ion-list *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM'">
+  <ion-list *ngIf="(rolearea == 'INBOUND' || rolearea == 'SHOWROOM') && pickinglist.length > 0">
     <div style="font-weight: bold;font-size:15px;border-bottom:1px solid;border-color:#dedede;text-align:center;">PICKING</div>
     <ion-row>
       <ion-col col-4 style="border:1px solid;border-color:#dedede;">Receipt No</ion-col>
@@ -116,7 +134,7 @@
       </ion-col>
     </ion-row>
   </ion-list>
-  <ion-list *ngIf="rolearea == 'OUTBOUND'">
+  <ion-list *ngIf="rolearea == 'OUTBOUND' && quality_control_out.length > 0">
     <div style="font-weight: bold;font-size:15px;border-bottom:1px solid;border-color:#dedede;text-align:center;">QC OUT</div>
     <ion-row>
       <ion-col col-4 style="border:1px solid;border-color:#dedede;">Receipt No</ion-col>
