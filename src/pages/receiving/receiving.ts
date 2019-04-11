@@ -59,8 +59,6 @@ export class ReceivingPage {
     });
     this.loader.present();
     this.rolecab = this.navParams.get('rolecab')
-    this.getPO();
-    this.getPOHistory();
     this.toggled = false;
     this.rcv = "receiving"
     platform.ready().then(() => {
@@ -79,6 +77,14 @@ export class ReceivingPage {
           })
       });
     });
+  }
+  ionViewDidEnter() {
+    this.halaman = 0;
+    this.halamanhistory = 0;
+    this.purchasing_order = [];
+    this.purchasing_order_history = [];
+    this.getPO();
+    this.getPOHistory();
   }
   ngAfterViewInit() {
     this.loader.dismiss();

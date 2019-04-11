@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActionSheetController, Platform, ModalController, MenuController, IonicPage, NavController, ToastController, NavParams, Refresher } from 'ionic-angular';
+import { ActionSheetController, Platform, ModalController, MenuController, IonicPage, NavController, ToastController, NavParams, Refresher, ViewController } from 'ionic-angular';
 import { ApiProvider } from '../../providers/api/api';
 import { AlertController } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -77,6 +77,7 @@ export class DetailpoactionPage {
     private barcodeScanner: BarcodeScanner,
     private platform: Platform,
     public actionSheetCtrl: ActionSheetController,
+    public viewCtrl: ViewController,
     private http: HttpClient,
     public storage: Storage
   ) {
@@ -529,6 +530,7 @@ export class DetailpoactionPage {
                           },
                           { headers })
                           .subscribe(val => {
+                            this.viewCtrl.dismiss()
                           });
                       }
                     })
@@ -620,6 +622,7 @@ export class DetailpoactionPage {
                             },
                             { headers })
                             .subscribe(val => {
+                              this.viewCtrl.dismiss()
                             });
                         }
                       });
@@ -713,6 +716,7 @@ export class DetailpoactionPage {
                             },
                             { headers })
                             .subscribe(val => {
+                              this.viewCtrl.dismiss()
                             });
                         }
                       });

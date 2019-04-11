@@ -172,6 +172,16 @@ export class TransferorderPage {
       userid: this.userid
     })
   }
+  doAddItemTO(to) {
+    this.navCtrl.push('TransferorderdetailaddPage', {
+      tono: to.to_no,
+      from: to.from_location,
+      to: to.to_location,
+      transferdate: to.transfer_date,
+      rolecab: this.rolecab,
+      userid: this.userid
+    });
+  }
   viewDetailTO(to) {
     this.navCtrl.push('TransferorderdetailPage', {
       tono: to.to_no,

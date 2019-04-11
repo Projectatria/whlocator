@@ -15,5 +15,7 @@ page-transferorderadd {
        text-align: center;
        margin-left: 50px;
     }
-
+    input[type="text"][disabled] {
+        opacity: 1;
+     }
 }

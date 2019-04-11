@@ -8,6 +8,8 @@ import { Storage } from '@ionic/storage';
 import moment from 'moment';
 import { UUID } from 'angular2-uuid';
 
+declare var $;
+
 @IonicPage()
 @Component({
   selector: 'page-documentprint',
@@ -24,6 +26,7 @@ export class DocumentprintPage {
   public rolecab: any;
   private width: number;
   private height: number;
+  public poshow: boolean = false;
 
   constructor(
     public navCtrl: NavController,
@@ -44,6 +47,7 @@ export class DocumentprintPage {
       content: 'Loading Content...'
     });
     this.loader.present();
+    this.poshow = false;
     platform.ready().then(() => {
       this.width = platform.width();
       this.height = platform.height();
@@ -78,5 +82,12 @@ export class DocumentprintPage {
         return false;
       }
     });
+  }
+  doPrintBA() {
+    this.poshow = true;
+    $("#textboxID").focus();
+  }
+  doClosePO() {
+    this.poshow = false;
   }
 }

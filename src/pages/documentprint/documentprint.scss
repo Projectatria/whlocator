@@ -1,3 +1,44 @@
 page-documentprint {
-
+    .content {
+        background: #217481;
+       }
+    .col {
+        background: #dedede;
+        border: 5px solid;
+        border-color: #217481;
+        text-align: center;
+       }
+       .col:hover {
+        background: #217481;
+        cursor: pointer;
+        border-color: #dedede;
+        .imgfa {
+            color:#dedede;
+           }
+           .textfa {
+            color:#dedede;
+           }
+       }
+       .imgfa {
+        font-size:400%;
+        color:#217481;
+        margin-top:5%;
+       }
+       .textfa {
+        text-align: left;
+        color:#217481;
+        font-size: 20px;
+       }
+       .qualitytipe {
+        position: fixed; /* Stay in place */
+        z-index: 999; /* Sit on top */
+        left: 35%;
+        top: 25%;
+        width: 30%; /* Full width */
+        height: 50%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        z-index: 999;
+    }
 }

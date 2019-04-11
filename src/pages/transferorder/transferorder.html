@@ -81,7 +81,9 @@
               <ion-icon *ngIf="filter == 'status' && sortTO == 'ASC'" name="md-arrow-dropdown"></ion-icon>
               <ion-icon *ngIf="filter == 'status' && sortTO == 'DESC'" name="md-arrow-dropup"></ion-icon>
             </ion-col>
-            <ion-col padding class="col-content" col-xl-2>Options
+            <ion-col padding class="col-content" col-xl-1>Add Item
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1>Posting
             </ion-col>
           </ion-row>
           <ion-row class="row-content-list" *ngFor="let to of transferorder">
@@ -100,7 +102,12 @@
             <ion-col padding class="col-content" col-xl-2 (click)="viewDetailTO(to)">
               {{to.status}}
             </ion-col>
-            <ion-col padding class="col-content" col-xl-2>
+            <ion-col padding class="col-content" col-xl-1>
+              <button item-end ion-button clear color="greenlake" (click)="doAddItemTO(to)">
+                <ion-icon name="md-add" style="font-size:30px;"></ion-icon>
+              </button>
+            </ion-col>
+            <ion-col padding class="col-content" col-xl-1>
               <button item-end ion-button clear color="greenlake" (click)="doPostingTO(to)">
                 <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
               </button>

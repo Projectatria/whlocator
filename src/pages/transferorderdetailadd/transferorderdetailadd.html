@@ -5,8 +5,8 @@
         <button ion-button clear color="light" (click)="closeModal()">Close</button>
       </div>
       <div class="close" *ngIf="itemsshow == true">
-          <button ion-button clear color="light" (click)="doOffItems()">Close</button>
-        </div>
+        <button ion-button clear color="light" (click)="doOffItems()">Close</button>
+      </div>
       <div class="logo-atria">
         <img src="assets/imgs/logoatriawhite.png" height="45" />
       </div>
@@ -16,39 +16,39 @@
 <ion-content id="content" class="content-menu" padding>
   <form [formGroup]="myForm">
     <ion-item class="item-input" no-lines style="font-size:15px;">
-      <ion-label floating>TO No</ion-label>
+      <ion-label stacked style="color:#000;">TO No</ion-label>
       <ion-input formControlName="tono" disabled="true" type="text"></ion-input>
     </ion-item>
     <ion-item class="item-input" no-lines style="font-size:15px;">
-      <ion-label floating>From Location</ion-label>
+      <ion-label stacked style="color:#000;">From Location</ion-label>
       <ion-input formControlName="from" disabled="true" type="text"></ion-input>
     </ion-item>
     <ion-item class="item-input" no-lines style="font-size:15px;">
-      <ion-label floating>To Location</ion-label>
+      <ion-label stacked style="color:#000;">To Location</ion-label>
       <ion-input formControlName="to" disabled="true" type="text"></ion-input>
     </ion-item>
     <ion-item class="item-input" no-lines style="font-size:15px;">
-      <ion-label floating>Transfer Date</ion-label>
+      <ion-label stacked style="color:#000;">Transfer Date</ion-label>
       <ion-input formControlName="transferdate" disabled="true" type="text"></ion-input>
     </ion-item>
-    <ion-item class="item-input" style="font-size:15px;">
-      <ion-label floating>Item No</ion-label>
-      <ion-input formControlName="itemno" disabled="true" type="text"></ion-input>
-      <button ion-button item-end (click)="doOpenItems()">
-        <ion-icon name="md-open" color="bluedark"></ion-icon>
+    <ion-item class="item-input" no-lines style="font-size:15px;" (click)="doOpenItems()">
+      <ion-label stacked style="color:#000;">Item No</ion-label>
+      <ion-input placeholder="Pilih Item No" formControlName="itemno" disabled="true" type="text"></ion-input>
+      <button ion-button item-end color="greenlake" style="height:50px;width:50px;">
+        <ion-icon style="font-size:30px;" name="md-open"></ion-icon>
       </button>
     </ion-item>
     <ion-item class="item-input" no-lines style="font-size:15px;">
-      <ion-label floating>Description</ion-label>
-      <ion-input formControlName="description" disabled="true"  type="text"></ion-input>
+      <ion-label stacked style="color:#000;">Description</ion-label>
+      <ion-input placeholder="Description" formControlName="description" disabled="true" type="text"></ion-input>
     </ion-item>
     <ion-item class="item-input" no-lines style="font-size:15px;">
-      <ion-label floating>QTY</ion-label>
-      <ion-input formControlName="qty" type="text"></ion-input>
+      <ion-label stacked style="color:#000;">QTY</ion-label>
+      <ion-input placeholder="Qty" formControlName="qty" type="text"></ion-input>
     </ion-item>
     <ion-item class="item-input" style="font-size:15px;">
-      <ion-label floating>Unit</ion-label>
-      <ion-input formControlName="unit" disabled="true" type="text"></ion-input>
+      <ion-label stacked style="color:#000;">Unit</ion-label>
+      <ion-input placeholder="Unit" formControlName="unit" disabled="true" type="text"></ion-input>
     </ion-item>
   </form>
 </ion-content>

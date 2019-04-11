@@ -124,17 +124,24 @@ export class TransferorderaddPage {
               },
               { headers })
               .subscribe((val) => {
-                console.log('to sukses')
+                let alert = this.alertCtrl.create({
+                  title: 'Sukses',
+                  subTitle: 'Insert TO Sukses',
+                  buttons: ['OK']
+                });
+                alert.present();
+                this.viewCtrl.dismiss();
+                this.navCtrl.push('TransferorderdetailaddPage', {
+                  tono: this.myForm.value.orderno,
+                  from: this.myForm.value.from,
+                  to: this.myForm.value.to,
+                  transferdate: this.myForm.value.transferdate,
+                  rolecab: this.rolecab,
+                  userid: this.userid
+                });
                 this.myForm.reset()
               })
           });
-          let alert = this.alertCtrl.create({
-            title: 'Sukses',
-            subTitle: 'Insert TO Sukses',
-            buttons: ['OK']
-          });
-          alert.present();
-          this.viewCtrl.dismiss();
         },
         response => {
 

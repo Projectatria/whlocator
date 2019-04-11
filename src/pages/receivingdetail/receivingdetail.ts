@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ModalController, MenuController, IonicPage, NavController, ToastController, NavParams, Refresher } from 'ionic-angular';
+import { ModalController, MenuController, IonicPage, NavController, ToastController, NavParams, Refresher, ViewController } from 'ionic-angular';
 import { ApiProvider } from '../../providers/api/api';
 import { AlertController } from 'ionic-angular';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
@@ -75,6 +75,7 @@ export class ReceivingdetailPage {
     public navParams: NavParams,
     public menu: MenuController,
     public modalCtrl: ModalController,
+    public viewCtrl: ViewController,
     private barcodeScanner: BarcodeScanner,
     public storage: Storage,
     private http: HttpClient
@@ -334,7 +335,9 @@ export class ReceivingdetailPage {
                   {
                     text: 'OK',
                     handler: data => {
-                      if ((parseInt(self.itemdata[0].qty_receiving) + parseInt(data.qty)) > self.itemdata[0].qty) {
+                      let detailrcv = self.itemdata
+                      self.doGetReceiving(detailrcv, data)
+                      /*if ((parseInt(self.itemdata[0].qty_receiving) + parseInt(data.qty)) > self.itemdata[0].qty) {
                         let alert = self.alertCtrl.create({
                           title: 'Error',
                           message: 'Total QTY Receiving greater than QTY',
@@ -370,7 +373,7 @@ export class ReceivingdetailPage {
                             self.getRCV();
                             alert.present();
                           });
-                      }
+                      }*/
                     }
                   }
                 ]
@@ -511,6 +514,60 @@ export class ReceivingdetailPage {
         press: true
       });
   }
+  doGetReceiving(detailrcv, data) {
+    this.api.get("table/receiving", { params: { filter: 'order_no=' + "'" + detailrcv.order_no + "' AND item_no=" + "'" + detailrcv.item_no + "' AND status= 'OPEN'" } })
+      .subscribe(val => {
+        let datareceiving = val['data']
+        if (datareceiving.length != 0) {
+          if ((parseInt(datareceiving[0].qty_receiving) + parseInt(data.qty)) > datareceiving[0].qty) {
+            let alert = this.alertCtrl.create({
+              title: 'Error',
+              message: 'Total QTY Receiving greater than QTY',
+              buttons: ['OK']
+            });
+            alert.present();
+          }
+          else {
+            const headers = new HttpHeaders()
+              .set("Content-Type", "application/json");
+            this.api.put("table/receiving",
+              {
+                "receiving_no": datareceiving[0].receiving_no,
+                "qty_receiving": parseInt(datareceiving[0].qty_receiving) + parseInt(data.qty)
+              },
+              { headers })
+              .subscribe(val => {
+                if ((parseInt(datareceiving[0].qty_receiving) + parseInt(data.qty)) == datareceiving[0].qty) {
+                  const headers = new HttpHeaders()
+                    .set("Content-Type", "application/json");
+                  this.api.put("table/receiving",
+                    {
+                      "receiving_no": datareceiving[0].receiving_no,
+                      "status": 'CHECKED'
+                    },
+                    { headers })
+                    .subscribe(val => {
+                      this.getRCV();
+                      this.getRCVChecked();
+                      this.detailrcv = 'receivingsubmit'
+                    });
+                }
+                this.itemdata = [];
+                this.getRCV();
+              });
+          }
+        }
+        else {
+          let alert = this.alertCtrl.create({
+            title: 'Perhatian',
+            message: 'Qty sudah di full receive di tempat lain',
+            buttons: ['OK']
+          });
+          alert.present();
+          this.viewCtrl.dismiss()
+        }
+      });
+  }
   doReceiving(detailrcv) {
     let alert = this.alertCtrl.create({
       title: detailrcv.item_no,
@@ -532,44 +589,7 @@ export class ReceivingdetailPage {
         {
           text: 'OK',
           handler: data => {
-            if ((parseInt(detailrcv.qty_receiving) + parseInt(data.qty)) > detailrcv.qty) {
-              let alert = this.alertCtrl.create({
-                title: 'Error',
-                message: 'Total QTY Receiving greater than QTY',
-                buttons: ['OK']
-              });
-              alert.present();
-            }
-            else {
-              const headers = new HttpHeaders()
-                .set("Content-Type", "application/json");
-              this.api.put("table/receiving",
-                {
-                  "receiving_no": detailrcv.receiving_no,
-                  "qty_receiving": parseInt(detailrcv.qty_receiving) + parseInt(data.qty)
-                },
-                { headers })
-                .subscribe(val => {
-                  if ((parseInt(detailrcv.qty_receiving) + parseInt(data.qty)) == detailrcv.qty) {
-                    const headers = new HttpHeaders()
-                      .set("Content-Type", "application/json");
-                    this.api.put("table/receiving",
-                      {
-                        "receiving_no": detailrcv.receiving_no,
-                        "status": 'CHECKED'
-                      },
-                      { headers })
-                      .subscribe(val => {
-                        this.getRCV();
-                        this.getRCVChecked();
-                        this.detailrcv = 'receivingsubmit'
-                      });
-                  }
-                  this.itemdata = [];
-                  this.getRCV();
-                });
-              alert.present();
-            }
+            this.doGetReceiving(detailrcv, data)
           }
         }
       ]
@@ -677,6 +697,97 @@ export class ReceivingdetailPage {
           this.doPostReceiving(cek)
         });
   }
+  doGetSubmitReceiving(cek) {
+    this.api.get("table/receiving", { params: { filter: 'receiving_no=' + "'" + cek.receiving_no + "' AND status='CHECKED'" } })
+      .subscribe(val => {
+        let datareceiving = val['data']
+        if (datareceiving.length != 0) {
+          const headers = new HttpHeaders()
+            .set("Content-Type", "application/json");
+
+          this.api.put("table/receiving",
+            {
+              "receiving_no": cek.receiving_no,
+              "status": 'CLSD'
+            },
+            { headers })
+            .subscribe(
+              (val) => {
+                let alert = this.alertCtrl.create({
+                  title: 'Sukses',
+                  subTitle: 'Posting Sukses',
+                  buttons: ['OK']
+                });
+                alert.present();
+                this.getRCVChecked();
+                this.viewCtrl.dismiss()
+              },
+              response => {
+
+              },
+              () => {
+
+              });
+          this.api.get('table/purchasing_order', { params: { limit: 30, filter: "order_no=" + "'" + cek.order_no + "'" } })
+            .subscribe(val => {
+              this.purchasingorder = val['data'];
+              if (this.purchasingorder[0].vendor_status == 'FOREIGN') {
+                this.api.get('table/staging_in', { params: { limit: 30, filter: "batch_no=" + "'" + cek.batch_no + "' AND item_no=" + "'" + cek.item_no + "' AND staging=" + "'" + cek.staging + "'" } })
+                  .subscribe(val => {
+                    let data = val['data']
+                    if (data.length == 0) {
+                      this.doPostStagingInImport(cek)
+                    }
+                    else {
+                      let datatemp = data[0]
+                      this.doPutStagingIn(cek, datatemp)
+                    }
+                  });
+              }
+              else {
+                this.api.get('table/staging_in', { params: { limit: 30, filter: "batch_no=" + "'" + cek.batch_no + "' AND item_no=" + "'" + cek.item_no + "' AND staging=" + "'" + cek.staging + "'" } })
+                  .subscribe(val => {
+                    let data = val['data']
+                    if (data.length == 0) {
+                      this.doPostStagingInLocal(cek)
+                    }
+                    else {
+                      let datatemp = data[0]
+                      this.doPutStagingIn(cek, datatemp)
+                    }
+                  });
+              }
+
+            });
+          this.api.get("table/receiving", { params: { filter: 'order_no=' + "'" + this.orderno + "'" + ' AND ' + "status= 'OPEN'" } }).subscribe(val => {
+            let belumreceived = val['data'];
+            if (belumreceived.length == 0) {
+              const headers = new HttpHeaders()
+                .set("Content-Type", "application/json");
+
+              this.api.put("table/purchasing_order",
+                {
+                  "order_no": this.orderno,
+                  "status": 'CLSD'
+                },
+                { headers })
+                .subscribe(val => {
+                  this.doPostReceiving(cek)
+                });
+            }
+          });
+        }
+        else {
+          let alert = this.alertCtrl.create({
+            title: 'Perhatian',
+            subTitle: 'Data sudah di submit ditempat lain',
+            buttons: ['OK']
+          });
+          alert.present();
+          this.viewCtrl.dismiss()
+        }
+      });
+  }
   doSubmitRCV(cek) {
     let alert = this.alertCtrl.create({
       title: 'Confirm Submit',
@@ -692,92 +803,7 @@ export class ReceivingdetailPage {
         {
           text: 'Submit',
           handler: () => {
-            const headers = new HttpHeaders()
-              .set("Content-Type", "application/json");
-
-            this.api.put("table/receiving",
-              {
-                "receiving_no": cek.receiving_no,
-                "status": 'CLSD'
-              },
-              { headers })
-              .subscribe(
-                (val) => {
-                  let alert = this.alertCtrl.create({
-                    title: 'Sukses',
-                    subTitle: 'Posting Sukses',
-                    buttons: ['OK']
-                  });
-                  alert.present();
-                  this.getRCVChecked();
-                },
-                response => {
-
-                },
-                () => {
-
-                });
-            this.api.get('table/purchasing_order', { params: { limit: 30, filter: "order_no=" + "'" + cek.order_no + "'" } })
-              .subscribe(val => {
-                this.purchasingorder = val['data'];
-                if (this.purchasingorder[0].vendor_status == 'FOREIGN') {
-                  this.api.get('table/staging_in', { params: { limit: 30, filter: "batch_no=" + "'" + cek.batch_no + "' AND item_no=" + "'" + cek.item_no + "' AND staging=" + "'" + cek.staging + "'" } })
-                    .subscribe(val => {
-                      let data = val['data']
-                      if (data.length == 0) {
-                        this.doPostStagingInImport(cek)
-                      }
-                      else {
-                        let datatemp = data[0]
-                        this.doPutStagingIn(cek, datatemp)
-                      }
-                    });
-                }
-                else {
-                  this.api.get('table/staging_in', { params: { limit: 30, filter: "batch_no=" + "'" + cek.batch_no + "' AND item_no=" + "'" + cek.item_no + "' AND staging=" + "'" + cek.staging + "'" } })
-                    .subscribe(val => {
-                      let data = val['data']
-                      if (data.length == 0) {
-                        this.doPostStagingInLocal(cek)
-                      }
-                      else {
-                        let datatemp = data[0]
-                        this.doPutStagingIn(cek, datatemp)
-                      }
-                    });
-                }
-
-              });
-
-            // if (this.totaldatachecked == 1) {
-            //   const headers = new HttpHeaders()
-            //     .set("Content-Type", "application/json");
-
-            //   this.api.put("table/purchasing_order",
-            //     {
-            //       "order_no": this.orderno,
-            //       "status": 'CLSD'
-            //     },
-            //     { headers })
-            //     .subscribe();
-            // }
-            this.api.get("table/receiving", { params: { filter: 'order_no=' + "'" + this.orderno + "'" + ' AND ' + "status= 'OPEN'" } }).subscribe(val => {
-              let belumreceived = val['data'];
-              if (belumreceived.length == 0) {
-                const headers = new HttpHeaders()
-                  .set("Content-Type", "application/json");
-
-                this.api.put("table/purchasing_order",
-                  {
-                    "order_no": this.orderno,
-                    "status": 'CLSD'
-                  },
-                  { headers })
-                  .subscribe(val => {
-                    this.doPostReceiving(cek)
-                  });
-              }
-            });
+            this.doGetSubmitReceiving(cek)
           }
         }
       ]

@@ -50,21 +50,21 @@
       </ion-grid>
       <ion-grid style="padding-top:10px;">
         <ion-row>
-          <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">No</ion-col>
-          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Item Code</ion-col>
-          <ion-col col-3 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Description</ion-col>
-          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Qty PO</ion-col>
-          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Qty Physical</ion-col>
-          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">Note</ion-col>
+          <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;font-style: italic;font-weight: bold;">No</ion-col>
+          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;font-style: italic;font-weight: bold;">Item Code</ion-col>
+          <ion-col col-3 style="background: #fff;border:1px solid;border-color:#000;text-align: center;font-style: italic;font-weight: bold;">Description</ion-col>
+          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;font-style: italic;font-weight: bold;">Qty PO</ion-col>
+          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;font-style: italic;font-weight: bold;">Qty Physical</ion-col>
+          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;font-style: italic;font-weight: bold;">Note</ion-col>
         </ion-row>
         <ion-row *ngFor="let rec of receiving">
-          <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{rec.Row}}</ion-col>
-          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{rec.item_no}}</ion-col>
-          <ion-col col-3 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{rec.description}}</ion-col>
-          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{rec.qty}}</ion-col>
-          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">{{rec.qty_receiving}}</ion-col>
-          <ion-col *ngIf="rec.qty == rec.qty_receiving" col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">OK QTY</ion-col>
-          <ion-col *ngIf="rec.qty > rec.qty_receiving" col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;margin:auto;font-style: italic;font-weight: bold;">PARTIAL QTY</ion-col>
+          <ion-col col-1 style="background: #fff;border:1px solid;border-color:#000;text-align: center;font-style: italic;font-weight: bold;">{{rec.Row}}</ion-col>
+          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;font-style: italic;font-weight: bold;">{{rec.item_no}}</ion-col>
+          <ion-col col-3 style="background: #fff;border:1px solid;border-color:#000;text-align: center;font-style: italic;font-weight: bold;">{{rec.description}}</ion-col>
+          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;font-style: italic;font-weight: bold;">{{rec.qty}}</ion-col>
+          <ion-col col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;font-style: italic;font-weight: bold;">{{rec.qty_receiving}}</ion-col>
+          <ion-col *ngIf="rec.qty == rec.qty_receiving" col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;font-style: italic;font-weight: bold;">OK QTY</ion-col>
+          <ion-col *ngIf="rec.qty > rec.qty_receiving" col-2 style="background: #fff;border:1px solid;border-color:#000;text-align: center;font-style: italic;font-weight: bold;">PARTIAL QTY</ion-col>
         </ion-row>
       </ion-grid>
       <ion-grid style="padding-top:20px;">

@@ -20,28 +20,27 @@
       </ion-select>
     </ion-item> -->
     <ion-item class="item-input" style="font-size:15px;">
-      <ion-label floating>From</ion-label>
-      <ion-select formControlName="from">
+      <ion-label stacked style="color:#000;">From</ion-label>
+      <ion-select formControlName="from" placeholder="Pilih lokasi pemilik barang" style="color:#000;">
         <ion-option *ngFor="let loc of location" value="{{loc.Code}}">{{loc.Code}} {{loc.Name}}</ion-option>
       </ion-select>
     </ion-item>
-    <ion-item class="item-input" style="font-size:15px;">
-      <ion-label floating>TO</ion-label>
-      <ion-select formControlName="to" disabled>
-        <ion-option *ngFor="let loc of location" value="{{loc.Code}}">{{loc.Code}} {{loc.Name}}</ion-option>
-      </ion-select>
+    <ion-item class="item-input" style="font-size:15px;color:#000;">
+      <ion-label stacked style="color:#000;">TO</ion-label>
+      <ion-input formControlName="to" disabled type="text" style="color:#000;"></ion-input>
     </ion-item>
     <ion-item class="item-input" no-lines style="font-size:15px;">
-      <ion-label floating>Order No</ion-label>
-      <ion-input formControlName="orderno" disabled type="text"></ion-input>
+      <ion-label stacked style="color:#000;">Order No</ion-label>
+      <ion-input formControlName="orderno" disabled type="text" style="color:#000;"></ion-input>
     </ion-item>
     <ion-item class="item-input" style="font-size:15px;">
-      <ion-label floating>Transfer Date</ion-label>
-      <ion-datetime formControlName="transferdate" displayFormat="DD MMMM YYYY" min="2018" max="2020-10-31" [(ngModel)]="myDate"></ion-datetime>
+      <ion-label stacked style="color:#000;">Transfer Date</ion-label>
+      <ion-datetime style="color:#000;" placeholder="Pilih tanggal pengiriman" formControlName="transferdate" displayFormat="DD MMMM YYYY"
+        min="2018" max="2020-10-31" [(ngModel)]="myDate"></ion-datetime>
     </ion-item>
-    <ion-item class="item-input" style="font-size:15px">
-      <ion-label floating>Description</ion-label>
-      <ion-textarea formControlName="description" disabled type="textarea"></ion-textarea>
+    <ion-item class="item-input" style="font-size:15px;">
+      <ion-label stacked style="color:#000;">Description</ion-label>
+      <ion-input formControlName="description" disabled type="text" style="color:#000;"></ion-input>
     </ion-item>
     <!-- <testing [messages]="error_messages.locationcode" [control]="myForm.get('locationcode')"></testing> -->
   </form>

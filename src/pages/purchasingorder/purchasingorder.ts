@@ -98,9 +98,6 @@ export class PurchasingorderPage {
       piclokasi: ['', Validators.compose([Validators.required])],
       picbarcode: ['', Validators.compose([Validators.required])],
     })
-    this.getPO();
-    this.getInfoPO();
-    this.getPrepare();
     this.toggled = false;
     platform.ready().then(() => {
       this.width = platform.width();
@@ -142,6 +139,17 @@ export class PurchasingorderPage {
     this.sortPO = ''
     this.sortInfoPO = ''
     this.sortPrepare = ''
+  }
+  ionViewDidEnter() {
+    this.halaman = 0;
+    this.halamaninfopo = 0;
+    this.halamanpreparation = 0;
+    this.purchasing_order = [];
+    this.infopo = [];
+    this.preparation = [];
+    this.getPO();
+    this.getInfoPO();
+    this.getPrepare();
   }
   doProfile() {
     this.navCtrl.push('UseraccountPage');
