@@ -495,7 +495,7 @@ export class QcoutPage {
           handler: data => {
             var barcodeno = data.barcodeno;
             var batchno = barcodeno.substring(0, 4);
-            var itemno = barcodeno.substring(4, 12);
+            var itemno = barcodeno.substring(4, 20);;
             this.api.get('table/qc_out', { params: { limit: 10, filter: "batch_no=" + "'" + batchno + "'" + " AND " + "item_no=" + "'" + itemno + "'" + " AND " + "status='OPEN'" } })
               .subscribe(val => {
                 this.qcoutbarcode = val['data'];

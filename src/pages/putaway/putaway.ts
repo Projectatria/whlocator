@@ -394,7 +394,7 @@ export class PutawayPage {
   doOpenQty() {
     var self = this;
     var batchno = self.myForm.value.barcodeno.substring(0, 4);
-    var itemno = self.myForm.value.barcodeno.substring(4, 12);
+    var itemno = self.myForm.value.barcodeno.substring(4, 20);;
     let rackno = self.myForm.value.rackno
     if (rackno == '') {
       let alert = self.alertCtrl.create({
@@ -527,7 +527,7 @@ export class PutawayPage {
   doOpenQtyDetail() {
     var self = this;
     var batchno = self.myForm.value.barcodeno.substring(0, 4);
-    var itemno = self.myForm.value.barcodeno.substring(4, 12);
+    var itemno = self.myForm.value.barcodeno.substring(4, 20);;
     self.api.get('table/putawaylist_temp', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "' AND pic=" + "'" + self.userid + "'" } })
       .subscribe(val => {
         self.receivingputawaylist = val['data'];
@@ -1361,7 +1361,7 @@ export class PutawayPage {
         let rackno = self.myForm.value.rackno
         var barcodeno = data.barcodeData;
         var batchno = barcodeno.substring(0, 4);
-        var itemno = barcodeno.substring(4, 12);
+        var itemno = barcodeno.substring(4, 20);;
         if (rackno == '') {
           let alert = self.alertCtrl.create({
             title: 'Error ',
@@ -1496,7 +1496,7 @@ export class PutawayPage {
         let rackno = self.myForm.value.rackno
         var barcodeno = barcodeData.text;
         var batchno = barcodeno.substring(0, 4);
-        var itemno = barcodeno.substring(4, 12);
+        var itemno = barcodeno.substring(4, 20);;
         if (rackno == '') {
           let alert = self.alertCtrl.create({
             title: 'Error ',
@@ -1636,7 +1636,7 @@ export class PutawayPage {
       Honeywell.onBarcodeEvent(function (data) {
         var barcodeno = data.barcodeData;
         var batchno = barcodeno.substring(0, 4);
-        var itemno = barcodeno.substring(4, 12);
+        var itemno = barcodeno.substring(4, 20);;
         self.api.get('table/putawaylist_temp', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "' AND pic=" + "'" + self.userid + "'" } })
           .subscribe(val => {
             self.receivingputawaylist = val['data'];
@@ -1804,7 +1804,7 @@ export class PutawayPage {
       self.barcodeScanner.scan().then(barcodeData => {
         var barcodeno = barcodeData.text;
         var batchno = barcodeno.substring(0, 4);
-        var itemno = barcodeno.substring(4, 12);
+        var itemno = barcodeno.substring(4, 20);;
         self.api.get('table/putawaylist_temp', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "' AND pic=" + "'" + self.userid + "'" } })
           .subscribe(val => {
             self.receivingputawaylist = val['data'];

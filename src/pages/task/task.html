@@ -1,4 +1,4 @@
-<ion-header class="header-menu">
+<ion-header id="myHeader" class="header-menu">
   <ion-navbar class="header-navbar">
     <button ion-button menuToggle color="light">
       <ion-icon name="menu" style="font-size:30px;"></ion-icon>
@@ -50,11 +50,11 @@
       <ion-col col-4 style="border:1px solid;border-color:#dedede;">Item No</ion-col>
       <ion-col col-8 style="border:1px solid;border-color:#dedede;">Staging (Qty)</ion-col>
     </ion-row>
-    <ion-row *ngFor="let myqc of quality_control" (click)="doDetailQC(myqc)" class="rowhover" item-start no-padding>
-      <ion-col col-4 style="border:1px solid;border-color:#dedede;background:transparent;">
+    <ion-row *ngFor="let myqc of quality_control" class="rowhover" item-start no-padding>
+      <ion-col (click)="doDetailQC(myqc)" col-4 style="border:1px solid;border-color:#dedede;background:transparent;">
         {{myqc.item_no}}
       </ion-col>
-      <ion-col col-8 style="border:1px solid;border-color:#dedede;background:transparent;">
+      <ion-col (click)="doDetailQC(myqc)" col-8 style="border:1px solid;border-color:#dedede;background:transparent;">
         {{myqc.staging}} ({{myqc.qty}})
       </ion-col>
       <div *ngIf="detailqc && myqc.item_no == qclist && myqc.batch_no == batchnolist" style="border-top:1px solid;border-color:#dedede;background:#ffffff;">
@@ -72,7 +72,7 @@
               </ion-row>
             </ion-col>
             <ion-col *ngFor="let result of qcresult" col-12 style="border-top:1px solid;border-color:#dedede;">
-              <ion-row *ngIf="detailqc && result.item_no == qclist">
+              <ion-row (click)="getfoto(result);" *ngIf="detailqc && result.item_no == qclist">
                 <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.date_finish}}</ion-col>
                 <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.time_start}}</ion-col>
                 <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.time_finish}}</ion-col>
@@ -86,18 +86,203 @@
       </div>
     </ion-row>
   </ion-list>
-  <ion-list *ngIf="rolearea == 'INBOUND'">
+  <ion-list *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM'">
+    <div style="font-weight: bold;font-size:15px;border-bottom:1px solid;border-color:#dedede;text-align:center;">TRANSFER ORDER</div>
+    <ion-row>
+      <ion-col col-4 style="border:1px solid;border-color:#dedede;">Lokasi Tujuan</ion-col>
+      <ion-col col-8 style="border:1px solid;border-color:#dedede;">Transfer Date</ion-col>
+    </ion-row>
+    <ion-row class="rowhover" item-start no-padding *ngFor="let to of transferorder" (click)="viewDetailTO(to)">
+      <ion-col col-4 style="border:1px solid;border-color:#dedede;background:transparent;">
+        {{to.to_location}}
+      </ion-col>
+      <ion-col col-8 style="border:1px solid;border-color:#dedede;background:transparent;">
+        {{to.transfer_date | date: "dd MMMM yyyy"}}
+      </ion-col>
+    </ion-row>
+  </ion-list>
+  <ion-list *ngIf="rolearea == 'INBOUND' || rolearea == 'SHOWROOM'">
     <div style="font-weight: bold;font-size:15px;border-bottom:1px solid;border-color:#dedede;text-align:center;">PICKING</div>
     <ion-row>
-      <ion-col col-4 style="border:1px solid;border-color:#dedede;">Picking Note</ion-col>
+      <ion-col col-4 style="border:1px solid;border-color:#dedede;">Receipt No</ion-col>
       <ion-col col-8 style="border:1px solid;border-color:#dedede;">Transfer Date</ion-col>
+    </ion-row>
+    <ion-row class="rowhover" item-start no-padding *ngFor="let picking of pickinglist" (click)="viewDetailPicking(picking)">
+      <ion-col col-4 style="border:1px solid;border-color:#dedede;background:transparent;">
+        {{picking.receipt_no}}
+      </ion-col>
+      <ion-col col-8 style="border:1px solid;border-color:#dedede;background:transparent;">
+        {{picking.expected_receipt_date | date: "dd MMMM yyyy"}}
+      </ion-col>
     </ion-row>
   </ion-list>
   <ion-list *ngIf="rolearea == 'OUTBOUND'">
     <div style="font-weight: bold;font-size:15px;border-bottom:1px solid;border-color:#dedede;text-align:center;">QC OUT</div>
     <ion-row>
-      <ion-col col-4 style="border:1px solid;border-color:#dedede;">QC Note</ion-col>
-      <ion-col col-8 style="border:1px solid;border-color:#dedede;">Transfer Date</ion-col>
+      <ion-col col-4 style="border:1px solid;border-color:#dedede;">Receipt No</ion-col>
+      <ion-col col-8 style="border:1px solid;border-color:#dedede;">PIC</ion-col>
+    </ion-row>
+    <ion-row *ngFor="let myqc of quality_control_out" class="rowhover" item-start no-padding>
+      <ion-col (click)="doDetailQCOut(myqc)" col-4 style="border:1px solid;border-color:#dedede;background:transparent;">
+        {{myqc.receipt_no}}
+      </ion-col>
+      <ion-col (click)="doDetailQCOut(myqc)" col-8 style="border:1px solid;border-color:#dedede;background:transparent;">
+        {{myqc.pic}}
+      </ion-col>
+      <div *ngIf="detailqcout && myqc.receipt_no == qclist" style="border-top:1px solid;border-color:#dedede;background:#ffffff;width:100%;">
+        <div padding style="font-weight:bold;">
+          Inspection Result
+        </div>
+        <ion-grid>
+          <ion-row *ngIf="detailqcout && myqc.receipt_no == qclist">
+            <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+              <ion-row>
+                <ion-col>Date Inspection</ion-col>
+                <ion-col>Time Inspection Start</ion-col>
+                <ion-col>Time Inspection Finish</ion-col>
+                <ion-col>Status</ion-col>
+              </ion-row>
+            </ion-col>
+            <ion-col *ngFor="let result of qcresult" col-12 style="border-top:1px solid;border-color:#dedede;">
+              <ion-row (click)="getfotoOut(result);" *ngIf="detailqcout && result.receipt_no == qclist">
+                <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.date_finish}}</ion-col>
+                <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.time_start}}</ion-col>
+                <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.time_finish}}</ion-col>
+                <ion-col *ngIf="result.qc_status == 'OPEN'" style="color:black">{{result.qc_status}}</ion-col>
+                <ion-col *ngIf="result.qc_status == 'REJECT'" style="color:red">{{result.qc_status}}</ion-col>
+                <ion-col *ngIf="result.qc_status == 'PASSED'" style="color:green">{{result.qc_status}}</ion-col>
+              </ion-row>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
     </ion-row>
   </ion-list>
 </ion-content>
+
+<div id="myQCChecking" class="modal-checking">
+  <div class="modal-content-checking">
+    <ion-header class="header-menu">
+      <ion-navbar class="header-navbar" style="width:100%;">
+        <div style="text-align:right;height:0px;">
+          <button ion-button clear style="color:#ffffff;background:transparent;font-size:25px;" (click)="doOffChecking()">
+            <ion-icon name="md-close"></ion-icon>
+          </button>
+        </div>
+        <ion-title class="side-title">
+          <div class="logo-atria" style="margin-left:56px;">
+            <img src="assets/imgs/logoatriawhite.png" height="45" />
+          </div>
+        </ion-title>
+      </ion-navbar>
+    </ion-header>
+    <ion-content class="content-checking">
+      <ion-grid>
+        <ion-row>
+          <ion-col *ngFor="let foto of photos" col-4 style="padding:0px;margin-bottom:-4px;border:1px solid;border-color:#e3e4e6;">
+            <div class="container">
+              <img *ngIf="foto.img_src == ''" src="http://101.255.60.202/qctesting/img/noimage" style="width:100%;" />
+              <img *ngIf="foto.img_src != ''" src="{{foto.img_src}}" style="width:100%;" imageViewer />
+              <div *ngIf="(foto.img_src == '') || (foto.img_src != '' && qcstatus == 'REJECT')" class="centered" (click)="doCamera(foto)">
+                <ion-icon name="md-add" style="font-size:40px;font-weight:bold;color:#217481;"></ion-icon>
+              </div>
+              <div *ngIf="foto.img_src != '' && qcstatus == 'OPEN'" class="bottom-right" (click)="doHapus(foto)">
+                <ion-icon name="md-trash" style="font-size:25px;font-weight:bold;color:#ffffff;"></ion-icon>
+              </div>
+              <div class="bottom-left">{{foto.param_desc}}</div>
+              <div *ngIf="foto.img_src != ''" class="bottom">{{foto.description}}</div>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <div id="myBTNChecking" class="button-checking">
+        <button ion-button full color="greenlake" (click)="doPassedQC()">
+          <ion-icon name="md-checkbox-outline" style="font-size:35px;"></ion-icon>
+        </button>
+        <button ion-button full color="danger" (click)="doRejectQC()">
+          <ion-icon name="md-close" style="font-size:35px;"></ion-icon>
+        </button>
+      </div>
+    </ion-content>
+  </div>
+</div>
+<div id="foto" class="modal-foto">
+  <div class="container">
+    <img src="{{viewfoto}}" />
+    <div class="top-right">
+      <ion-icon name="md-close" style="font-size:25px;" (click)="doCloseViewPhoto()"></ion-icon>
+    </div>
+  </div>
+</div>
+<ion-footer id="myBTNChecking" class="button-checking">
+  <button ion-button full color="primary" (click)="doPassedQC()">
+    <ion-icon name="md-checkbox-outline" style="font-size:35px;"></ion-icon>
+  </button>
+  <button ion-button full color="danger" (click)="doRejectQC()">
+    <ion-icon name="md-close" style="font-size:35px;"></ion-icon>
+  </button>
+</ion-footer>
+
+
+<div id="myQCChecking" class="modal-checking">
+  <div class="modal-content-checking">
+    <ion-header class="header-menu">
+      <ion-navbar class="header-navbar" style="width:100%;">
+        <div style="text-align:right;height:0px;">
+          <button ion-button clear style="color:#ffffff;background:transparent;font-size:25px;" (click)="doOffChecking()">
+            <ion-icon name="md-close"></ion-icon>
+          </button>
+        </div>
+        <ion-title class="side-title">
+          <div class="logo-atria" style="margin-left:56px;">
+            <img src="assets/imgs/logoatriawhite.png" height="45" />
+          </div>
+        </ion-title>
+      </ion-navbar>
+    </ion-header>
+    <ion-content class="content-checking">
+      <ion-grid>
+        <ion-row>
+          <ion-col *ngFor="let foto of photos" col-4 style="padding:0px;margin-bottom:-4px;border:1px solid;border-color:#e3e4e6;">
+            <div class="container">
+              <img *ngIf="foto.img_src == ''" src="http://101.255.60.202/qctesting/img/noimage" style="width:100%;" />
+              <img *ngIf="foto.img_src != ''" src="{{foto.img_src}}" style="width:100%;" imageViewer />
+              <div *ngIf="(foto.img_src == '') || (foto.img_src != '' && qcstatus == 'REJECT')" class="centered" (click)="doCamera(foto)">
+                <ion-icon name="md-add" style="font-size:40px;font-weight:bold;color:#217481;"></ion-icon>
+              </div>
+              <div *ngIf="foto.img_src != '' && qcstatus == 'OPEN'" class="bottom-right" (click)="doHapus(foto)">
+                <ion-icon name="md-trash" style="font-size:25px;font-weight:bold;color:#ffffff;"></ion-icon>
+              </div>
+              <div class="bottom-left">{{foto.param_desc}}</div>
+              <div *ngIf="foto.img_src != ''" class="bottom">{{foto.description}}</div>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <div id="myBTNChecking" class="button-checking">
+        <button ion-button full color="greenlake" (click)="doPassedQCOut()">
+          <ion-icon name="md-checkbox-outline" style="font-size:35px;"></ion-icon>
+        </button>
+        <button ion-button full color="danger" (click)="doRejectQCOut()">
+          <ion-icon name="md-close" style="font-size:35px;"></ion-icon>
+        </button>
+      </div>
+    </ion-content>
+  </div>
+</div>
+<div id="foto" class="modal-foto">
+  <div class="container">
+    <img src="{{viewfoto}}" />
+    <div class="top-right">
+      <ion-icon name="md-close" style="font-size:25px;" (click)="doCloseViewPhoto()"></ion-icon>
+    </div>
+  </div>
+</div>
+<ion-footer id="myBTNChecking" class="button-checking">
+  <button ion-button full color="primary" (click)="doPassedQC()">
+    <ion-icon name="md-checkbox-outline" style="font-size:35px;"></ion-icon>
+  </button>
+  <button ion-button full color="danger" (click)="doRejectQC()">
+    <ion-icon name="md-close" style="font-size:35px;"></ion-icon>
+  </button>
+</ion-footer>

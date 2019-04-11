@@ -207,7 +207,7 @@ export class PickingdetailpartPage {
       Honeywell.onBarcodeEvent(function (data) {
         var barcodeno = data.barcodeData;
         var batchno = barcodeno.substring(0, 4);
-        var itemno = barcodeno.substring(4, 12);
+        var itemno = barcodeno.substring(4, 20);;
         self.doCekStock(result, batchno, itemno)
       }, function (reason) {
       });
@@ -221,7 +221,7 @@ export class PickingdetailpartPage {
     this.barcodeScanner.scan().then(barcodeData => {
       var barcodeno = barcodeData.text;
       var batchno = barcodeno.substring(0, 4);
-      var itemno = barcodeno.substring(4, 12);
+      var itemno = barcodeno.substring(4, 20);;
       this.doCekStock(result, batchno, itemno)
     }).catch(err => {
       console.log('Error', err);
@@ -249,7 +249,7 @@ export class PickingdetailpartPage {
           handler: data => {
             var barcodeno = data.barcodeData;
             var batchno = barcodeno.substring(0, 4);
-            var itemno = barcodeno.substring(4, 12);
+            var itemno = barcodeno.substring(4, 20);;
             this.doCekStock(result, batchno, itemno)
           }
         }

@@ -119,7 +119,7 @@ export class MovementPage {
     let rackno = this.myForm.value.rackno
     let barcodeno = this.myForm.value.barcodeno
     var batchno = barcodeno.substring(0, 4);
-    var itemno = barcodeno.substring(4, 12);
+    var itemno = barcodeno.substring(4, 20);;
     if (rackno == '') {
       let alert = this.alertCtrl.create({
         title: 'Error ',
@@ -259,7 +259,7 @@ export class MovementPage {
     let rackno = this.myForm.value.rackno
     let barcodeno = this.myForm.value.barcodeno
     var batchno = barcodeno.substring(0, 4);
-    var itemno = barcodeno.substring(4, 12);
+    var itemno = barcodeno.substring(4, 20);;
     self.api.get('table/movement_temp', { params: { limit: 100, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" + ' AND ' + "pic=" + "'" + self.userid + "'" } })
       .subscribe(val => {
         let putawaylist = val['data'];
@@ -639,7 +639,7 @@ export class MovementPage {
         let rackno = self.myForm.value.rackno
         var barcodeno = data.barcodeData;
         var batchno = barcodeno.substring(0, 4);
-        var itemno = barcodeno.substring(4, 12);
+        var itemno = barcodeno.substring(4, 20);;
         if (rackno == '') {
           let alert = self.alertCtrl.create({
             title: 'Error ',
@@ -694,7 +694,7 @@ export class MovementPage {
                         else {
                           let rackno = self.myForm.value.rackno
                           var batchno = barcodeno.substring(0, 4);
-                          var itemno = barcodeno.substring(4, 12);
+                          var itemno = barcodeno.substring(4, 20);;
                           self.api.get('table/movement_temp', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "' AND pic=" + "'" + self.userid + "'" } })
                             .subscribe(val => {
                               self.getmovementlist = val['data'];
@@ -783,7 +783,7 @@ export class MovementPage {
         let rackno = self.myForm.value.rackno
         var barcodeno = barcodeData.text;
         var batchno = barcodeno.substring(0, 4);
-        var itemno = barcodeno.substring(4, 12);
+        var itemno = barcodeno.substring(4, 20);;
         if (rackno == '') {
           let alert = self.alertCtrl.create({
             title: 'Error ',
@@ -838,7 +838,7 @@ export class MovementPage {
                         else {
                           let rackno = self.myForm.value.rackno
                           var batchno = barcodeno.substring(0, 4);
-                          var itemno = barcodeno.substring(4, 12);
+                          var itemno = barcodeno.substring(4, 20);;
                           self.api.get('table/movement_temp', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "' AND pic=" + "'" + self.userid + "'" } })
                             .subscribe(val => {
                               self.getmovementlist = val['data'];
@@ -932,7 +932,7 @@ export class MovementPage {
       Honeywell.onBarcodeEvent(function (data) {
         var barcodeno = data.barcodeData;
         var batchno = barcodeno.substring(0, 4);
-        var itemno = barcodeno.substring(4, 12);
+        var itemno = barcodeno.substring(4, 20);;
         self.api.get('table/movement_temp', { params: { limit: 100, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" + ' AND ' + "pic=" + "'" + self.userid + "'" } })
           .subscribe(val => {
             let putawaylist = val['data'];
@@ -1080,7 +1080,7 @@ export class MovementPage {
       self.barcodeScanner.scan().then(barcodeData => {
         var barcodeno = barcodeData.text;
         var batchno = barcodeno.substring(0, 4);
-        var itemno = barcodeno.substring(4, 12);
+        var itemno = barcodeno.substring(4, 20);;
         self.api.get('table/movement_temp', { params: { limit: 100, filter: "batch_no=" + "'" + batchno + "'" + ' AND ' + "item_no=" + "'" + itemno + "'" + ' AND ' + "pic=" + "'" + self.userid + "'" } })
           .subscribe(val => {
             let putawaylist = val['data'];

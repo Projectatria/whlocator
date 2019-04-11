@@ -485,7 +485,7 @@ export class QcinPage {
       Honeywell.onBarcodeEvent(function (data) {
         var barcodeno = data.barcodeData;
         var batchno = barcodeno.substring(0, 4);
-        var itemno = barcodeno.substring(4, 12);
+        var itemno = barcodeno.substring(4, 20);;
         self.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" + " AND " + "batch_no=" + "'" + batchno + "'" + " AND " + "item_no=" + "'" + itemno + "'" + " AND " + "status='OPEN'" } })
           .subscribe(val => {
             self.qcinbarcode = val['data'];
@@ -587,7 +587,7 @@ export class QcinPage {
         self.barcodeScanner.scan().then(barcodeData => {
           var barcodeno = barcodeData.text;
           var batchno = barcodeno.substring(0, 4);
-          var itemno = barcodeno.substring(4, 12);
+          var itemno = barcodeno.substring(4, 20);;
           self.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" + " AND " + "batch_no=" + "'" + batchno + "'" + " AND " + "item_no=" + "'" + itemno + "'" + " AND " + "status='OPEN'" } })
             .subscribe(val => {
               self.qcinbarcode = val['data'];
