@@ -40,11 +40,6 @@ export class QcoutdetailPage {
     this.toggled = false;
     this.detailpo = "detailpoitem"
     this.receiptno = navParams.get('receiptno');
-    this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Delivery Management Line", filter: "[Receipt No_]=" + "'" + this.receiptno + "'"} })
-    .subscribe(val => {
-      this.trans_sales_detail = val['data'];
-      this.totaldata = val['count'];
-    })
     this.getPOD();
   }
   ionViewCanEnter() {
@@ -59,11 +54,11 @@ export class QcoutdetailPage {
     });
   }
   getPOD() {
-    this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Delivery Management Line", filter: "[Receipt No_]=" + "'" + this.receiptno + "'"} })
+    this.api.get("table/delivery_order_line", { params: { limit: 1000, filter: "receipt_no=" + "'" + this.receiptno + "' AND part_line_no='10000'", sort: "line_no ASC, part_line_no ASC " } })
     .subscribe(val => {
       this.trans_sales_detail = val['data'];
       this.totaldata = val['count'];
-    })
+    });
   }
   getSearchPODetail(ev: any) {
     // set val to the value of the searchbar
@@ -82,14 +77,11 @@ export class QcoutdetailPage {
     this.toggled = this.toggled ? false : true;
   }
   doRefresh(refresher) {
-    this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Delivery Management Line", filter: "[Receipt No_]=" + "'" + this.receiptno + "'"} })
+    this.api.get("table/delivery_order_line", { params: { limit: 1000, filter: "receipt_no=" + "'" + this.receiptno + "' AND part_line_no='10000'", sort: "line_no ASC, part_line_no ASC " } })
     .subscribe(val => {
       this.trans_sales_detail = val['data'];
       this.totaldata = val['count'];
-      this.searchpodetail = this.trans_sales_detail;
       refresher.complete();
     });
-  }
-  ionViewDidLoad() {
   }
 }

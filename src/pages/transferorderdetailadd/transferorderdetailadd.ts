@@ -34,6 +34,8 @@ export class TransferorderdetailaddPage {
   halaman = 0;
   public userid: any;
   public rolecab: any;
+  public qtyavailable = 0;
+  public qtyavailablecek: boolean = false;
 
   constructor(
     public navCtrl: NavController,
@@ -57,7 +59,6 @@ export class TransferorderdetailaddPage {
     this.myFormModalItems = fb.group({
       items: ['', Validators.compose([Validators.required])],
     })
-    this.getItems();
     this.userid = navParams.get('userid')
     this.rolecab = navParams.get('rolecab')
     this.tono = navParams.get('tono');
@@ -68,6 +69,7 @@ export class TransferorderdetailaddPage {
     this.myForm.get('from').setValue(this.from);
     this.myForm.get('to').setValue(this.to);
     this.myForm.get('transferdate').setValue(this.transferdate);
+    this.getItems()
   }
   ionViewCanEnter() {
     this.storage.get('token').then((val) => {
@@ -81,7 +83,7 @@ export class TransferorderdetailaddPage {
     });
   }
   getItems() {
-    this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Item"} }).subscribe(val => {
+    this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Item" } }).subscribe(val => {
       this.items = val['data'];
     });
   }
@@ -96,19 +98,16 @@ export class TransferorderdetailaddPage {
     this.item = item;
     this.itemdesc = item.description;
     this.itemdiv = item.division_code;
-    console.log(item, this.itemdesc)
   }
   insertTODetail() {
     this.getNextNo().subscribe(val => {
       this.nextno = val['nextno'];
       let uuid = UUID.UUID();
       this.uuid = uuid;
-      console.log(this.tono)
       this.api.get("table/transfer_order_detail", { params: { filter: "to_no=" + "'" + this.tono + "' AND location_current_code=" + "'" + this.rolecab + "'", sort: 'line_no DESC' } })
         .subscribe(val => {
           let data = val['data']
           if (data.length != 0) {
-            console.log(data)
             var lineno = parseInt(data[0].line_no) + 10000
             const headers = new HttpHeaders()
               .set("Content-Type", "application/json");
@@ -151,7 +150,6 @@ export class TransferorderdetailaddPage {
                 });
           }
           else {
-            console.log(data)
             const headers = new HttpHeaders()
               .set("Content-Type", "application/json");
             this.api.post("table/transfer_order_detail",
@@ -209,7 +207,7 @@ export class TransferorderdetailaddPage {
     document.getElementById('content').style.display = 'none'
     document.getElementById('footer').style.display = 'none'
   }
-  getSearch(ev: any) {
+  getSearchItem(ev: any) {
     // set val to the value of the searchbar
     let value = ev.target.value;
     // if the value is an empty string don't filter the items
@@ -226,10 +224,166 @@ export class TransferorderdetailaddPage {
       this.getItems()
     }
   }
+  getSearchDescription(ev: any) {
+    // set val to the value of the searchbar
+    let value = ev.target.value;
+    // if the value is an empty string don't filter the items
+    if (value && value.trim() != '') {
+      this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Item", filter: "Description LIKE '%" + value + "%'", sort: "No_" + " ASC " } })
+        .subscribe(val => {
+          let data = val['data']
+          this.items = data.filter(item => {
+            return item.Description.toLowerCase().indexOf(value.toLowerCase()) > -1;
+          })
+        });
+    }
+    else {
+      this.getItems()
+    }
+  }
   doSelectItems(item) {
     this.myForm.get('itemno').setValue(item.No_)
     this.myForm.get('description').setValue(item.Description)
     this.myForm.get('unit').setValue(item["Base Unit of Measure"])
     this.doOffItems()
+  }
+  doCekStock(item) {
+    this.qtyavailable = 0;
+    this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Production BOM Line", filter: "[Production BOM No_]=" + "'B-" + item.No_ + "'" } }).subscribe(val => {
+      let datapart = val['data']
+      if (datapart.length != 0) {
+        for (let i = 0; i < datapart.length; i++) {
+          let partno = datapart[i].No_
+          let partqty = parseInt(item.Quantity) + parseInt(datapart[i].Quantity)
+          this.doGetStock(partno, partqty, item)
+        }
+        this.doShowAlert(item)
+      }
+      else {
+        let partno = item.No_
+        let partqty = item.Quantity
+        this.doGetStock(partno, partqty, item)
+        this.doShowAlert(item)
+      }
+    });
+  }
+  doGetStock(partno, partqty, item) {
+    this.api.get("table/stock", { params: { limit: 1000, filter: "item_no=" + "'" + partno + "' AND location=" + "'" + this.from + "'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data.length != 0) {
+          if (this.qtyavailable == 0) {
+            let totalqty = data[0].qtysum
+            this.qtyavailable = totalqty
+          }
+          else {
+            let totalqty = data[0].qtysum
+            if (totalqty < this.qtyavailable) {
+              this.qtyavailable = totalqty
+            }
+          }
+        }
+        else {
+          let totalqty = 0
+          this.qtyavailable = totalqty
+        }
+      });
+  }
+  doShowAlert(item) {
+    this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Production BOM Line", filter: "[Production BOM No_]=" + "'B-" + item.No_ + "'" } }).subscribe(val => {
+      let datapart = val['data']
+      if (datapart.length != 0) {
+        let partno = datapart[0].No_
+        this.api.get("table/stock", { params: { limit: 1000, filter: "item_no=" + "'" + partno + "' AND location=" + "'" + this.from + "'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
+          .subscribe(val => {
+            let data = val['data']
+            if (data.length != 0) {
+              if (data[0].qtysum > 0) {
+                if (this.qtyavailable == 0) {
+                  for (let i = 0; this.qtyavailable == 0; i++) {
+
+                  }
+                  let alert = this.alertCtrl.create({
+                    subTitle: 'ITEMS NO ' + item.No_,
+                    message: 'Qty Tersedia ' + this.qtyavailable,
+                    buttons: ['OK']
+                  });
+                  alert.present();
+                }
+                else {
+                  let alert = this.alertCtrl.create({
+                    subTitle: 'ITEMS NO ' + item.No_,
+                    message: 'Qty Tersedia ' + this.qtyavailable,
+                    buttons: ['OK']
+                  });
+                  alert.present();
+                }
+              }
+              else {
+                let alert = this.alertCtrl.create({
+                  subTitle: 'ITEMS NO ' + item.No_,
+                  message: 'Qty Tersedia ' + this.qtyavailable,
+                  buttons: ['OK']
+                });
+                alert.present();
+              }
+            }
+            else {
+              let alert = this.alertCtrl.create({
+                subTitle: 'ITEMS NO ' + item.No_,
+                message: 'Qty Tersedia ' + this.qtyavailable,
+                buttons: ['OK']
+              });
+              alert.present();
+            }
+          });
+      }
+      else {
+        let partno = item.No_
+        this.api.get("table/stock", { params: { limit: 1000, filter: "item_no=" + "'" + partno + "' AND location=" + "'" + this.from + "'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
+          .subscribe(val => {
+            let data = val['data']
+            if (data.length != 0) {
+              if (data[0].qtysum > 0) {
+                if (this.qtyavailable == 0) {
+                  for (let i = 0; this.qtyavailable == 0; i++) {
+
+                  }
+                  let alert = this.alertCtrl.create({
+                    subTitle: 'ITEMS NO ' + item.No_,
+                    message: 'Qty Tersedia ' + this.qtyavailable,
+                    buttons: ['OK']
+                  });
+                  alert.present();
+                }
+                else {
+                  let alert = this.alertCtrl.create({
+                    subTitle: 'ITEMS NO ' + item.No_,
+                    message: 'Qty Tersedia ' + this.qtyavailable,
+                    buttons: ['OK']
+                  });
+                  alert.present();
+                }
+              }
+              else {
+                let alert = this.alertCtrl.create({
+                  subTitle: 'ITEMS NO ' + item.No_,
+                  message: 'Qty Tersedia ' + this.qtyavailable,
+                  buttons: ['OK']
+                });
+                alert.present();
+              }
+            }
+            else {
+              let alert = this.alertCtrl.create({
+                subTitle: 'ITEMS NO ' + item.No_,
+                message: 'Qty Tersedia ' + this.qtyavailable,
+                buttons: ['OK']
+              });
+              alert.present();
+            }
+          });
+      }
+    });
   }
 }

@@ -1014,99 +1014,38 @@ export class PutawayPage {
       this.api.get('table/putaway', { params: { limit: 30, filter: "receiving_no=" + "'" + this.receivingno + "'" } })
       .subscribe(val => {
         this.putaway = val['data'];
-        /*this.totalqty = this.putaway.reduce(function (prev, cur) {
-          return prev + cur.qty;
-        }, 0);*/
-        if (this.myFormModal.value.qty > this.qty) {
-          let alert = this.alertCtrl.create({
-            title: 'Error ',
-            subTitle: 'Qty does not exist',
-            buttons: ['OK']
-          });
-          alert.present();
-          this.receivingno = '';
-          this.qtyprevious = '';
-          this.putawayno = '';
-        }
-        else {
-          if (this.qtyprevious == '') {
-            this.api.get('table/putaway', { params: { limit: 30, filter: "receiving_no=" + "'" + this.receivingno + "'" + " AND " + "location_position=" + "'" + this.myFormModal.value.location + "'" } })
-              .subscribe(val => {
-                this.putawaylist = val['data'];
-                if (this.putawaylist.length != 0 && (this.putawaylist[0].location_position == this.myFormModal.value.location)) {
-                  const headers = new HttpHeaders()
-                    .set("Content-Type", "application/json");
-                  let date = moment().format('YYYY-MM-DD');
-                  this.api.put("table/putaway",
-                    {
-                      "putaway_no": this.putawaylist[0].putaway_no,
-                      "qty": parseInt(this.putawaylist[0].qty) + parseInt(this.myFormModal.value.qty)
-                    },
-                    { headers })
-                    .subscribe(val => {
-                      this.api.get('table/staging_in', { params: { limit: 30, filter: "receiving_no=" + "'" + this.receivingno + "'" } })
-                        .subscribe(val => {
-                          let data = val['data']
-                          console.log(data, this.myFormModal.value.qty)
-                          const headers = new HttpHeaders()
-                            .set("Content-Type", "application/json");
-                          this.api.put("table/staging_in",
-                            {
-                              "staging_no": data[0].staging_no,
-                              "qty_putaway": parseInt(data[0].qty_putaway) - parseInt(this.myFormModal.value.qty)
-                            },
-                            { headers })
-                            .subscribe(val => {
-                              this.receiving = [];
-                              this.halaman = 0;
-                              this.getrcv()
-                            });
-                          let datatemp = data[0]
-                          this.doPostStockBalanceOut(datatemp, data)
-                        })
-                      this.api.get('table/putaway', { params: { limit: 30, filter: "receiving_no=" + this.receivingno } })
-                        .subscribe(val => {
-                          this.putaway = val['data'];
-                          this.rcvlist = this.receivingno;
-                          this.totaldataputaway = val['count'];
-                          let alert = this.alertCtrl.create({
-                            title: 'Sukses',
-                            subTitle: 'Save Sukses',
-                            buttons: ['OK']
-                          });
-                          alert.present();
-                          this.doOffPutaway();
-                          this.receivingno = '';
-                          this.qtyprevious = '';
-                        });
-                    });
-                }
-                else {
-                  const headers = new HttpHeaders()
-                    .set("Content-Type", "application/json");
-                  this.getNextNo().subscribe(val => {
-                    this.nextno = val['nextno'];
+        this.api.get('table/staging_in', { params: { limit: 30, filter: "receiving_no=" + "'" + this.receivingno + "'" } })
+        .subscribe(val => {
+          let datastagingin = val['data']
+          console.log(this.qty, datastagingin[0].qty_putaway)
+          if (this.myFormModal.value.qty > datastagingin[0].qty_putaway) {
+            let alert = this.alertCtrl.create({
+              title: 'Error ',
+              subTitle: 'Qty does not exist',
+              buttons: ['OK']
+            });
+            alert.present();
+            this.receivingno = '';
+            this.qtyprevious = '';
+            this.putawayno = '';
+            this.doOffPutaway()
+            this.receiving = [];
+            this.halaman = 0;
+            this.getrcv()
+          }
+          else {
+            if (this.qtyprevious == '') {
+              this.api.get('table/putaway', { params: { limit: 30, filter: "receiving_no=" + "'" + this.receivingno + "'" + " AND " + "location_position=" + "'" + this.myFormModal.value.location + "'" } })
+                .subscribe(val => {
+                  this.putawaylist = val['data'];
+                  if (this.putawaylist.length != 0 && (this.putawaylist[0].location_position == this.myFormModal.value.location)) {
+                    const headers = new HttpHeaders()
+                      .set("Content-Type", "application/json");
                     let date = moment().format('YYYY-MM-DD');
-                    this.api.post("table/putaway",
+                    this.api.put("table/putaway",
                       {
-                        "putaway_no": this.nextno,
-                        "receiving_no": this.receivingno,
-                        "doc_no": this.docno,
-                        "order_no": this.orderno,
-                        "batch_no": this.batchno,
-                        "item_no": this.itemno,
-                        "posting_date": date,
-                        "location_code": '81003',
-                        "location_position": this.myFormModal.value.location,
-                        "division": this.divisionno,
-                        "qty": this.myFormModal.value.qty,
-                        "qty_receiving": this.qtyreceiving,
-                        "unit": this.unit,
-                        "flag": '',
-                        "pic": this.userid,
-                        "status": 'OPEN',
-                        "chronology_no": '',
-                        "uuid": UUID.UUID()
+                        "putaway_no": this.putawaylist[0].putaway_no,
+                        "qty": parseInt(this.putawaylist[0].qty) + parseInt(this.myFormModal.value.qty)
                       },
                       { headers })
                       .subscribe(val => {
@@ -1132,26 +1071,9 @@ export class PutawayPage {
                           })
                         this.api.get('table/putaway', { params: { limit: 30, filter: "receiving_no=" + this.receivingno } })
                           .subscribe(val => {
-                            if (this.myFormModal.value.qty == this.qty) {
-                              var position = this.myFormModal.value.location.substring(0, 2);
-                              this.api.put("table/receiving",
-                                {
-                                  "receiving_no": this.receivingno,
-                                  "staging": 'RACK',
-                                  "position": position
-                                },
-                                { headers })
-                                .subscribe(val => {
-                                  this.api.get('table/staging_in', { params: { limit: 30, filter: "qty_putaway!=0" } })
-                                    .subscribe(val => {
-                                      this.receiving = val['data'];
-                                    });
-                                });
-                            }
                             this.putaway = val['data'];
                             this.rcvlist = this.receivingno;
                             this.totaldataputaway = val['count'];
-                            this.detailput = this.detailput ? false : true;
                             let alert = this.alertCtrl.create({
                               title: 'Sukses',
                               subTitle: 'Save Sukses',
@@ -1163,70 +1085,154 @@ export class PutawayPage {
                             this.qtyprevious = '';
                           });
                       });
-                  });
-                }
-              });
-          }
-          else {
-            if (((parseInt(this.totalqty) - parseInt(this.qtyprevious)) + parseInt(this.myFormModal.value.qty)) > parseInt(this.qtyreceiving)) {
-              let alert = this.alertCtrl.create({
-                title: 'Error ',
-                subTitle: 'Qty does not exist',
-                buttons: ['OK']
-              });
-              alert.present();
-            }
-            else {
-              const headers = new HttpHeaders()
-                .set("Content-Type", "application/json");
-              this.api.put("table/putaway",
-                {
-                  "putaway_no": this.putawayno,
-                  "location_position": this.myFormModal.value.location,
-                  "qty": this.myFormModal.value.qty
-                },
-                { headers })
-                .subscribe(val => {
-                  this.api.get('table/staging_in', { params: { limit: 30, filter: "receiving_no=" + "'" + this.receivingno + "'" } })
-                    .subscribe(val => {
-                      let data = val['data']
-                      console.log(data, this.myFormModal.value.qty)
-                      const headers = new HttpHeaders()
-                        .set("Content-Type", "application/json");
-                      this.api.put("table/staging_in",
+                  }
+                  else {
+                    const headers = new HttpHeaders()
+                      .set("Content-Type", "application/json");
+                    this.getNextNo().subscribe(val => {
+                      this.nextno = val['nextno'];
+                      let date = moment().format('YYYY-MM-DD');
+                      this.api.post("table/putaway",
                         {
-                          "staging_no": data[0].staging_no,
-                          "qty_putaway": parseInt(data[0].qty_putaway) - parseInt(this.myFormModal.value.qty)
+                          "putaway_no": this.nextno,
+                          "receiving_no": this.receivingno,
+                          "doc_no": this.docno,
+                          "order_no": this.orderno,
+                          "batch_no": this.batchno,
+                          "item_no": this.itemno,
+                          "posting_date": date,
+                          "location_code": '81003',
+                          "location_position": this.myFormModal.value.location,
+                          "division": this.divisionno,
+                          "qty": this.myFormModal.value.qty,
+                          "qty_receiving": this.qtyreceiving,
+                          "unit": this.unit,
+                          "flag": '',
+                          "pic": this.userid,
+                          "status": 'OPEN',
+                          "chronology_no": '',
+                          "uuid": UUID.UUID()
                         },
                         { headers })
                         .subscribe(val => {
-                          this.receiving = [];
-                          this.halaman = 0;
-                          this.getrcv()
+                          this.api.get('table/staging_in', { params: { limit: 30, filter: "receiving_no=" + "'" + this.receivingno + "'" } })
+                            .subscribe(val => {
+                              let data = val['data']
+                              console.log(data, this.myFormModal.value.qty)
+                              const headers = new HttpHeaders()
+                                .set("Content-Type", "application/json");
+                              this.api.put("table/staging_in",
+                                {
+                                  "staging_no": data[0].staging_no,
+                                  "qty_putaway": parseInt(data[0].qty_putaway) - parseInt(this.myFormModal.value.qty)
+                                },
+                                { headers })
+                                .subscribe(val => {
+                                  this.receiving = [];
+                                  this.halaman = 0;
+                                  this.getrcv()
+                                });
+                              let datatemp = data[0]
+                              this.doPostStockBalanceOut(datatemp, data)
+                            })
+                          this.api.get('table/putaway', { params: { limit: 30, filter: "receiving_no=" + this.receivingno } })
+                            .subscribe(val => {
+                              if (this.myFormModal.value.qty == this.qty) {
+                                var position = this.myFormModal.value.location.substring(0, 2);
+                                this.api.put("table/receiving",
+                                  {
+                                    "receiving_no": this.receivingno,
+                                    "staging": 'RACK',
+                                    "position": position
+                                  },
+                                  { headers })
+                                  .subscribe(val => {
+                                    this.api.get('table/staging_in', { params: { limit: 30, filter: "qty_putaway!=0" } })
+                                      .subscribe(val => {
+                                        this.receiving = val['data'];
+                                      });
+                                  });
+                              }
+                              this.putaway = val['data'];
+                              this.rcvlist = this.receivingno;
+                              this.totaldataputaway = val['count'];
+                              this.detailput = this.detailput ? false : true;
+                              let alert = this.alertCtrl.create({
+                                title: 'Sukses',
+                                subTitle: 'Save Sukses',
+                                buttons: ['OK']
+                              });
+                              alert.present();
+                              this.doOffPutaway();
+                              this.receivingno = '';
+                              this.qtyprevious = '';
+                            });
                         });
-                      let datatemp = data[0]
-                      this.doPostStockBalanceInMan(datatemp)
-                    })
-                  this.api.get('table/putaway', { params: { limit: 30, filter: "receiving_no=" + this.receivingno } })
-                    .subscribe(val => {
-                      this.putaway = val['data'];
-                      this.rcvlist = this.receivingno;
-                      this.totaldataputaway = val['count'];
-                      let alert = this.alertCtrl.create({
-                        title: 'Sukses',
-                        subTitle: 'Save Sukses',
-                        buttons: ['OK']
-                      });
-                      alert.present();
-                      this.doOffPutaway();
-                      this.receivingno = '';
-                      this.qtyprevious = '';
                     });
+                  }
                 });
             }
+            else {
+              if (((parseInt(this.totalqty) - parseInt(this.qtyprevious)) + parseInt(this.myFormModal.value.qty)) > parseInt(this.qtyreceiving)) {
+                let alert = this.alertCtrl.create({
+                  title: 'Error ',
+                  subTitle: 'Qty does not exist',
+                  buttons: ['OK']
+                });
+                alert.present();
+              }
+              else {
+                const headers = new HttpHeaders()
+                  .set("Content-Type", "application/json");
+                this.api.put("table/putaway",
+                  {
+                    "putaway_no": this.putawayno,
+                    "location_position": this.myFormModal.value.location,
+                    "qty": this.myFormModal.value.qty
+                  },
+                  { headers })
+                  .subscribe(val => {
+                    this.api.get('table/staging_in', { params: { limit: 30, filter: "receiving_no=" + "'" + this.receivingno + "'" } })
+                      .subscribe(val => {
+                        let data = val['data']
+                        console.log(data, this.myFormModal.value.qty)
+                        const headers = new HttpHeaders()
+                          .set("Content-Type", "application/json");
+                        this.api.put("table/staging_in",
+                          {
+                            "staging_no": data[0].staging_no,
+                            "qty_putaway": parseInt(data[0].qty_putaway) - parseInt(this.myFormModal.value.qty)
+                          },
+                          { headers })
+                          .subscribe(val => {
+                            this.receiving = [];
+                            this.halaman = 0;
+                            this.getrcv()
+                          });
+                        let datatemp = data[0]
+                        this.doPostStockBalanceInMan(datatemp)
+                      })
+                    this.api.get('table/putaway', { params: { limit: 30, filter: "receiving_no=" + this.receivingno } })
+                      .subscribe(val => {
+                        this.putaway = val['data'];
+                        this.rcvlist = this.receivingno;
+                        this.totaldataputaway = val['count'];
+                        let alert = this.alertCtrl.create({
+                          title: 'Sukses',
+                          subTitle: 'Save Sukses',
+                          buttons: ['OK']
+                        });
+                        alert.present();
+                        this.doOffPutaway();
+                        this.receivingno = '';
+                        this.qtyprevious = '';
+                      });
+                  });
+              }
+            }
+  
           }
-
-        }
+        });
       });
     }
   }

@@ -22,9 +22,11 @@ declare var Honeywell;
   templateUrl: 'qcin.html',
 })
 export class QcinPage {
+  public loader: any;
   private staging_in = [];
   private quality_control = [];
   private qcresult = [];
+  private qcresultclsd = [];
   private qcresultopen = [];
   private qcinpic = [];
   private qcinbarcode = [];
@@ -35,6 +37,7 @@ export class QcinPage {
   totaldata: any;
   totaldataqc: any;
   totaldataqcresult: any;
+  totaldataqcresultclsd: any;
   totaldataqcresultopen: any;
   totalphoto: any;
   public toggled: boolean = false;
@@ -42,9 +45,12 @@ export class QcinPage {
   private nextnoqc = '';
   private nextnoqcresult = '';
   public detailqc: boolean = false;
+  public detailqcclsd: boolean = false;
   public button: boolean = false;
   private qclist = '';
+  public qclistclsd = '';
   private batchnolist = '';
+  public batchnolistclsd = '';
   option: BarcodeScannerOptions;
   imageURI: string = '';
   imageFileName: string = '';
@@ -54,6 +60,7 @@ export class QcinPage {
   private qcnoresult = '';
   private viewfoto = '';
   private qcqty = '';
+  private qcqtyclsd = '';
   private token: any;
   public name: any;
   public userid: any;
@@ -85,6 +92,7 @@ export class QcinPage {
     this.toggled = false;
     this.qc = "qcin"
     this.detailqc = false;
+    this.detailqcclsd = false;
     this.button = false;
     this.storage.get('name').then((val) => {
       this.name = val;
@@ -300,161 +308,180 @@ export class QcinPage {
         {
           text: 'OK',
           handler: data => {
-            if (staging.qty_qc < data.qty) {
+            if (data.qty > 0) {
+              this.api.get('table/staging_in', { params: { limit: 30, filter: "staging_no=" + "'" + staging.staging_no + "'" } })
+                .subscribe(val => {
+                  let datastaging = val['data']
+                  if (datastaging[0].qty_qc < data.qty) {
+                    let alert = this.alertCtrl.create({
+                      title: 'Error',
+                      subTitle: 'Qty lebih besar dari stok',
+                      buttons: ['OK']
+                    });
+                    alert.present();
+                    this.halaman = 0;
+                    this.staging_in = [];
+                    this.getStagingin()
+                  }
+                  else {
+                    this.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" + " AND " + "batch_no=" + "'" + datastaging[0].batch_no + "'" + " AND " + "item_no=" + "'" + datastaging[0].item_no + "'" } })
+                      .subscribe(val => {
+                        this.qcinpic = val['data'];
+                        if (this.qcinpic.length == 0) {
+                          this.api.get('nextno/qc_in/qc_no')
+                            .subscribe(val => {
+                              this.nextnoqc = val['nextno'];
+                              const headers = new HttpHeaders()
+                                .set("Content-Type", "application/json");
+                              let date = moment().format('YYYY-MM-DD');
+                              this.api.post("table/qc_in",
+                                {
+                                  "qc_no": this.nextnoqc,
+                                  "receiving_no": datastaging[0].receiving_no,
+                                  "doc_no": datastaging[0].doc_no,
+                                  "order_no": datastaging[0].order_no,
+                                  "batch_no": datastaging[0].batch_no,
+                                  "item_no": datastaging[0].item_no,
+                                  "date_start": moment().format('YYYY-MM-DD'),
+                                  "time_start": moment().format('HH:mm:ss'),
+                                  "pic": this.userid,
+                                  "qty": data.qty,
+                                  "unit": datastaging[0].unit,
+                                  "staging": datastaging[0].staging,
+                                  "status": 'OPEN',
+                                  "uuid": UUID.UUID()
+                                },
+                                { headers })
+                                .subscribe(val => {
+                                  let nextnoqc = this.nextnoqc
+                                  this.doLoopQcOutResult(data, staging, nextnoqc)
+                                  const headers = new HttpHeaders()
+                                    .set("Content-Type", "application/json");
+                                  this.api.put("table/staging_in",
+                                    {
+                                      "staging_no": datastaging[0].staging_no,
+                                      "qty_qc": datastaging[0].qty_qc - data.qty
+                                    },
+                                    { headers })
+                                    .subscribe(val => {
+                                      this.api.get('table/staging_in', { params: { filter: "qty_qc!=0" } })
+                                        .subscribe(val => {
+                                          this.staging_in = val['data'];
+                                          this.totaldata = val['count'];
+                                          this.searchstaging = this.staging_in;
+                                          this.api.get('table/qc_in', { params: { limit: 30, filter: "status='OPEN' AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
+                                            .subscribe(val => {
+                                              this.quality_control = val['data'];
+                                              this.totaldataqc = val['count'];
+                                              this.searchqc = this.quality_control;
+                                            });
+                                        });
+
+                                    });
+                                }, err => {
+                                  let nextnoqc = this.nextnoqc
+                                  this.doLoopQcOutResult(data, staging, nextnoqc)
+                                  const headers = new HttpHeaders()
+                                    .set("Content-Type", "application/json");
+                                  this.api.put("table/staging_in",
+                                    {
+                                      "staging_no": datastaging[0].staging_no,
+                                      "qty_qc": datastaging[0].qty_qc - data.qty
+                                    },
+                                    { headers })
+                                    .subscribe(val => {
+                                      this.api.get('table/staging_in', { params: { filter: "qty_qc!=0" } })
+                                        .subscribe(val => {
+                                          this.staging_in = val['data'];
+                                          this.totaldata = val['count'];
+                                          this.searchstaging = this.staging_in;
+                                          this.api.get('table/qc_in', { params: { limit: 30, filter: "status='OPEN' AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
+                                            .subscribe(val => {
+                                              this.quality_control = val['data'];
+                                              this.totaldataqc = val['count'];
+                                              this.searchqc = this.quality_control;
+                                            });
+                                        });
+
+                                    });
+                                });
+                            });
+                        }
+                        else {
+                          const headers = new HttpHeaders()
+                            .set("Content-Type", "application/json");
+                          let date = moment().format('YYYY-MM-DD');
+                          this.api.put("table/qc_in",
+                            {
+                              "qc_no": this.qcinpic[0].qc_no,
+                              "qty": parseInt(this.qcinpic[0].qty) + parseInt(data.qty)
+                            },
+                            { headers })
+                            .subscribe(val => {
+                              let nextnoqc = this.qcinpic[0].qc_no
+                              this.doLoopQcOutResult(data, staging, nextnoqc)
+                              const headers = new HttpHeaders()
+                                .set("Content-Type", "application/json");
+                              this.api.put("table/staging_in",
+                                {
+                                  "staging_no": datastaging[0].staging_no,
+                                  "qty_qc": datastaging[0].qty_qc - data.qty
+                                },
+                                { headers })
+                                .subscribe(val => {
+                                  this.api.get('table/staging_in', { params: { filter: "qty_qc!=0" } })
+                                    .subscribe(val => {
+                                      this.staging_in = val['data'];
+                                      this.totaldata = val['count'];
+                                      this.searchstaging = this.staging_in;
+                                      this.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
+                                        .subscribe(val => {
+                                          this.quality_control = val['data'];
+                                          this.totaldataqc = val['count'];
+                                          this.searchqc = this.quality_control;
+                                        });
+                                    });
+
+                                });
+                            }, err => {
+                              let nextnoqc = this.qcinpic[0].qc_no
+                              this.doLoopQcOutResult(data, staging, nextnoqc)
+                              const headers = new HttpHeaders()
+                                .set("Content-Type", "application/json");
+                              this.api.put("table/staging_in",
+                                {
+                                  "staging_no": datastaging[0].staging_no,
+                                  "qty_qc": datastaging[0].qty_qc - data.qty
+                                },
+                                { headers })
+                                .subscribe(val => {
+                                  this.api.get('table/staging_in', { params: { filter: "qty_qc!=0" } })
+                                    .subscribe(val => {
+                                      this.staging_in = val['data'];
+                                      this.totaldata = val['count'];
+                                      this.searchstaging = this.staging_in;
+                                      this.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
+                                        .subscribe(val => {
+                                          this.quality_control = val['data'];
+                                          this.totaldataqc = val['count'];
+                                          this.searchqc = this.quality_control;
+                                        });
+                                    });
+
+                                });
+                            });
+                        }
+                      });
+                  }
+                });
+            }
+            else {
               let alert = this.alertCtrl.create({
-                title: 'Error',
-                subTitle: 'Qty lebih besar dari stok',
+                title: 'Perhatian',
+                subTitle: 'Qty Tidak Boleh Kosong !!',
                 buttons: ['OK']
               });
               alert.present();
-            }
-            else {
-              this.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" + " AND " + "batch_no=" + "'" + staging.batch_no + "'" + " AND " + "item_no=" + "'" + staging.item_no + "'" } })
-              .subscribe(val => {
-                this.qcinpic = val['data'];
-                if (this.qcinpic.length == 0) {
-                  this.api.get('nextno/qc_in/qc_no')
-                    .subscribe(val => {
-                      this.nextnoqc = val['nextno'];
-                      const headers = new HttpHeaders()
-                        .set("Content-Type", "application/json");
-                      let date = moment().format('YYYY-MM-DD');
-                      this.api.post("table/qc_in",
-                        {
-                          "qc_no": this.nextnoqc,
-                          "receiving_no": staging.receiving_no,
-                          "doc_no": staging.doc_no,
-                          "order_no": staging.order_no,
-                          "batch_no": staging.batch_no,
-                          "item_no": staging.item_no,
-                          "pic": this.userid,
-                          "qty": data.qty,
-                          "unit": staging.unit,
-                          "staging": staging.staging,
-                          "status": 'OPEN',
-                          "uuid": UUID.UUID()
-                        },
-                        { headers })
-                        .subscribe(val => {
-                          let nextnoqc = this.nextnoqc
-                          this.doLoopQcOutResult(data, staging, nextnoqc)
-                          const headers = new HttpHeaders()
-                            .set("Content-Type", "application/json");
-                          this.api.put("table/staging_in",
-                            {
-                              "staging_no": staging.staging_no,
-                              "qty_qc": staging.qty_qc - data.qty
-                            },
-                            { headers })
-                            .subscribe(val => {
-                              this.api.get('table/staging_in', { params: { filter: "qty_qc!=0" } })
-                                .subscribe(val => {
-                                  this.staging_in = val['data'];
-                                  this.totaldata = val['count'];
-                                  this.searchstaging = this.staging_in;
-                                  this.api.get('table/qc_in', { params: { limit: 30, filter: "status='OPEN' AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
-                                    .subscribe(val => {
-                                      this.quality_control = val['data'];
-                                      this.totaldataqc = val['count'];
-                                      this.searchqc = this.quality_control;
-                                    });
-                                });
-
-                            });
-                        }, err => {
-                          let nextnoqc = this.nextnoqc
-                          this.doLoopQcOutResult(data, staging, nextnoqc)
-                          const headers = new HttpHeaders()
-                            .set("Content-Type", "application/json");
-                          this.api.put("table/staging_in",
-                            {
-                              "staging_no": staging.staging_no,
-                              "qty_qc": staging.qty_qc - data.qty
-                            },
-                            { headers })
-                            .subscribe(val => {
-                              this.api.get('table/staging_in', { params: { filter: "qty_qc!=0" } })
-                                .subscribe(val => {
-                                  this.staging_in = val['data'];
-                                  this.totaldata = val['count'];
-                                  this.searchstaging = this.staging_in;
-                                  this.api.get('table/qc_in', { params: { limit: 30, filter: "status='OPEN' AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
-                                    .subscribe(val => {
-                                      this.quality_control = val['data'];
-                                      this.totaldataqc = val['count'];
-                                      this.searchqc = this.quality_control;
-                                    });
-                                });
-
-                            });
-                        });
-                    });
-                }
-                else {
-                  const headers = new HttpHeaders()
-                    .set("Content-Type", "application/json");
-                  let date = moment().format('YYYY-MM-DD');
-                  this.api.put("table/qc_in",
-                    {
-                      "qc_no": this.qcinpic[0].qc_no,
-                      "qty": parseInt(this.qcinpic[0].qty) + parseInt(data.qty)
-                    },
-                    { headers })
-                    .subscribe(val => {
-                      let nextnoqc = this.qcinpic[0].qc_no
-                      this.doLoopQcOutResult(data, staging, nextnoqc)
-                      const headers = new HttpHeaders()
-                        .set("Content-Type", "application/json");
-                      this.api.put("table/staging_in",
-                        {
-                          "staging_no": staging.staging_no,
-                          "qty_qc": staging.qty_qc - data.qty
-                        },
-                        { headers })
-                        .subscribe(val => {
-                          this.api.get('table/staging_in', { params: { filter: "qty_qc!=0" } })
-                            .subscribe(val => {
-                              this.staging_in = val['data'];
-                              this.totaldata = val['count'];
-                              this.searchstaging = this.staging_in;
-                              this.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
-                                .subscribe(val => {
-                                  this.quality_control = val['data'];
-                                  this.totaldataqc = val['count'];
-                                  this.searchqc = this.quality_control;
-                                });
-                            });
-
-                        });
-                    }, err => {
-                      let nextnoqc = this.qcinpic[0].qc_no
-                      this.doLoopQcOutResult(data, staging, nextnoqc)
-                      const headers = new HttpHeaders()
-                        .set("Content-Type", "application/json");
-                      this.api.put("table/staging_in",
-                        {
-                          "staging_no": staging.staging_no,
-                          "qty_qc": staging.qty_qc - data.qty
-                        },
-                        { headers })
-                        .subscribe(val => {
-                          this.api.get('table/staging_in', { params: { filter: "qty_qc!=0" } })
-                            .subscribe(val => {
-                              this.staging_in = val['data'];
-                              this.totaldata = val['count'];
-                              this.searchstaging = this.staging_in;
-                              this.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
-                                .subscribe(val => {
-                                  this.quality_control = val['data'];
-                                  this.totaldataqc = val['count'];
-                                  this.searchqc = this.quality_control;
-                                });
-                            });
-
-                        });
-                    });
-                }
-              });
             }
           }
         }
@@ -470,6 +497,18 @@ export class QcinPage {
     this.detailqc = this.detailqc ? false : true;
     this.getQCResult(myqc);
   }
+  doDetailQCclsd(myqc) {
+    this.loader = this.loadingCtrl.create({
+      // cssClass: 'transparent',
+      content: 'Loading...'
+    });
+    this.loader.present()
+    this.qclistclsd = myqc.item_no;
+    this.batchnolistclsd = myqc.batch_no;
+    this.qcqtyclsd = myqc.qty
+    this.detailqcclsd = this.detailqcclsd ? false : true;
+    this.getQCResultclsd(myqc);
+  }
   getQCResult(myqc) {
     return new Promise(resolve => {
       this.api.get("table/qc_in_result", { params: { limit: 1000, filter: 'qc_no=' + "'" + myqc.qc_no + "'" } }).subscribe(val => {
@@ -477,6 +516,14 @@ export class QcinPage {
         this.totaldataqcresult = val['count'];
         resolve();
       })
+    });
+  }
+  getQCResultclsd(myqc) {
+    this.api.get("table/qc_in_result", { params: { limit: 1000, filter: 'qc_no=' + "'" + myqc.qc_no + "'" } }).subscribe(val => {
+      this.qcresultclsd = val['data'];
+      console.log(this.qcresultclsd)
+      this.totaldataqcresultclsd = val['count'];
+      this.loader.dismiss()
     });
   }
   doChecked() {
@@ -580,112 +627,112 @@ export class QcinPage {
             }
 
           });
-        }, function (reason) {
-          alert(reason + '1');
-        });
       }, function (reason) {
-        self.barcodeScanner.scan().then(barcodeData => {
-          var barcodeno = barcodeData.text;
-          var batchno = barcodeno.substring(0, 4);
-          var itemno = barcodeno.substring(4, 20);;
-          self.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" + " AND " + "batch_no=" + "'" + batchno + "'" + " AND " + "item_no=" + "'" + itemno + "'" + " AND " + "status='OPEN'" } })
-            .subscribe(val => {
-              self.qcinbarcode = val['data'];
-              if (self.qcinbarcode.length == 0) {
-                let alert = self.alertCtrl.create({
-                  title: 'Error',
-                  subTitle: 'Data Not Found In My QC',
-                  buttons: ['OK']
-                });
-                alert.present();
-              }
-              else {
-                self.api.get("table/qc_in_result", { params: { filter: 'qc_no=' + "'" + self.qcinbarcode[0].qc_no + "'" } }).subscribe(val => {
-                  self.qcresult = val['data'];
-                  self.totaldataqcresult = val['count'];
-                  if (self.qcinbarcode.length == 0) {
-                    let alert = self.alertCtrl.create({
-                      title: 'Error',
-                      subTitle: 'Data Not Found In My QC',
-                      buttons: ['OK']
-                    });
-                    alert.present();
-                  }
-                  else if (self.totaldataqcresult == self.qcinbarcode[0].qty) {
-                    let alert = self.alertCtrl.create({
-                      title: 'Error',
-                      subTitle: 'Data Already Create',
-                      buttons: ['OK']
-                    });
-                    alert.present();
-                  }
-                  else {
-                    let alert = self.alertCtrl.create({
-                      title: 'Confirm Start',
-                      message: 'Do you want to QC Now?',
-                      buttons: [
-                        {
-                          text: 'Cancel',
-                          role: 'cancel',
-                          handler: () => {
-                          }
-                        },
-                        {
-                          text: 'Start',
-                          handler: () => {
-                            self.getNextNoQCResult().subscribe(val => {
-                              let time = moment().format('HH:mm:ss');
-                              let date = moment().format('YYYY-MM-DD');
-                              let uuid = UUID.UUID();
-                              self.nextnoqcresult = val['nextno'];
-                              const headers = new HttpHeaders()
-                                .set("Content-Type", "application/json");
-                              self.api.post("table/qc_in_result",
-                                {
-                                  "qc_result_no": self.nextnoqcresult,
-                                  "qc_no": self.qcinbarcode[0].qc_no,
-                                  "batch_no": self.qcinbarcode[0].batch_no,
-                                  "item_no": self.qcinbarcode[0].item_no,
-                                  "date_start": date,
-                                  "date_finish": date,
-                                  "time_start": time,
-                                  "time_finish": time,
-                                  "qc_pic": this.userid,
-                                  "qty_receiving": self.qcinbarcode[0].qty,
-                                  "unit": self.qcinbarcode[0].unit,
-                                  "qc_status": "OPEN",
-                                  "qc_description": "",
-                                  "uuid": uuid
-                                },
-                                { headers })
-                                .subscribe(val => {
-                                  document.getElementById("myQCChecking").style.display = "block";
-                                  document.getElementById("myBTNChecking").style.display = "block";
-                                  document.getElementById("myHeader").style.display = "none";
-                                  self.button = true;
-                                  self.uuidqcresult = uuid;
-                                  self.qcnoresult = self.nextnoqcresult;
-                                  self.qcno = self.qcinbarcode[0].qc_no
-                                  self.api.get("table/link_image", { params: { limit: 100, filter: 'parent=' + "'" + self.uuidqcresult + "'" } }).subscribe(val => {
-                                    self.photos = val['data'];
-                                    self.totalphoto = val['count'];
-                                  });
-                                })
-                            });
-                          }
+        alert(reason + '1');
+      });
+    }, function (reason) {
+      self.barcodeScanner.scan().then(barcodeData => {
+        var barcodeno = barcodeData.text;
+        var batchno = barcodeno.substring(0, 4);
+        var itemno = barcodeno.substring(4, 20);;
+        self.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" + " AND " + "batch_no=" + "'" + batchno + "'" + " AND " + "item_no=" + "'" + itemno + "'" + " AND " + "status='OPEN'" } })
+          .subscribe(val => {
+            self.qcinbarcode = val['data'];
+            if (self.qcinbarcode.length == 0) {
+              let alert = self.alertCtrl.create({
+                title: 'Error',
+                subTitle: 'Data Not Found In My QC',
+                buttons: ['OK']
+              });
+              alert.present();
+            }
+            else {
+              self.api.get("table/qc_in_result", { params: { filter: 'qc_no=' + "'" + self.qcinbarcode[0].qc_no + "'" } }).subscribe(val => {
+                self.qcresult = val['data'];
+                self.totaldataqcresult = val['count'];
+                if (self.qcinbarcode.length == 0) {
+                  let alert = self.alertCtrl.create({
+                    title: 'Error',
+                    subTitle: 'Data Not Found In My QC',
+                    buttons: ['OK']
+                  });
+                  alert.present();
+                }
+                else if (self.totaldataqcresult == self.qcinbarcode[0].qty) {
+                  let alert = self.alertCtrl.create({
+                    title: 'Error',
+                    subTitle: 'Data Already Create',
+                    buttons: ['OK']
+                  });
+                  alert.present();
+                }
+                else {
+                  let alert = self.alertCtrl.create({
+                    title: 'Confirm Start',
+                    message: 'Do you want to QC Now?',
+                    buttons: [
+                      {
+                        text: 'Cancel',
+                        role: 'cancel',
+                        handler: () => {
                         }
-                      ]
-                    });
-                    alert.present();
-                  }
-                });
-              }
-  
-            });
-        }).catch(err => {
-            console.log('Error', err);
-        });
-      }, {
+                      },
+                      {
+                        text: 'Start',
+                        handler: () => {
+                          self.getNextNoQCResult().subscribe(val => {
+                            let time = moment().format('HH:mm:ss');
+                            let date = moment().format('YYYY-MM-DD');
+                            let uuid = UUID.UUID();
+                            self.nextnoqcresult = val['nextno'];
+                            const headers = new HttpHeaders()
+                              .set("Content-Type", "application/json");
+                            self.api.post("table/qc_in_result",
+                              {
+                                "qc_result_no": self.nextnoqcresult,
+                                "qc_no": self.qcinbarcode[0].qc_no,
+                                "batch_no": self.qcinbarcode[0].batch_no,
+                                "item_no": self.qcinbarcode[0].item_no,
+                                "date_start": date,
+                                "date_finish": date,
+                                "time_start": time,
+                                "time_finish": time,
+                                "qc_pic": this.userid,
+                                "qty_receiving": self.qcinbarcode[0].qty,
+                                "unit": self.qcinbarcode[0].unit,
+                                "qc_status": "OPEN",
+                                "qc_description": "",
+                                "uuid": uuid
+                              },
+                              { headers })
+                              .subscribe(val => {
+                                document.getElementById("myQCChecking").style.display = "block";
+                                document.getElementById("myBTNChecking").style.display = "block";
+                                document.getElementById("myHeader").style.display = "none";
+                                self.button = true;
+                                self.uuidqcresult = uuid;
+                                self.qcnoresult = self.nextnoqcresult;
+                                self.qcno = self.qcinbarcode[0].qc_no
+                                self.api.get("table/link_image", { params: { limit: 100, filter: 'parent=' + "'" + self.uuidqcresult + "'" } }).subscribe(val => {
+                                  self.photos = val['data'];
+                                  self.totalphoto = val['count'];
+                                });
+                              })
+                          });
+                        }
+                      }
+                    ]
+                  });
+                  alert.present();
+                }
+              });
+            }
+
+          });
+      }).catch(err => {
+        console.log('Error', err);
+      });
+    }, {
         press: true
       });
   }
@@ -1055,7 +1102,7 @@ export class QcinPage {
             this.qcno = result.qc_no;
             this.itemno = result.item_no;
             this.qcstatus = result.qc_status
-            if (result.qc_status != 'PASSED') {
+            if (result.qc_status == 'OPEN') {
               document.getElementById("myQCChecking").style.display = "block";
               document.getElementById("myBTNChecking").style.display = "block";
               // document.getElementById("button").style.display = "block";
@@ -1439,41 +1486,44 @@ export class QcinPage {
                           this.api.get("table/qc_in_result", { params: { filter: 'qc_no=' + "'" + this.qcno + "'" } }).subscribe(val => {
                             this.qcresult = val['data'];
                             this.totaldataqcresult = val['count'];
-                            this.api.get("table/qc_in_result", { params: { filter: 'qc_no=' + "'" + this.qcno + "' AND qc_status!= 'PASSED'" } }).subscribe(val => {
-                              this.qcresultopen = val['data'];
-                              if (this.qcresultopen.length == 0) {
-                                const headers = new HttpHeaders()
-                                  .set("Content-Type", "application/json");
-                                this.api.put("table/qc_in",
-                                  {
-                                    "qc_no": this.qcno,
-                                    "status": "CLSD"
-                                  },
-                                  { headers })
+                            this.api.get("table/qc_in_result", { params: { filter: 'qc_no=' + "'" + this.qcno + "' AND qc_status= 'OPEN'" } })
+                              .subscribe(val => {
+                                this.qcresultopen = val['data'];
+                                if (this.qcresultopen.length == 0) {
+                                  const headers = new HttpHeaders()
+                                    .set("Content-Type", "application/json");
+                                  this.api.put("table/qc_in",
+                                    {
+                                      "qc_no": this.qcno,
+                                      "date_finish": moment().format('YYYY-MM-DD'),
+                                      "time_finish": moment().format('HH:mm:ss'),
+                                      "status": "CLSD"
+                                    },
+                                    { headers })
+                                    .subscribe(val => {
+                                      this.api.get('table/qc_in', { params: { limit: 10, filter: "status='OPEN'   AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
+                                        .subscribe(val => {
+                                          this.quality_control = val['data'];
+                                          this.totaldataqc = val['count'];
+                                          this.searchqc = this.quality_control
+                                        });
+                                      this.api.get('table/qc_in', { params: { limit: 10, filter: "status='CLSD'   AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
+                                        .subscribe(val => {
+                                          this.quality_control_clsd = val['data']
+                                        });
+                                    });
+                                }
+                                this.api.get('table/qc_in', { params: { limit: 10, filter: "status='OPEN'   AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
                                   .subscribe(val => {
-                                    this.api.get('table/qc_in', { params: { limit: 10, filter: "status='OPEN'   AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
-                                      .subscribe(val => {
-                                        this.quality_control = val['data'];
-                                        this.totaldataqc = val['count'];
-                                        this.searchqc = this.quality_control
-                                      });
-                                    this.api.get('table/qc_in', { params: { limit: 10, filter: "status='CLSD'   AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
-                                      .subscribe(val => {
-                                        this.quality_control_clsd = val['data']
-                                      });
+                                    this.quality_control = val['data'];
+                                    this.totaldataqc = val['count'];
+                                    this.searchqc = this.quality_control
                                   });
-                              }
-                              this.api.get('table/qc_in', { params: { limit: 10, filter: "status='OPEN'   AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
-                                .subscribe(val => {
-                                  this.quality_control = val['data'];
-                                  this.totaldataqc = val['count'];
-                                  this.searchqc = this.quality_control
-                                });
-                              this.api.get('table/qc_in', { params: { limit: 10, filter: "status='CLSD'  AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
-                                .subscribe(val => {
-                                  this.quality_control_clsd = val['data']
-                                });
-                            });
+                                this.api.get('table/qc_in', { params: { limit: 10, filter: "status='CLSD'  AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
+                                  .subscribe(val => {
+                                    this.quality_control_clsd = val['data']
+                                  });
+                              });
                           });
                           let alert = this.alertCtrl.create({
                             title: 'Sukses',
@@ -1591,17 +1641,15 @@ export class QcinPage {
                                   this.api.get("table/qc_in_result", { params: { filter: 'qc_no=' + "'" + this.qcno + "'" + " AND " + "qc_status='OPEN'" } }).subscribe(val => {
                                     this.qcresultopen = val['data'];
                                     this.totaldataqcresultopen = val['count'];
-                                    if ((this.totaldataqcresult == this.qcqty) && this.totaldataqcresultopen == 0) {
+                                    if (this.qcresultopen.length == 0) {
                                       const headers = new HttpHeaders()
                                         .set("Content-Type", "application/json");
                                       this.api.put("table/qc_in",
                                         {
                                           "qc_no": this.qcno,
-                                          "date_start": this.qcresult[0].date_start,
-                                          "date_finish": this.qcresult[0].date_finish,
-                                          "time_start": this.qcresult[0].time_start,
-                                          "time_finish": this.qcresult[0].time_finish,
-                                          "status": 'CLSD'
+                                          "date_finish": moment().format('YYYY-MM-DD'),
+                                          "time_finish": moment().format('HH:mm:ss'),
+                                          "status": "CLSD"
                                         },
                                         { headers })
                                         .subscribe(val => {
@@ -1609,6 +1657,11 @@ export class QcinPage {
                                             .subscribe(val => {
                                               this.quality_control = val['data'];
                                               this.totaldataqc = val['count'];
+                                              this.searchqc = this.quality_control
+                                            });
+                                          this.api.get('table/qc_in', { params: { limit: 10, filter: "status='CLSD'   AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
+                                            .subscribe(val => {
+                                              this.quality_control_clsd = val['data']
                                             });
                                         });
                                     }

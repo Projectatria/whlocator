@@ -55,10 +55,10 @@
         placeholder="Search Receipt No"></ion-searchbar>
       <ion-card *ngFor="let dm of datadm">
         <ion-item text-wrap>
-          <h3 (click)="doDetail(dm)" style="font-weight:bold;padding-bottom:5px;">Receipt No - {{dm["Receipt No_"]}}</h3>
-          <p (click)="doDetail(dm)">Expected Receipt Date : {{dm["Expected Receipt Date"] | date: 'dd-MM-yyyy'}}</p>
-          <p (click)="doDetail(dm)">Store No : {{dm["Store No_"]}}</p>
-          <p (click)="doDetail(dm)">SO No : {{dm["SO No_"]}}</p>
+          <h3 (click)="doDetail(dm)" style="font-weight:bold;padding-bottom:5px;">Receipt No - {{dm.receipt_no}}</h3>
+          <p (click)="doDetail(dm)">Expected Receipt Date : {{dm.delivery_date | date: 'dd-MM-yyyy'}}</p>
+          <p (click)="doDetail(dm)">Store No : {{dm.store_no}}</p>
+          <p (click)="doDetail(dm)">SO No : {{dm.so_no}}</p>
           <button item-end ion-button clear color="greenlake" (click)="doMyQC(dm)">
             <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
           </button>

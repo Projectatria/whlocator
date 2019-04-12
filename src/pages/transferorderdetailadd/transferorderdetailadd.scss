@@ -38,4 +38,41 @@ page-transferorderdetailadd {
         opacity: 1;
         color:#000000;
      }
+     .row-content {
+        border-top: 1px solid;
+        border-bottom: 1px solid;
+        border-color: #9e9fa1;
+        background: #ffffff;
+    }
+    .row-content-list {
+        background: transparent;
+        color: #000000;
+    }
+    .row-content-list:hover {
+        background: #b7c400;
+        color: #000000;
+        cursor: pointer;
+    }
+    .col-content {
+        background:transparent;
+        color:#000000;
+        border:0px;
+        text-align:left;
+    }
+    .col-content-genap {
+        background: #fff;
+        border: 1px solid;
+        border-color:#dedede;
+        color:#000000;
+        text-align:left;
+        cursor: pointer;
+    }
+    .col-content-ganjil {
+        background: #f5f5f5;
+        border: 1px solid;
+        border-color:#dedede;
+        color:#000000;
+        text-align:left;
+        cursor: pointer;
+    }
  }

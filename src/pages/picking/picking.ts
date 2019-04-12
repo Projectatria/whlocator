@@ -527,7 +527,7 @@ export class PickingPage {
                       },
                       { headers })
                       .subscribe(val => {
-                        this.api.get("table/delivery_order_line", { params: { limit: 1000, filter: "receipt_no=" + "'" + listpick.receipt_no + "' AND line_no='10000'", sort: "line_no ASC, part_line_no ASC " } })
+                        this.api.get("table/delivery_order_line", { params: { limit: 1000, filter: "receipt_no=" + "'" + listpick.receipt_no + "' AND part_line_no='10000'", sort: "line_no ASC, part_line_no ASC " } })
                           .subscribe(val => {
                             let data = val['data'];
                             for (let i = 0; i < data.length; i++) {

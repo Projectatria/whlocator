@@ -166,30 +166,21 @@ export class QcoutPage {
   }
   getDataDM() {
     return new Promise(resolve => {
-      let offsetpicking = 10 * this.halaman
+      let offsetpicking = 30 * this.halaman
       if (this.halaman == -1) {
         resolve();
       }
       else {
         this.halaman++;
-        this.api.get("tablenav", { params: { limit: 10, table: "CSB_LIVE$Delivery Management Header", filter: "Status=0 AND [Expected Receipt Date] > '2018-01-01'", offset: offsetpicking, sort: "[Expected Receipt Date]" + " DESC " } })
+        this.api.get("table/delivery_order_header", { params: { limit: 30, offset: offsetpicking, filter: "Status='OPEN' AND qc_get='0'", sort: "delivery_date DESC " } })
           .subscribe(val => {
             let data = val['data'];
-            this.loader.dismiss()
             for (let i = 0; i < data.length; i++) {
-              this.api.get('table/qc_out', { params: { limit: 10, filter: "receipt_no=" + "'" + data[i]["Receipt No_"] + "'" } })
-                .subscribe(val => {
-                  this.dataqc = val['data'];
-                  if (this.dataqc.length == 0) {
-                    this.datadm.push(data[i]);
-                    this.totaldatadatadm = val['count'];
-                    this.searchdata = this.datadm
-                  }
-                  else if (this.dataqc.length) {
-
-                  }
-                });
+              this.datadm.push(data[i]);
+              this.searchdata = this.datadm
+              this.totaldatadatadm = val['count'];
             }
+            this.loader.dismiss()
             if (data.length == 0) {
               this.halaman = -1
             }
@@ -198,31 +189,6 @@ export class QcoutPage {
       }
     });
   }
-  // getTranssales() {
-  //   return new Promise(resolve => {
-  //     let offsetstagingin = 30 * this.halaman
-  //     if (this.halaman == -1) {
-  //       resolve();
-  //     }
-  //     else {
-  //       this.halaman++;
-  //       this.api.get('table/trans_sales_entry', { params: { limit: 30, offset: offsetstagingin, filter: "status_qc='0'" } })
-  //         .subscribe(val => {
-  //           let data = val['data'];
-  //           for (let i = 0; i < data.length; i++) {
-  //             this.trans_sales_entry.push(data[i]);
-  //             this.totaldata = val['count'];
-  //             this.searchdatadm = this.trans_sales_entry;
-  //           }
-  //           if (data.length == 0) {
-  //             this.halaman = -1
-  //           }
-  //           resolve();
-  //         });
-  //     }
-  //   })
-
-  // }
   getStagingqc() {
     return new Promise(resolve => {
       let offsetqc = 10 * this.halaman
@@ -1177,6 +1143,8 @@ export class QcoutPage {
                                 this.api.put("table/qc_out",
                                   {
                                     "qc_no": this.qcno,
+                                    "date_finish": date,
+                                    "time_finish": time,
                                     "status": "CLSD"
                                   },
                                   { headers })
@@ -1318,35 +1286,6 @@ export class QcoutPage {
                                   this.qcresult = val['data'];
                                   this.totaldataqcresult = val['count'];
                                 });
-                                this.api.get("table/qc_out_result", { params: { filter: 'qc_no=' + "'" + this.qcno + "'" } }).subscribe(val => {
-                                  this.qcresult = val['data'];
-                                  this.totaldataqcresult = val['count'];
-                                  this.api.get("table/qc_out_result", { params: { filter: 'qc_no=' + "'" + this.qcno + "'" + " AND " + "qc_status='OPEN'" } }).subscribe(val => {
-                                    this.qcresultopen = val['data'];
-                                    this.totaldataqcresultopen = val['count'];
-                                    if ((this.totaldataqcresult == this.qcqty) && this.totaldataqcresultopen == 0) {
-                                      const headers = new HttpHeaders()
-                                        .set("Content-Type", "application/json");
-                                      this.api.put("table/qc_out",
-                                        {
-                                          "qc_no": this.qcno,
-                                          "date_start": this.qcresult[0].date_start,
-                                          "date_finish": this.qcresult[0].date_finish,
-                                          "time_start": this.qcresult[0].time_start,
-                                          "time_finish": this.qcresult[0].time_finish,
-                                          "status": 'CLSD'
-                                        },
-                                        { headers })
-                                        .subscribe(val => {
-                                          this.api.get('table/qc_out', { params: { limit: 10, filter: "status='OPEN'   AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
-                                            .subscribe(val => {
-                                              this.quality_control = val['data'];
-                                              this.totaldataqc = val['count'];
-                                            });
-                                        });
-                                    }
-                                  });
-                                });
                               });
                           });
                           let alert = this.alertCtrl.create({
@@ -1398,12 +1337,26 @@ export class QcoutPage {
   }
   doDetail(dm) {
     this.navCtrl.push('QcoutdetailPage', {
-      receiptno: dm["Receipt No_"]
+      receiptno: dm.receipt_no
     });
+  }
+  doUpdateDO(dm) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    this.api.post("table/delivery_order_header",
+      {
+        "uuid": dm.uuid,
+        "qc_get": '1'
+      },
+      { headers })
+      .subscribe(val => {
+      }, err => {
+        this.doUpdateDO(dm)
+      });
   }
   doMyQC(dm) {
     let alert = this.alertCtrl.create({
-      subTitle: 'Yakin ingin memasukan no invoice ini ' + dm["Receipt No_"] + ' ke MyQC ? ',
+      subTitle: 'Yakin ingin memasukan no invoice ini ' + dm.receipt_no + ' ke MyQC ? ',
       buttons: [
         {
           text: 'Cancel',
@@ -1423,14 +1376,17 @@ export class QcoutPage {
                 this.api.post("table/qc_out",
                   {
                     "qc_no": this.nextnoqc,
-                    "receipt_no": dm["Receipt No_"],
+                    "receipt_no": dm.receipt_no,
+                    "date_start": moment().format('YYYY-MM-DD'),
+                    "time_start": moment().format('HH:mm:ss'),
                     "pic": this.userid,
                     "status": 'OPEN',
                     "uuid": UUID.UUID()
                   },
                   { headers })
                   .subscribe(val => {
-                    this.api.get("tablenav", { params: { limit: 50, table: "CSB_LIVE$Delivery Management Line", filter: "[Receipt No_]=" + "'" + dm["Receipt No_"] + "'" } })
+                    this.doUpdateDO(dm)
+                    this.api.get("table/delivery_order_line", { params: { limit: 1000, filter: "receipt_no=" + "'" + dm.receipt_no + "' AND part_line_no='10000'", sort: "line_no ASC, part_line_no ASC " } })
                       .subscribe(val => {
                         let data = val['data']
                         for (let i = 0; i < data.length; i++) {
@@ -1438,27 +1394,10 @@ export class QcoutPage {
                           let nextnoqc = this.nextnoqc
                           this.doInsertQCResult(datai, nextnoqc);
                         }
-
-                      })
-                    this.datadm = [];
-                    this.api.get("tablenav", { params: { limit: 50, table: "CSB_LIVE$Delivery Management Header", filter: "Status=0 AND [Expected Receipt Date] > '2018-01-01'", sort: "[Expected Receipt Date]" + " DESC " } })
-                      .subscribe(val => {
-                        let data = val['data'];
-                        for (let i = 0; i < data.length; i++) {
-                          this.api.get('table/qc_out', { params: { limit: 50, filter: "receipt_no=" + "'" + data[i]["Receipt No_"] + "'" } })
-                            .subscribe(val => {
-                              this.dataqc = val['data'];
-                              if (this.dataqc.length == 0) {
-                                this.datadm.push(data[i]);
-                                this.totaldatadatadm = val['count'];
-                                this.searchdatadm = this.datadm;
-                              }
-                              else if (this.dataqc.length) {
-
-                              }
-                            });
-                        }
                       });
+                    this.halaman = 0;
+                    this.datadm = [];
+                    this.getDataDM()
                     this.api.get('table/qc_out', { params: { limit: 50, filter: "status='OPEN'   AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
                       .subscribe(val => {
                         this.quality_control = val['data']
@@ -1486,13 +1425,13 @@ export class QcoutPage {
       .set("Content-Type", "application/json");
     this.api.post("table/qc_out_result",
       {
-        "qc_result_no": datai["Receipt No_"] + datai["Item No_"] + datetime,
+        "qc_result_no": datai.receipt_no + datai.item_no + datetime,
         "qc_no": nextnoqc,
-        "receipt_no": datai["Receipt No_"],
+        "receipt_no": datai.receipt_no,
         "batch_no": '',
-        "item_no": datai["Item No_"],
+        "item_no": datai.item_no,
         "qc_pic": this.userid,
-        "qty_receiving": datai.Quantity,
+        "qty_receiving": datai.item_qty,
         "unit": datai.UOM,
         "qc_status": "OPEN",
         "qc_description": "",

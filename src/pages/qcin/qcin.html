@@ -71,9 +71,6 @@
           <p (click)="doDetailQC(myqc)">Batch No : {{myqc.batch_no}}</p>
           <p (click)="doDetailQC(myqc)">Qty : {{myqc.qty}}</p>
           <ion-note (click)="doDetailQC(myqc)" item-end>Staging : {{myqc.staging}}</ion-note>
-          <button ion-button item-end clear color="greenlake" (click)="doPrintBA(myqc)">
-            <i style="font-size:25px;" class="fas fa-print"></i>
-          </button>
         </ion-item>
         <div *ngIf="detailqc && myqc.item_no == qclist && myqc.batch_no == batchnolist" style="border-top:1px solid;border-color:#dedede;background:#ffffff;">
           <div padding style="font-weight:bold;">
@@ -107,6 +104,56 @@
       </ion-card>
     </ion-list>
     <ion-list *ngSwitchCase="'history'">
+      <ion-refresher (ionRefresh)="doRefreshmyqcclsd($event)">
+        <ion-refresher-content>
+          pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing..."
+        </ion-refresher-content>
+      </ion-refresher>
+      <ion-searchbar style="margin-top:-10px;margin-left:-10px;padding:0px;width:105%;" (ionInput)="getSearchQCclsd($event)" placeholder="Search Receipt No"></ion-searchbar>
+      <div *ngFor="let myqc of quality_control_clsd">
+        <ion-card *ngIf="roleid =='ADMIN' || roleid == 'TL' || userid == myqc.pic">
+          <ion-item>
+            <h3 (click)="doDetailQCclsd(myqc)" style="font-weight:bold;padding-bottom:5px;">ITEM NO - {{myqc.item_no}}</h3>
+            <p (click)="doDetailQCclsd(myqc)">Batch No : {{myqc.batch_no}}</p>
+            <p (click)="doDetailQCclsd(myqc)">Qty : {{myqc.qty}}</p>
+            <ion-note (click)="doDetailQCclsd(myqc)" item-end>Staging : {{myqc.staging}}</ion-note>
+          </ion-item>
+          <div *ngIf="detailqcclsd && myqc.item_no == qclistclsd && myqc.batch_no == batchnolistclsd" style="border-top:1px solid;border-color:#dedede;background:#ffffff;">
+            <div padding style="font-weight:bold;">
+              Inspection Result
+            </div>
+            <ion-grid>
+              <ion-row *ngIf="detailqcclsd && myqc.item_no == qclistclsd">
+                <ion-col col-12 style="border-top:1px solid;border-color:#dedede;">
+                  <ion-row>
+                    <ion-col>Item No</ion-col>
+                    <ion-col>Date</ion-col>
+                    <ion-col>Start QC</ion-col>
+                    <ion-col>Finish QC</ion-col>
+                    <ion-col>Status</ion-col>
+                  </ion-row>
+                </ion-col>
+                <ion-col *ngFor="let result of qcresultclsd" col-12 style="border-top:1px solid;border-color:#dedede;">
+                  <ion-row (click)="getfoto(result);" *ngIf="detailqcclsd && result.item_no == qclistclsd">
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.item_no}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.date_start | date:'dd-MM-yy'}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.time_start}}</ion-col>
+                    <ion-col style="border-right:1px solid;border-top:0px;border-left:0px;border-color:#dedede">{{result.time_finish}}</ion-col>
+                    <ion-col *ngIf="result.qc_status == 'OPEN'" style="color:black">{{result.qc_status}}</ion-col>
+                    <ion-col *ngIf="result.qc_status == 'REJECT'" style="color:red">{{result.qc_status}}</ion-col>
+                    <ion-col *ngIf="result.qc_status == 'PASSED'" style="color:green">{{result.qc_status}}</ion-col>
+                  </ion-row>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+        </ion-card>
+      </div>
+      <ion-infinite-scroll (ionInfinite)="doInfiniteQCclsd($event)">
+        <ion-infinite-scroll-content>
+          loadingSpinner="bubbles" loadingText="Loading more data...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
     </ion-list>
   </div>
   <ion-infinite-scroll (ionInfinite)="doInfiniteStaging($event)">
@@ -139,7 +186,7 @@
             <div class="container">
               <img *ngIf="foto.img_src == ''" src="http://101.255.60.202/qctesting/img/noimage" style="width:100%;" />
               <img *ngIf="foto.img_src != ''" src="{{foto.img_src}}" style="width:100%;" imageViewer />
-              <div *ngIf="(foto.img_src == '') || (foto.img_src != '' && qcstatus == 'REJECT')" class="centered" (click)="doCamera(foto)">
+              <div *ngIf="foto.img_src != '' && qcstatus == 'OPEN'" class="centered" (click)="doCamera(foto)">
                 <ion-icon name="md-add" style="font-size:40px;font-weight:bold;color:#217481;"></ion-icon>
               </div>
               <div *ngIf="foto.img_src != '' && qcstatus == 'OPEN'" class="bottom-right" (click)="doHapus(foto)">

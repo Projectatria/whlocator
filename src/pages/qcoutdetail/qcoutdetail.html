@@ -33,9 +33,6 @@
     <ion-segment-button value="detailpoitem">
       Detail Items
     </ion-segment-button>
-    <ion-segment-button value="history">
-      History
-    </ion-segment-button>
   </ion-segment>
 
   <div [ngSwitch]="detailpo">
@@ -45,15 +42,11 @@
           <img src="assets/imgs/noimage.jpg" alt="">
         </ion-avatar>
         <div no-padding>
-          <h2>No Item : {{detailpo["Item No_"]}}</h2>
-          <p>Description: {{detailpo.Description}}</p>
-          <ion-note>Qty : {{detailpo.Quantity}}</ion-note><br/>
+          <h2>No Item : {{detailpo.item_no}}</h2>
+          <p>Description: {{detailpo.item_description}}</p>
+          <ion-note>Qty : {{detailpo.item_qty}}</ion-note>
+          <br/>
         </div>
-      </ion-item>
-    </ion-list>
-    <ion-list *ngSwitchCase="'history'">
-      <ion-item>
-
       </ion-item>
     </ion-list>
   </div>

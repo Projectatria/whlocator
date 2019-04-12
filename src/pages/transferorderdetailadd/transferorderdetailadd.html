@@ -58,16 +58,38 @@
   </button>
 </ion-footer>
 <div *ngIf="itemsshow == true" id="myModalItems" class="modal-items">
-  <ion-content padding class="modal-content-items">
-    <ion-searchbar placeholder="Search Items" (ionInput)="getSearch($event)"></ion-searchbar>
-    <ion-grid padding>
+  <ion-content class="modal-content-items">
+    <ion-grid>
       <ion-row class="row-content">
-        <ion-col padding class="col-content">Item No</ion-col>
-        <ion-col padding class="col-content">Description</ion-col>
+        <ion-col col-3 padding class="col-content">Item No</ion-col>
+        <ion-col col-8 padding class="col-content">Description</ion-col>
+        <ion-col col-1 padding class="col-content">Cek Stock</ion-col>
       </ion-row>
-      <ion-row *ngFor="let item of items" class="row-content-list" (click)="doSelectItems(item)">
-        <ion-col padding class="col-content">{{item.No_}}</ion-col>
-        <ion-col padding class="col-content">{{item.Description}}</ion-col>
+      <ion-row>
+        <ion-col col-3 style="padding:0px;background: #fff;border:1px solid;border-color:#dedede;border-bottom:0px;">
+          <ion-searchbar (ionInput)="getSearchItem($event)" placeholder="Search Item"></ion-searchbar>
+        </ion-col>
+        <ion-col col-8 style="padding:0px;background: #fff;border:1px solid;border-color:#dedede;border-bottom:0px;">
+          <ion-searchbar (ionInput)="getSearchDescription($event)" placeholder="Search Description"></ion-searchbar>
+        </ion-col>
+        <ion-col col-1 style="padding:0px;background: #fff;border:1px solid;border-color:#dedede;border-bottom:0px;"></ion-col>
+      </ion-row>
+      <ion-row *ngFor="let item of items" class="row-content-list">
+        <ion-col col-3 *ngIf="item.Row % 2 == 0" padding class="col-content-genap" (click)="doSelectItems(item)">{{item.No_}}</ion-col>
+        <ion-col col-8 *ngIf="item.Row % 2 == 0" padding class="col-content-genap" (click)="doSelectItems(item)">{{item.Description}}</ion-col>
+        <ion-col col-1 *ngIf="item.Row % 2 == 0" class="col-content-genap" (click)="doCekStock(item)">
+          <button ion-button full color="greenlake">
+            <ion-icon name="pricetag"></ion-icon>
+          </button>
+        </ion-col>
+
+        <ion-col col-3 *ngIf="item.Row % 2 != 0" padding class="col-content-ganjil" (click)="doSelectItems(item)">{{item.No_}}</ion-col>
+        <ion-col col-8 *ngIf="item.Row % 2 != 0" padding class="col-content-ganjil" (click)="doSelectItems(item)">{{item.Description}}</ion-col>
+        <ion-col col-1 *ngIf="item.Row % 2 != 0" class="col-content-ganjil" (click)="doCekStock(item)">
+          <button ion-button full color="greenlake">
+            <ion-icon name="pricetag"></ion-icon>
+          </button>
+        </ion-col>
       </ion-row>
     </ion-grid>
   </ion-content>
