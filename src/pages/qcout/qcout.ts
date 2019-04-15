@@ -8,7 +8,7 @@ import { UUID } from 'angular2-uuid';
 import moment from 'moment';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
-import { BarcodeScanner, BarcodeScannerOptions } from "@ionic-native/barcode-scanner";;
+import { BarcodeScanner, BarcodeScannerOptions } from "@ionic-native/barcode-scanner";
 import { Storage } from '@ionic/storage';
 import { ImageViewerController } from 'ionic-img-viewer';
 
@@ -317,25 +317,11 @@ export class QcoutPage {
     this.toggled = this.toggled ? false : true;
   }
   doRefreshDM(refresher) {
-    this.api.get("tablenav", { params: { limit: 10, table: "CSB_LIVE$Delivery Management Header", filter: "Status=0 AND [Expected Receipt Date] > '2018-01-01'", sort: "[Expected Receipt Date]" + " DESC " } })
-      .subscribe(val => {
-        let data = val['data'];
-        for (let i = 0; i < data.length; i++) {
-          this.api.get('table/qc_out', { params: { limit: 10, filter: "receipt_no=" + "'" + data[i]["Receipt No_"] + "'" } })
-            .subscribe(val => {
-              this.dataqc = val['data'];
-              if (this.dataqc.length == 0) {
-                this.datadm.push(data[i]);
-                this.totaldatadatadm = val['count'];
-                this.searchdatadm = this.datadm;
-                refresher.complete()
-              }
-              else if (this.dataqc.length) {
-
-              }
-            });
-        }
-      });
+    this.halaman = 0;
+    this.datadm = [];
+    this.getDataDM().then(() => {
+      refresher.complete();
+    })
   }
   doRefreshmyqc(refresher) {
     this.api.get('table/qc_out', { params: { limit: 10, filter: "status='OPEN'  AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
@@ -461,7 +447,7 @@ export class QcoutPage {
           handler: data => {
             var barcodeno = data.barcodeno;
             var batchno = barcodeno.substring(0, 4);
-            var itemno = barcodeno.substring(4, 20);;
+            var itemno = barcodeno.substring(4, 20);
             this.api.get('table/qc_out', { params: { limit: 10, filter: "batch_no=" + "'" + batchno + "'" + " AND " + "item_no=" + "'" + itemno + "'" + " AND " + "status='OPEN'" } })
               .subscribe(val => {
                 this.qcoutbarcode = val['data'];

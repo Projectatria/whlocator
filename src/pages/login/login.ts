@@ -66,7 +66,6 @@ export class LoginPage {
             this.storage.set('token', this.token);
             var sometext = this.user[0].id_user;
             var upperid = sometext.toUpperCase();
-            console.log(upperid)
             this.storage.set('userid', upperid);
             this.storage.set('name', this.user[0].name);
             this.storage.get('tokennotification').then((val) => {

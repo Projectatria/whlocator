@@ -42,6 +42,13 @@ export class MyApp {
       events.subscribe('user:login', (role, time) => {
         this.rolearea = role[0].id_area;
         this.rolegroup = role[0].id_group;
+        this.rolecab = role[0].id_cab;
+        if (role.length != 0) {
+          this.rolearea = role[0].id_area
+          this.rolegroup = role[0].id_group
+          this.rolecab = role[0].id_cab
+          this.doGetTaskPO()
+        }
       });
       this.storage.get('token').then((val) => {
         this.token = val;
@@ -179,39 +186,39 @@ export class MyApp {
   }
   doGetTaskPicking() {
     this.api.get('table/picking_list', { params: { filter: "pic=" + "'" + this.userid + "' AND status='INP1'" } })
-    .subscribe(val => {
-      let data = val['data']
-      if (data.length == 0) {
-        this.doGetTaskTransferOrder()
-      }
-      else {
-        let alert = this.alertCtrl.create({
-          subTitle: 'Notification',
-          message: 'Anda mempunyai pekerjaan yang belum diselesaikan',
-          buttons: ['OK']
-        });
-        alert.present();
-        this.appCtrl.getRootNav().setRoot('TaskPage');
-      }
-    });
+      .subscribe(val => {
+        let data = val['data']
+        if (data.length == 0) {
+          this.doGetTaskTransferOrder()
+        }
+        else {
+          let alert = this.alertCtrl.create({
+            subTitle: 'Notification',
+            message: 'Anda mempunyai pekerjaan yang belum diselesaikan',
+            buttons: ['OK']
+          });
+          alert.present();
+          this.appCtrl.getRootNav().setRoot('TaskPage');
+        }
+      });
   }
   doGetTaskTransferOrder() {
     this.api.get('table/transfer_order', { params: { limit: 30, filter: "((from_location=" + "'" + this.rolecab + "'" + " AND " + "status='INPG') OR (to_location=" + "'" + this.rolecab + "'" + " AND " + "status='OPEN') OR (to_location=" + "'" + this.rolecab + "'" + " AND " + "status='CLS1'))" } })
-    .subscribe(val => {
-      let data = val['data']
-      if (data.length == 0) {
-        this.appCtrl.getRootNav().setRoot(HomePage);
-      }
-      else {
-        let alert = this.alertCtrl.create({
-          subTitle: 'Notification',
-          message: 'Anda mempunyai pekerjaan yang belum diselesaikan',
-          buttons: ['OK']
-        });
-        alert.present();
-        this.appCtrl.getRootNav().setRoot('TaskPage');
-      }
-    });
+      .subscribe(val => {
+        let data = val['data']
+        if (data.length == 0) {
+          this.appCtrl.getRootNav().setRoot(HomePage);
+        }
+        else {
+          let alert = this.alertCtrl.create({
+            subTitle: 'Notification',
+            message: 'Anda mempunyai pekerjaan yang belum diselesaikan',
+            buttons: ['OK']
+          });
+          alert.present();
+          this.appCtrl.getRootNav().setRoot('TaskPage');
+        }
+      });
   }
   open(pageName) {
     this.appCtrl.getRootNav().setRoot(pageName);

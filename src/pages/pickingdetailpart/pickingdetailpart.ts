@@ -174,23 +174,23 @@ export class PickingdetailpartPage {
   doCekStock(result, batchno, itemno) {
     if (result.batch_no == batchno && result.part_no == itemno) {
       this.api.get("table/stock", { params: { filter: "batch_no=" + "'" + batchno + "' AND item_no=" + "'" + itemno + "' AND sub_location=" + "'" + result.sub_location + "'", sort: 'batch_no ASC, sub_location ASC' } })
-      .subscribe(val => {
-        let data = val['data']
-        if (data.length == 0) {
-          let alert = this.alertCtrl.create({
-            title: 'Perhatian',
-            subTitle: 'Data tidak ditemukan',
-            buttons: ['OK']
-          });
-          alert.present();
-        }
-        else {
-          this.doMinStockBalance(result, batchno, itemno)
-          this.doUpdatePicking(result)
-        }
-      }, err => {
-        this.doCekStock(result, batchno, itemno)
-      });
+        .subscribe(val => {
+          let data = val['data']
+          if (data.length == 0) {
+            let alert = this.alertCtrl.create({
+              title: 'Perhatian',
+              subTitle: 'Data tidak ditemukan',
+              buttons: ['OK']
+            });
+            alert.present();
+          }
+          else {
+            this.doMinStockBalance(result, batchno, itemno)
+            this.doUpdatePicking(result)
+          }
+        }, err => {
+          this.doCekStock(result, batchno, itemno)
+        });
     }
     else {
       let alert = this.alertCtrl.create({
@@ -207,7 +207,7 @@ export class PickingdetailpartPage {
       Honeywell.onBarcodeEvent(function (data) {
         var barcodeno = data.barcodeData;
         var batchno = barcodeno.substring(0, 4);
-        var itemno = barcodeno.substring(4, 20);;
+        var itemno = barcodeno.substring(4, 20);
         self.doCekStock(result, batchno, itemno)
       }, function (reason) {
       });
@@ -221,7 +221,7 @@ export class PickingdetailpartPage {
     this.barcodeScanner.scan().then(barcodeData => {
       var barcodeno = barcodeData.text;
       var batchno = barcodeno.substring(0, 4);
-      var itemno = barcodeno.substring(4, 20);;
+      var itemno = barcodeno.substring(4, 20);
       this.doCekStock(result, batchno, itemno)
     }).catch(err => {
       console.log('Error', err);
@@ -249,7 +249,7 @@ export class PickingdetailpartPage {
           handler: data => {
             var barcodeno = data.barcodeData;
             var batchno = barcodeno.substring(0, 4);
-            var itemno = barcodeno.substring(4, 20);;
+            var itemno = barcodeno.substring(4, 20);
             this.doCekStock(result, batchno, itemno)
           }
         }
@@ -286,7 +286,7 @@ export class PickingdetailpartPage {
                 },
                 { headers })
                 .subscribe(val => {
-                  this.api.get("table/picking_list_detail", { params: { limit:1000, filter: "receipt_no=" + "'" + result.receipt_no + "' AND status = 'OPEN'" } })
+                  this.api.get("table/picking_list_detail", { params: { limit: 1000, filter: "receipt_no=" + "'" + result.receipt_no + "' AND status = 'OPEN'" } })
                     .subscribe(val => {
                       this.picking_detail = val['data'];
                       console.log(this.picking_detail)
@@ -298,6 +298,7 @@ export class PickingdetailpartPage {
                           },
                           { headers })
                           .subscribe(val => {
+                            this.doUpdateTransferOrder(result)
                             this.navCtrl.pop()
                           });
                       }
@@ -320,6 +321,22 @@ export class PickingdetailpartPage {
             }
           });
       });
+  }
+  doUpdateTransferOrder(result) {
+    if (result.receipt_no.substring(0, 2) == 'TO') {
+      const headers = new HttpHeaders()
+        .set("Content-Type", "application/json");
+      this.api.put("table/transfer_order",
+        {
+          "to_no": result.receipt_no,
+          "status_picking": '1',
+        },
+        { headers })
+        .subscribe(val => {
+        }, err => {
+          this.doUpdateTransferOrder(result)
+        });
+    }
   }
   getNextNoStockBalance() {
     return this.api.get('nextno/stock_balance/id')

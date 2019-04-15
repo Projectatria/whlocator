@@ -186,7 +186,7 @@
             <div class="container">
               <img *ngIf="foto.img_src == ''" src="http://101.255.60.202/qctesting/img/noimage" style="width:100%;" />
               <img *ngIf="foto.img_src != ''" src="{{foto.img_src}}" style="width:100%;" imageViewer />
-              <div *ngIf="foto.img_src != '' && qcstatus == 'OPEN'" class="centered" (click)="doCamera(foto)">
+              <div *ngIf="foto.img_src == '' && qcstatus == 'OPEN'" class="centered" (click)="doCamera(foto)">
                 <ion-icon name="md-add" style="font-size:40px;font-weight:bold;color:#217481;"></ion-icon>
               </div>
               <div *ngIf="foto.img_src != '' && qcstatus == 'OPEN'" class="bottom-right" (click)="doHapus(foto)">
@@ -209,21 +209,13 @@
     </ion-content>
   </div>
 </div>
-
-<!-- <div id="button" [ngSwitch]="qc" *ngIf="!button">
-  <ion-fab *ngSwitchCase="'myqc'" class="fixed-div" bottom right>
-    <button ion-fab color="greenlake" (click)="doChecked()">
+<div id="button" [ngSwitch]="qc">
+  <ion-fab *ngSwitchCase="'qcin'" class="fixed-div" bottom right>
+    <button ion-fab color="greenlake" (click)="doCheckedQcIN()">
       <ion-icon name="md-barcode"></ion-icon>
     </button>
   </ion-fab>
 </div>
-<div id="button" [ngSwitch]="qc" *ngIf="button">
-  <ion-fab *ngSwitchCase="'myqc'" class="fixed-div" bottom right>
-    <button ion-fab color="greenlake" (click)="doCamera()">
-      <ion-icon name="md-camera"></ion-icon>
-    </button>
-  </ion-fab>
-</div> -->
 <div id="foto" class="modal-foto">
   <div class="container">
     <img src="{{viewfoto}}" />

@@ -8,7 +8,7 @@ import { UUID } from 'angular2-uuid';
 import moment from 'moment';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
-import { BarcodeScanner, BarcodeScannerOptions } from "@ionic-native/barcode-scanner";;
+import { BarcodeScanner, BarcodeScannerOptions } from "@ionic-native/barcode-scanner";
 import { Storage } from '@ionic/storage';
 import { ImageViewerController } from 'ionic-img-viewer';
 
@@ -532,7 +532,7 @@ export class QcinPage {
       Honeywell.onBarcodeEvent(function (data) {
         var barcodeno = data.barcodeData;
         var batchno = barcodeno.substring(0, 4);
-        var itemno = barcodeno.substring(4, 20);;
+        var itemno = barcodeno.substring(4, 20);
         self.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" + " AND " + "batch_no=" + "'" + batchno + "'" + " AND " + "item_no=" + "'" + itemno + "'" + " AND " + "status='OPEN'" } })
           .subscribe(val => {
             self.qcinbarcode = val['data'];
@@ -634,7 +634,7 @@ export class QcinPage {
       self.barcodeScanner.scan().then(barcodeData => {
         var barcodeno = barcodeData.text;
         var batchno = barcodeno.substring(0, 4);
-        var itemno = barcodeno.substring(4, 20);;
+        var itemno = barcodeno.substring(4, 20);
         self.api.get('table/qc_in', { params: { limit: 30, filter: "(pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" + " AND " + "batch_no=" + "'" + batchno + "'" + " AND " + "item_no=" + "'" + itemno + "'" + " AND " + "status='OPEN'" } })
           .subscribe(val => {
             self.qcinbarcode = val['data'];
@@ -1720,5 +1720,35 @@ export class QcinPage {
     this.navCtrl.push('BeritaacaraqcPage', {
       myqc: myqc
     })
+  }
+  doCheckedQcIN() {
+    var self = this
+    Honeywell.barcodeReaderPressSoftwareTrigger(function () {
+      Honeywell.onBarcodeEvent(function (data) {
+        var barcodeno = data.barcodeData;
+        var batchno = barcodeno.substring(0, 4);
+        var itemno = barcodeno.substring(4, 20);
+        this.doGetStagingIn(batchno, itemno)
+      }, function (reason) {
+        alert(reason + '1');
+      });
+    }, function (reason) {
+      self.barcodeScanner.scan().then(barcodeData => {
+        var barcodeno = barcodeData.text;
+        var batchno = barcodeno.substring(0, 4);
+        var itemno = barcodeno.substring(4, 20);
+        this.doGetStagingIn(batchno, itemno)
+      }).catch(err => {
+        console.log('Error', err);
+      });
+    }, {
+        press: true
+      });
+  }
+  doGetStagingIn(batchno, itemno) {
+    this.api.get('table/staging_in', { params: { limit: 30, filter: "batch_no=" + "'" + batchno + "' AND item_no=" + "'" + itemno + "'", sort: 'order_no ASC' } })
+      .subscribe(val => {
+        let data = val['data']
+      });
   }
 }

@@ -19,13 +19,13 @@
 <ion-content class="content-menu" no-padding>
   <ion-segment *ngIf="roleid != 'ADMIN'" [(ngModel)]="to">
     <ion-segment-button value="transferorder">
-      TO Request
+      TO Reserve
     </ion-segment-button>
     <ion-segment-button value="transferorderlist">
-      List TO Request
+      TO Shipment
     </ion-segment-button>
     <ion-segment-button value="transferorderreceiving">
-      TO Receiving
+      TO Receipts
     </ion-segment-button>
   </ion-segment>
 
@@ -139,7 +139,7 @@
             <ion-note>{{tolist.transfer_date}}</ion-note>
             <ion-note>{{tolist.status}}</ion-note>
           </div>
-          <button [disabled]="tolist.from_location != rolecab" item-end ion-button clear color="greenlake" (click)="doPostingTOList(tolist)">
+          <button [disabled]="tolist.from_location != rolecab || tolist.status_picking == ''" item-end ion-button clear color="greenlake" (click)="doPostingTOList(tolist)">
             <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
           </button>
         </ion-item>
@@ -206,7 +206,7 @@
               </button>
             </ion-col>
             <ion-col class="col-content" col-xl-1>
-              <button [disabled]="tolist.from_location != rolecab" item-end ion-button clear color="greenlake" (click)="doPostingTOList(tolist)">
+              <button [disabled]="tolist.from_location != rolecab || tolist.status_picking == ''" item-end ion-button clear color="greenlake" (click)="doPostingTOList(tolist)">
                 <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
               </button>
             </ion-col>
@@ -237,9 +237,9 @@
             <ion-note>{{tolist.transfer_date}}</ion-note>
             <ion-note>{{tolist.status}}</ion-note>
           </div>
-          <button item-end ion-button clear color="greenlake" (click)="doPostingTOReceiving(tolist)">
+          <!-- <button item-end ion-button clear color="greenlake" (click)="doPostingTOReceiving(tolist)">
             <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
-          </button>
+          </button> -->
         </ion-item>
       </div>
       <div *ngIf="width >= 900" class="pc-content">
@@ -260,7 +260,7 @@
               <ion-icon *ngIf="filter == 'location_code' && sortTOList == 'ASC'" name="md-arrow-dropdown"></ion-icon>
               <ion-icon *ngIf="filter == 'location_code' && sortTOList == 'DESC'" name="md-arrow-dropup"></ion-icon>
             </ion-col>
-            <ion-col padding class="col-content" col-xl-4>Description
+            <ion-col padding class="col-content" col-xl-6>Description
             </ion-col>
             <ion-col padding class="col-content" col-xl-1 (click)="doSortTOList('expected_receipt_date')">Transfer Date
               <ion-icon *ngIf="filter == 'transfer_date' && sortTOList == 'ASC'" name="md-arrow-dropdown"></ion-icon>
@@ -270,8 +270,8 @@
               <ion-icon *ngIf="filter == 'status' && sortTOList == 'ASC'" name="md-arrow-dropdown"></ion-icon>
               <ion-icon *ngIf="filter == 'status' && sortTOList == 'DESC'" name="md-arrow-dropup"></ion-icon>
             </ion-col>
-            <ion-col padding class="col-content" col-xl-2>Options
-            </ion-col>
+            <!-- <ion-col padding class="col-content" col-xl-2>Options
+            </ion-col> -->
           </ion-row>
           <ion-row class="row-content-list" *ngFor="let tolist of transferorderreceiving">
             <ion-col padding class="col-content" col-xl-2 (click)="viewDetailTOReceiving(tolist)">
@@ -280,7 +280,7 @@
             <ion-col padding class="col-content" col-xl-1 (click)="viewDetailTOReceiving(tolist)">
               {{tolist.to_location}}
             </ion-col>
-            <ion-col padding class="col-content" col-xl-4 (click)="viewDetailTOReceiving(tolist)">
+            <ion-col padding class="col-content" col-xl-6 (click)="viewDetailTOReceiving(tolist)">
               {{tolist.description}}
             </ion-col>
             <ion-col padding class="col-content" col-xl-1 (click)="viewDetailTOReceiving(tolist)">
@@ -289,11 +289,11 @@
             <ion-col padding class="col-content" col-xl-2 (click)="viewDetailTOReceiving(tolist)">
               {{tolist.status}}
             </ion-col>
-            <ion-col padding class="col-content" col-xl-2>
+            <!-- <ion-col padding class="col-content" col-xl-2>
               <button item-end ion-button clear color="greenlake" (click)="doPostingTOReceiving(tolist)">
                 <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
               </button>
-            </ion-col>
+            </ion-col> -->
           </ion-row>
         </ion-grid>
       </div>

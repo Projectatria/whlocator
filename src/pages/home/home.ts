@@ -55,7 +55,6 @@ export class HomePage {
             this.rolearea = this.role[0].id_area
             this.rolegroup = this.role[0].id_group
             this.rolecab = this.role[0].id_cab
-            console.log(this.rolearea)
           }
         })
     });

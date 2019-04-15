@@ -209,6 +209,7 @@ export class TransferorderdetailPage {
                           this.transferorderdetail = val['data'];
                         });
                         this.getRCVChecked();
+                        this.detailto = 'receivingsubmit'
                       });
                   }
                   this.api.get("table/transfer_order_detail", { params: { limit: 30, filter: "status='OPEN' AND to_no=" + "'" + this.tono + "'" } }).subscribe(val => {
@@ -255,7 +256,7 @@ export class TransferorderdetailPage {
                     buttons: ['OK']
                   });
                   alert.present();
-                  this.getRCVChecked();
+                  this.doUpdateTOCLSD();
                 },
                 response => {
 
@@ -284,23 +285,36 @@ export class TransferorderdetailPage {
                 { headers })
                 .subscribe();
             });
-            if (this.totaldatachecked == 1) {
-              const headers = new HttpHeaders()
-                .set("Content-Type", "application/json");
-
-              this.api.put("table/transfer_order",
-                {
-                  "to_no": this.tono,
-                  "status": 'CLSD'
-                },
-                { headers })
-                .subscribe();
-            }
           }
         }
       ]
     });
     alert.present();
+  }
+  doUpdateTOCLSD() {
+    this.api.get("table/transfer_order_detail", { params: { filter: 'to_no=' + "'" + this.tono + "'" + ' AND ' + "(status= 'OPEN' OR status='CHECKED')" } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data.length == 0) {
+          const headers = new HttpHeaders()
+            .set("Content-Type", "application/json");
+
+          this.api.put("table/transfer_order",
+            {
+              "to_no": this.tono,
+              "status": 'CLSD'
+            },
+            { headers })
+            .subscribe(val => {
+              this.navCtrl.pop()
+            });
+        }
+        else {
+          this.getRCVChecked()
+        }
+      }, err => {
+        this.doUpdateTOCLSD()
+      });
   }
   getNextNoStaging() {
     return this.api.get('nextno/staging_out/staging_no')

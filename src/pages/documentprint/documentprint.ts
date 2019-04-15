@@ -27,6 +27,7 @@ export class DocumentprintPage {
   private width: number;
   private height: number;
   public poshow: boolean = false;
+  public po = '';
 
   constructor(
     public navCtrl: NavController,
@@ -85,9 +86,30 @@ export class DocumentprintPage {
   }
   doPrintBA() {
     this.poshow = true;
-    $("#textboxID").focus();
   }
   doClosePO() {
     this.poshow = false;
+    this.po = '';
   }
+  doPrintReceiving() {
+    this.api.get('table/purchasing_order', { params: { limit: 30, filter: "status='CLSD' AND order_no=" + "'" + this.po + "'" } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data.length == 0) {
+          let alert = this.alertCtrl.create({
+            title: 'Perhatian',
+            subTitle: 'PO Tidak ada atau belum selesai di Receiving',
+            buttons: ['OK']
+          });
+          alert.present();
+        }
+        else {
+          this.navCtrl.push('BeritaacarareceivingPage', {
+            po: data[0]
+          })
+          this.doClosePO()
+        }
+      });
+  }
+
 }

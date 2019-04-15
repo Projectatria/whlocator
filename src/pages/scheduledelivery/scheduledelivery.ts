@@ -23,6 +23,7 @@ export class ScheduledeliveryPage {
   public role = [];
   public roleid: any;
   public rolecab: any;
+  public rolearea: any;
   private width: number;
   private height: number;
   public slot: any;
@@ -78,6 +79,7 @@ export class ScheduledeliveryPage {
             this.role = val['data']
             this.roleid = this.role[0].id_group
             this.rolecab = this.role[0].id_cab
+            this.rolearea = this.role[0].id_area
           })
       });
     });
@@ -131,9 +133,11 @@ export class ScheduledeliveryPage {
     this.slotall = [];
   }
   doSlot(date) {
-    this.navCtrl.push('SlotdeliveryPage', {
-      calendar: date
-    })
+    if (this.rolearea == 'INBOUND') {
+      this.navCtrl.push('SlotdeliveryPage', {
+        calendar: date
+      })
+    }
   }
   slideChanged() {
     this.doHideSlot()
@@ -147,7 +151,7 @@ export class ScheduledeliveryPage {
     this.invoiceshow = false;
   }
   doGetDeliveryOrder() {
-    this.api.get("table/delivery_order_header", { params: { limit: 100, filter: "store_no=" + "'" + this.rolecab + "' AND (delivery_booking= '' OR delivery_booking IS NULL)", sort: 'receipt_date ASC' } })
+    this.api.get("table/delivery_order_header", { params: { limit: 100, filter: "store_from=" + "'" + this.rolecab + "' AND (delivery_booking= '' OR delivery_booking IS NULL)", sort: 'receipt_date ASC' } })
       .subscribe(val => {
         this.deliveryorder = val['data']
       }, err => {
@@ -159,7 +163,7 @@ export class ScheduledeliveryPage {
     let value = ev.target.value;
     // if the value is an empty string don't filter the items
     if (value && value.trim() != '') {
-      this.api.get("table/delivery_order_header", { params: { limit: 10, filter: "store_no=" + "'" + this.rolecab + "' AND receipt_no LIKE" + "'%" + value + "%'  AND (delivery_booking= '' OR delivery_booking IS NULL)", sort: 'receipt_date ASC' } })
+      this.api.get("table/delivery_order_header", { params: { limit: 10, filter: "store_from=" + "'" + this.rolecab + "' AND receipt_no LIKE" + "'%" + value + "%'  AND (delivery_booking= '' OR delivery_booking IS NULL)", sort: 'receipt_date ASC' } })
         .subscribe(val => {
           let data = val['data']
           this.deliveryorder = data.filter(delivery => {
@@ -263,12 +267,27 @@ export class ScheduledeliveryPage {
     return this.api.get('nextno/slot_delivery/request_no')
   }
   doGetNextNo(dod, name, address, address1, kota, telp, postcode, latitude, longitude) {
-    this.getNextNo().subscribe(val => {
-      let nextno = val['nextno'];
-      this.doUpdateSlotDelivery(nextno, dod, name, address, address1, kota, telp, postcode, latitude, longitude)
-    }, err => {
-      this.doGetNextNo(dod, name, address, address1, kota, telp, postcode, latitude, longitude)
-    });
+    this.api.get("table/slot_delivery", { params: { limit: 1000, filter: "uuid =" + "'" + this.slotselect['uuid'] + "'", sort: 'receipt_no ASC' } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data[0].request_no == '') {
+          this.getNextNo().subscribe(val => {
+            let nextno = val['nextno'];
+            this.doUpdateSlotDelivery(nextno, dod, name, address, address1, kota, telp, postcode, latitude, longitude)
+          }, err => {
+            this.doGetNextNo(dod, name, address, address1, kota, telp, postcode, latitude, longitude)
+          });
+        }
+        else {
+          let alert = this.alertCtrl.create({
+            title: 'Perhatian',
+            subTitle: 'Slot sudah terpakai',
+            buttons: ['OK']
+          });
+          alert.present();
+          this.doGetCalendarAfterUpdate()
+        }
+      });
   }
   doUpdateSlotDelivery(nextno, dod, name, address, address1, kota, telp, postcode, latitude, longitude) {
     const headers = new HttpHeaders()

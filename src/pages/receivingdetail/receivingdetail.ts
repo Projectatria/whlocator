@@ -298,7 +298,7 @@ export class ReceivingdetailPage {
       Honeywell.onBarcodeEvent(function (data) {
         var barcodeno = data.barcodeData;
         var batchno = barcodeno.substring(0, 4);
-        var itemno = barcodeno.substring(4, 20);;
+        var itemno = barcodeno.substring(4, 20);
         return new Promise(resolve => {
           self.api.get("table/receiving", {
             params: {
@@ -407,7 +407,7 @@ export class ReceivingdetailPage {
       self.barcodeScanner.scan().then(barcodeData => {
         var barcodeno = barcodeData.text;
         var batchno = barcodeno.substring(0, 4);
-        var itemno = barcodeno.substring(4, 20);;
+        var itemno = barcodeno.substring(4, 20);
         return new Promise(resolve => {
           self.api.get("table/receiving", {
             params: {

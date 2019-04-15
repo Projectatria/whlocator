@@ -194,49 +194,370 @@ export class TransferorderPage {
     });
   }
   doPostingTO(to) {
-    let alert = this.alertCtrl.create({
-      title: 'Confirm Posting',
-      message: 'Do you want to posting  ' + to.to_no + ' ?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          handler: () => {
-
-          }
-        },
-        {
-          text: 'Posting',
-          handler: () => {
-            const headers = new HttpHeaders()
-              .set("Content-Type", "application/json");
-            this.api.put("table/transfer_order",
+    this.api.get('table/transfer_order_detail', { params: { limit: 1000, filter: "to_no=" + "'" + to.to_no + "'" } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data.length == 0) {
+          let alert = this.alertCtrl.create({
+            title: 'Perhatian',
+            subTitle: 'Item masih kosong',
+            buttons: ['OK']
+          });
+          alert.present();
+          this.doAddItemTO(to)
+        }
+        else {
+          let alert = this.alertCtrl.create({
+            title: 'Confirm Posting',
+            message: 'Do you want to posting  ' + to.to_no + ' ?',
+            buttons: [
               {
-                "to_no": to.to_no,
-                "status": 'INPG'
+                text: 'Cancel',
+                role: 'cancel',
+                handler: () => {
+
+                }
               },
-              { headers })
-              .subscribe(
-                (val) => {
-                  let alert = this.alertCtrl.create({
-                    title: 'Sukses',
-                    subTitle: 'Posting Sukses',
-                    buttons: ['OK']
+              {
+                text: 'Posting',
+                handler: () => {
+                  const headers = new HttpHeaders()
+                    .set("Content-Type", "application/json");
+                  this.api.put("table/transfer_order",
+                    {
+                      "to_no": to.to_no,
+                      "status": 'INPG'
+                    },
+                    { headers })
+                    .subscribe(
+                      (val) => {
+                        this.doBookingStok(to)
+                        let alert = this.alertCtrl.create({
+                          title: 'Sukses',
+                          subTitle: 'Posting Sukses',
+                          buttons: ['OK']
+                        });
+                        alert.present();
+                        this.ionViewDidEnter()
+                      },
+                      response => {
+
+                      },
+                      () => {
+
+                      });
+                }
+              }
+            ]
+          });
+          alert.present();
+        }
+      });
+  }
+  doBookingStok(to) {
+    this.api.get('table/transfer_order_detail', { params: { limit: 1000, filter: "to_no=" + "'" + to.to_no + "'" } })
+      .subscribe(val => {
+        let data = val['data']
+        console.log(data)
+        for (let i = 0; i < data.length; i++) {
+          this.doPostPickingListDetail(data, i)
+        }
+      }, err => {
+        this.doBookingStok(to)
+      });
+  }
+  doPostPickingListDetail(data, i) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    let uuid = UUID.UUID();
+    this.uuid = uuid;
+    this.api.post("table/picking_list_detail",
+      {
+        "id": data[i].to_no + data[i].line_no,
+        "receipt_no": data[i].to_no,
+        "item_no": data[i].item_no,
+        "description": data[i].description,
+        "qty": data[i].qty,
+        "sent_by": data[i].location_previous_code,
+        "sjl_from": data[i].location_current_code,
+        "UOM": 'SET',
+        "retail_so_no": data[i].to_no,
+        "status": 'OPEN',
+        "datetime": moment().format('YYYY-MM-DD HH:mm'),
+        "uuid": this.uuid
+      },
+      { headers })
+      .subscribe(val => {
+        this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Item", filter: "[No_]=" + "'" + data[i].item_no + "'" } })
+          .subscribe(val => {
+            let dataitem = val['data']
+            this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Production BOM Line", filter: "[Production BOM No_]=" + "'" + dataitem[0]["Production BOM No_"] + "'" } }).subscribe(val => {
+              let datapart = val['data']
+              if (datapart.length == 0) {
+                this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + data[i].item_no + "' AND location=" + "'" + data[i].location_previous_code + "'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
+                  .subscribe(val => {
+                    let totalqty = val['data'][0].qtysum
+                    if (data[i].qty <= totalqty) {
+                      for (let k = 0; k < data[i].qty; k++) {
+                        this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + data[i].item_no + "' AND location=" + "'" + data[i].location_previous_code + "' AND qty >= " + 1, sort: 'batch_no ASC, sub_location ASC' } })
+                          .subscribe(val => {
+                            let datapickingresult = val['data']
+                            if (datapickingresult.length != 0) {
+                              let datai = data[i]
+                              let datapicking = datapickingresult[0]
+                              this.doPostPickingListDetailPartNull(k, datai, datapicking)
+                            }
+                            else {
+                              let datai = data[i]
+                              let datapicking = { 'batch_no': 'NOT FOUND', 'location': 'NOT FOUND', 'sub_location': 'NOT FOUND' }
+                              this.doPostPickingListDetailPartNull(k, datai, datapicking)
+                            }
+                          });
+                      }
+                    }
+                    else {
+                      let alert = this.alertCtrl.create({
+                        title: 'Perhatian',
+                        subTitle: 'Stok tidak cukup',
+                        buttons: ['OK']
+                      });
+                      alert.present();
+                    }
                   });
-                  alert.present();
-                  this.ionViewDidEnter()
-                },
-                response => {
-
-                },
-                () => {
-
-                });
+              }
+              else {
+                for (let j = 0; j < datapart.length; j++) {
+                  this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + datapart[j].No_ + "' AND location=" + "'" + data[i].location_previous_code + "'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
+                    .subscribe(val => {
+                      let totalqty = val['data'][0].qtysum
+                      if (data[i].qty <= totalqty) {
+                        for (let k = 0; k < data[i].qty; k++) {
+                          this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + datapart[j].No_ + "' AND location=" + "'" + data[i].location_previous_code + "' AND qty >=" + datapart[j].Quantity, sort: 'batch_no ASC, sub_location ASC' } })
+                            .subscribe(val => {
+                              let datapickingresult = val['data']
+                              if (datapickingresult.length != 0) {
+                                let datai = data[i]
+                                let dataj = datapart[j]
+                                let datapicking = datapickingresult[0]
+                                this.doPostPickingListDetailPart(k, datai, dataj, datapicking)
+                              }
+                              else {
+                                let datai = data[i]
+                                let dataj = datapart[j]
+                                let datapicking = { 'batch_no': 'NOT FOUND', 'location': 'NOT FOUND', 'sub_location': 'NOT FOUND' }
+                                this.doPostPickingListDetailPart(k, datai, dataj, datapicking)
+                              }
+                            });
+                        }
+                      }
+                      else {
+                        let alert = this.alertCtrl.create({
+                          title: 'Perhatian',
+                          subTitle: 'Stok tidak cukup',
+                          buttons: ['OK']
+                        });
+                        alert.present();
+                      }
+                    });
+                }
+              }
+            });
+          })
+      }, err => {
+        this.doPostPickingListDetail(data, i)
+      });
+  }
+  doPostPickingListDetailPartInsert(datai, dataj, datapicking) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    this.api.post("table/picking_list_detail_part",
+      {
+        "id": datai.to_no + datai.line_no,
+        "batch_no": datapicking.batch_no,
+        "receipt_no": datai.to_no,
+        "item_no": datai.item_no,
+        "bom_no": dataj["Production BOM No_"],
+        "part_no": dataj.No_,
+        "line_no": dataj["Line No_"],
+        "description": dataj.Description,
+        "qty": dataj.Quantity,
+        "location": datapicking.location,
+        "sub_location": datapicking.sub_location,
+        "UOM": dataj["Unit of Measure Code"],
+        "retail_so_no": datai.to_no,
+        "status": 'OPEN',
+        "datetime": moment().format('YYYY-MM-DD HH:mm'),
+        "uuid": UUID.UUID()
+      },
+      { headers })
+      .subscribe(val => {
+        let qtytotal = dataj.Quantity
+        this.doGetStock(datai, dataj, datapicking, qtytotal)
+      }, err => {
+        this.doPostPickingListDetailPartInsert(datai, dataj, datapicking)
+      });
+  }
+  doPostPickingListDetailPartUpdate(datai, dataj, datapicking, dataupd) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    this.api.put("table/picking_list_detail_part",
+      {
+        "id": dataupd[0].id,
+        "batch_no": datapicking.batch_no,
+        "receipt_no": datai.to_no,
+        "item_no": datai.item_no,
+        "bom_no": dataj["Production BOM No_"],
+        "part_no": dataj.No_,
+        "line_no": dataj["Line No_"],
+        "description": dataj.Description,
+        "qty": parseInt(dataupd[0].qty) + parseInt(dataj.Quantity),
+        "location": datapicking.location,
+        "sub_location": datapicking.sub_location,
+        "UOM": dataj["Unit of Measure Code"],
+        "retail_so_no": datai.to_no,
+        "status": 'OPEN',
+        "datetime": moment().format('YYYY-MM-DD HH:mm'),
+        "uuid": dataupd[0].uuid
+      },
+      { headers })
+      .subscribe(val => {
+        let qtytotal = dataj.Quantity
+        this.doGetStock(datai, dataj, datapicking, qtytotal)
+      }, err => {
+        this.doPostPickingListDetailPartUpdate(datai, dataj, datapicking, dataupd)
+      });
+  }
+  doPostPickingListDetailPart(k, datai, dataj, datapicking) {
+    this.api.get("table/picking_list_detail_part", { params: { limit: 100, filter: "receipt_no=" + "'" + datai.to_no + "' AND item_no=" + "'" + datai.item_no + "' AND part_no=" + "'" + dataj.No_ + "'" } })
+      .subscribe(val => {
+        let dataupd = val['data']
+        if (dataupd.length != 0) {
+          this.doPostPickingListDetailPartUpdate(datai, dataj, datapicking, dataupd)
+        }
+        else {
+          if (k > 0) {
+            this.doPostPickingListDetailPart(k, datai, dataj, datapicking)
+          }
+          else {
+            this.doPostPickingListDetailPartInsert(datai, dataj, datapicking)
           }
         }
-      ]
-    });
-    alert.present();
+      }, err => {
+        this.doPostPickingListDetailPart(k, datai, dataj, datapicking)
+      });
+  }
+  doPostPickingListDetailPartNullInsert(datai, datapicking, dataupd) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    this.api.post("table/picking_list_detail_part",
+      {
+        "id": datai.to_no + datai.line_no,
+        "batch_no": datapicking.batch_no,
+        "receipt_no": datai.to_no,
+        "item_no": datai.item_no,
+        "bom_no": 'NOT FOUND',
+        "part_no": datai.item_no,
+        "line_no": '10000',
+        "description": datai.description,
+        "qty": 1,
+        "location": datapicking.location,
+        "sub_location": datapicking.sub_location,
+        "UOM": datai.unit,
+        "retail_so_no": datai.to_no,
+        "status": 'OPEN',
+        "datetime": moment().format('YYYY-MM-DD HH:mm'),
+        "uuid": UUID.UUID()
+      },
+      { headers })
+      .subscribe(val => {
+        let dataj = { 'Quantity': 1 }
+        let qtytotal = 1
+        this.doGetStock(datai, dataj, datapicking, qtytotal)
+      }, err => {
+        this.doPostPickingListDetailPartNullInsert(datai, datapicking, dataupd)
+      });
+  }
+  doPostPickingListDetailPartNullUpdate(datai, datapicking, dataupd) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    this.api.put("table/picking_list_detail_part",
+      {
+        "id": dataupd[0].id,
+        "batch_no": datapicking.batch_no,
+        "receipt_no": datai.to_no,
+        "item_no": datai.item_no,
+        "bom_no": 'NOT FOUND',
+        "part_no": datai.item_no,
+        "line_no": '10000',
+        "description": datai.description,
+        "qty": parseInt(dataupd[0].qty) + 1,
+        "location": datapicking.location,
+        "sub_location": datapicking.sub_location,
+        "UOM": datai.unit,
+        "retail_so_no": datai.to_no,
+        "status": 'OPEN',
+        "datetime": moment().format('YYYY-MM-DD HH:mm'),
+        "uuid": dataupd[0].uuid
+      },
+      { headers })
+      .subscribe(val => {
+        let dataj = { 'Quantity': 1 }
+        let qtytotal = 1
+        this.doGetStock(datai, dataj, datapicking, qtytotal)
+      }, err => {
+        this.doPostPickingListDetailPartNullUpdate(datai, datapicking, dataupd)
+      });
+  }
+  doPostPickingListDetailPartNull(k, datai, datapicking) {
+    this.api.get("table/picking_list_detail_part", { params: { limit: 100, filter: "receipt_no=" + "'" + datai.to_no + "' AND batch_no=" + "'" + datapicking.batch_no + "' AND item_no=" + "'" + datai.item_no + "' AND part_no=" + "'" + datai.item_no + "' AND line_no=" + "'10000'" } })
+      .subscribe(val => {
+        let dataupd = val['data']
+        if (dataupd.length != 0) {
+          this.doPostPickingListDetailPartNullUpdate(datai, datapicking, dataupd)
+        }
+        else {
+          if (k > 0) {
+            this.doPostPickingListDetailPartNull(k, datai, datapicking)
+          }
+          else {
+            this.doPostPickingListDetailPartNullInsert(datai, datapicking, dataupd)
+          }
+        }
+      }, err => {
+        this.doPostPickingListDetailPartNull(k, datai, datapicking)
+      });
+  }
+  doGetStock(datai, dataj, datapicking, qtytotal) {
+    this.api.get("table/stock", { params: { limit: 100, filter: "id=" + "'" + datapicking.id + "'" } })
+      .subscribe(val => {
+        this.datastok = val['data']
+        if (this.datastok.length == 0) {
+          this.doGetStock(datai, dataj, datapicking, qtytotal)
+        }
+        else {
+          this.doUpdateStock(datai, dataj, datapicking, qtytotal)
+        }
+      }, err => {
+        this.doGetStock(datai, dataj, datapicking, qtytotal)
+      });
+  }
+  doUpdateStock(datai, dataj, datapicking, qtytotal) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    let date = moment().format('YYYY-MM-DD HH:mm');
+    this.api.put("table/stock",
+      {
+        "id": datapicking.id,
+        "qty": parseInt(this.datastok[0].qty) - parseInt(qtytotal),
+        "qty_booking": parseInt(this.datastok[0].qty_booking) + parseInt(qtytotal),
+        "datetime": date
+      },
+      { headers })
+      .subscribe(val => {
+        this.datastok = [];
+      }, err => {
+        this.doUpdateStock(datai, dataj, datapicking, qtytotal)
+      });
   }
   getTOList() {
     return new Promise(resolve => {
@@ -362,7 +683,8 @@ export class TransferorderPage {
         "receipt_no": tolist.to_no,
         "receipt_date": '',
         "type_doc": 'TO',
-        "store_no": tolist.from_location,
+        "store_no": tolist.to_location,
+        "store_from": tolist.from_location,
         "delivery_date": '',
         "installation_date": '',
         "delivery_booking": '',
@@ -440,13 +762,16 @@ export class TransferorderPage {
       { headers })
       .subscribe(
         (val) => {
-          let alert = this.alertCtrl.create({
-            title: 'Sukses',
-            subTitle: 'Posting Sukses',
-            buttons: ['OK']
-          });
-          alert.present();
-          this.doGoToSlotDelivery()
+          console.log(i, data.length)
+          if (i == (data.length - 1)) {
+            let alert = this.alertCtrl.create({
+              title: 'Sukses',
+              subTitle: 'Posting Sukses',
+              buttons: ['OK']
+            });
+            alert.present();
+            this.doGoToSlotDelivery()
+          }
         }, err => {
           this.doPostDeliveryOrderLinePartNull(data, i)
         });
@@ -478,13 +803,16 @@ export class TransferorderPage {
       { headers })
       .subscribe(
         (val) => {
-          let alert = this.alertCtrl.create({
-            title: 'Sukses',
-            subTitle: 'Posting Sukses',
-            buttons: ['OK']
-          });
-          alert.present();
-          this.doGoToSlotDelivery()
+          console.log(i, data.length)
+          if ((i == (data.length - 1)) && (j == (datapart.length - 1))) {
+            let alert = this.alertCtrl.create({
+              title: 'Sukses',
+              subTitle: 'Posting Sukses',
+              buttons: ['OK']
+            });
+            alert.present();
+            this.doGoToSlotDelivery()
+          }
         }, err => {
           this.doPostDeliveryOrderLinePart(data, i, datapart, j)
         });
@@ -739,14 +1067,7 @@ export class TransferorderPage {
                   },
                   { headers })
                   .subscribe(data => {
-                    this.api.get("table/transfer_order_detail", { params: { filter: "to_no=" + "'" + tolist.to_no + "'" } })
-                      .subscribe(val => {
-                        let data = val['data'];
-                        for (let i = 0; i < data.length; i++) {
-                          this.doPostPickingListDetail(tolist, data, i)
-                        }
-                        this.doUpdateTOPicking(tolist)
-                      });
+                    this.doUpdateTO(tolist)
                   }, (e) => {
                   });
               });
@@ -755,7 +1076,7 @@ export class TransferorderPage {
       });
 
   }
-  doPostPickingListDetail(tolist, data, i) {
+  /*doPostPickingListDetail(tolist, data, i) {
     const headers = new HttpHeaders()
       .set("Content-Type", "application/json");
     let uuid = UUID.UUID();
@@ -1047,22 +1368,7 @@ export class TransferorderPage {
       }, err => {
         this.doUpdateStock(tolist, datai, dataj, datapicking, qtytotal)
       });
-  }
-  doUpdateTOPicking(tolist) {
-    const headers = new HttpHeaders()
-      .set("Content-Type", "application/json");
-    this.api.put("table/transfer_order",
-      {
-        "to_no": tolist.to_no,
-        "status_picking": '1',
-      },
-      { headers })
-      .subscribe(val => {
-        this.doUpdateTO(tolist)
-      }, err => {
-        this.doUpdateTOPicking(tolist)
-      });
-  }
+  }*/
   doUpdateTO(tolist) {
     const headers = new HttpHeaders()
       .set("Content-Type", "application/json");

@@ -197,7 +197,7 @@
   </div>
 </div>
 
-<div [ngSwitch]="detailto">
+<div [ngSwitch]="detailto" *ngIf="status == 'OPEN'">
   <ion-fab class="fixed-div" bottom right *ngSwitchCase="'detailtoitem'">
     <button ion-fab color="greenlake" (click)="doAddTODetail(detailto)">
       <ion-icon name="md-add"></ion-icon>

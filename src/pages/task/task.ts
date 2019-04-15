@@ -8,7 +8,7 @@ import { UUID } from 'angular2-uuid';
 import moment from 'moment';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
-import { BarcodeScanner, BarcodeScannerOptions } from "@ionic-native/barcode-scanner";;
+import { BarcodeScanner, BarcodeScannerOptions } from "@ionic-native/barcode-scanner";
 import { Storage } from '@ionic/storage';
 import { ImageViewerController } from 'ionic-img-viewer';
 
@@ -122,7 +122,50 @@ export class TaskPage {
     });
   }
   ionViewDidEnter() {
-
+    this.storage.get('userid').then((val) => {
+      this.userid = val;
+      this.api.get('table/user_role', { params: { filter: "id_user=" + "'" + this.userid + "'" } })
+        .subscribe(val => {
+          this.role = val['data']
+          this.roleid = this.role[0].id_group
+          this.rolecab = this.role[0].id_cab
+          this.rolearea = this.role[0].id_area
+          this.rolegroup = this.role[0].id_group
+          this.api.get('table/purchasing_order', {
+            params: {
+              limit: 30, filter: "(status='INP2'" + " AND " +
+                "((pic=" + "'" + this.userid + "')" +
+                " OR " +
+                "(pic_lokasi=" + "'" + this.userid + "'" + " AND status_location ='')" +
+                " OR " +
+                "(pic_barcode=" + "'" + this.userid + "'" + " AND status_barcode ='')))"
+            }
+          })
+            .subscribe(val => {
+              this.preparation = val['data'];
+            });
+          this.api.get('table/purchasing_order', { params: { limit: 30, filter: "status='INPG'" + " AND " + "pic=" + "'" + this.userid + "'" } })
+            .subscribe(val => {
+              this.receiving = val['data'];
+            });
+          this.api.get('table/qc_in', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" + " AND " + "status='OPEN'" } })
+            .subscribe(val => {
+              this.quality_control = val['data'];
+            });
+          this.api.get('table/qc_out', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" + " AND " + "status='OPEN'" } })
+            .subscribe(val => {
+              this.quality_control_out = val['data'];
+            });
+          this.api.get('table/transfer_order', { params: { limit: 30, filter: "(from_location=" + "'" + this.rolecab + "'" + " AND " + "status='INPG') OR (to_location=" + "'" + this.rolecab + "'" + " AND " + "status='OPEN') OR (to_location=" + "'" + this.rolecab + "'" + " AND " + "status='CLS1')" } })
+            .subscribe(val => {
+              this.transferorder = val['data'];
+            });
+          this.api.get('table/picking_list', { params: { limit: 30, filter: "pic=" + "'" + this.userid + "'" + " AND " + "status='INP1'" } })
+            .subscribe(val => {
+              this.pickinglist = val['data'];
+            });
+        })
+    });
   }
   getPrepare() {
     this.api.get('table/purchasing_order', {

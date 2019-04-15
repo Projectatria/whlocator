@@ -268,7 +268,7 @@ export class TransferorderdetailaddPage {
     });
   }
   doGetStock(partno, partqty, item) {
-    this.api.get("table/stock", { params: { limit: 1000, filter: "item_no=" + "'" + partno + "' AND location=" + "'" + this.from + "'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
+    this.api.get("table/stock", { params: { limit: 1000, filter: "item_no=" + "'" + partno + "' AND location=" + "'" + this.from + "' AND sub_location !='Staging Out' AND sub_location != 'STAGINGIN'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
       .subscribe(val => {
         let data = val['data']
         if (data.length != 0) {
@@ -294,7 +294,7 @@ export class TransferorderdetailaddPage {
       let datapart = val['data']
       if (datapart.length != 0) {
         let partno = datapart[0].No_
-        this.api.get("table/stock", { params: { limit: 1000, filter: "item_no=" + "'" + partno + "' AND location=" + "'" + this.from + "'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
+        this.api.get("table/stock", { params: { limit: 1000, filter: "item_no=" + "'" + partno + "' AND location=" + "'" + this.from + "' AND sub_location !='Staging Out' AND sub_location != 'STAGINGIN'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
           .subscribe(val => {
             let data = val['data']
             if (data.length != 0) {
@@ -340,7 +340,7 @@ export class TransferorderdetailaddPage {
       }
       else {
         let partno = item.No_
-        this.api.get("table/stock", { params: { limit: 1000, filter: "item_no=" + "'" + partno + "' AND location=" + "'" + this.from + "'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
+        this.api.get("table/stock", { params: { limit: 1000, filter: "item_no=" + "'" + partno + "' AND location=" + "'" + this.from + "' AND sub_location !='Staging Out' AND sub_location != 'STAGINGIN'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
           .subscribe(val => {
             let data = val['data']
             if (data.length != 0) {

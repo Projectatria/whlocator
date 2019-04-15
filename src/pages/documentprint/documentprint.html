@@ -46,12 +46,12 @@
     </ion-toolbar>
   </ion-header>
   <ion-list style="margin-top:60px;background:#217481;color:#26262d;">
-    <ion-input id="textboxID" placeholder="Masukan Nomor PO" style="color:#fff;font-size:20px;"></ion-input>
+    <ion-input [(ngModel)]="po" placeholder="Masukan Nomor PO" style="color:#fff;font-size:20px;"></ion-input>
   </ion-list>
   <ion-footer>
     <ion-row>
       <ion-col col-12 style="background: transparent;">
-        <button ion-button full color="primary" style="font-weight: bold;font-size:15px;" (click)="doClosePO()">
+        <button ion-button full color="primary" style="font-weight: bold;font-size:15px;" (click)="doPrintReceiving()">
           <i class="fas fa-print"></i>&nbsp;&nbsp;&nbsp;Print</button>
       </ion-col>
       <ion-col col-12 style="background: transparent;">

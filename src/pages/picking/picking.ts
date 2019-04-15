@@ -114,7 +114,6 @@ export class PickingPage {
     });
     this.storage.get('userid').then((val) => {
       this.userid = val;
-      this.doListPickingDetail();
       this.api.get('table/user_role', { params: { filter: "id_user=" + "'" + this.userid + "'" } })
         .subscribe(val => {
           this.role = val['data']
@@ -132,9 +131,6 @@ export class PickingPage {
           }
         })
     });
-    //this.getPickingSearch();
-    this.halaman = 0;
-    this.getpicking();
     this.toggled = false;
     this.groupby = ""
     this.search = 'invoice_no';
@@ -155,6 +151,12 @@ export class PickingPage {
         return false;
       }
     });
+  }
+  ionViewDidEnter() {
+    this.halaman = 0;
+    this.listpicking = [];
+    this.getpicking()
+    this.doListPickingDetail()
   }
   getpicking() {
     return new Promise(resolve => {
@@ -582,7 +584,8 @@ export class PickingPage {
       },
       { headers })
       .subscribe(val => {
-        this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Item", filter: "[No_]=" + "'" + data[i].item_no + "'" } }).subscribe(val => {
+        this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Item", filter: "[No_]=" + "'" + data[i].item_no + "'" } })
+        .subscribe(val => {
           let dataitem = val['data']
           this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Production BOM Line", filter: "[Production BOM No_]=" + "'" + dataitem[0]["Production BOM No_"] + "'" } }).subscribe(val => {
             let datapart = val['data']
