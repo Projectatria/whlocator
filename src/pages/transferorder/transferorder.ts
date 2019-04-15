@@ -75,7 +75,7 @@ export class TransferorderPage {
       this.api.get('table/transfer_order', { params: { limit: 30, filter: "status='OPEN' AND to_location=" + "'" + this.rolecab + "'" } }).subscribe(val => {
         this.transferorder = val['data']
       });
-      this.api.get('table/transfer_order', { params: { limit: 30, filter: "status='INPG' AND from_location=" + "'" + this.rolecab + "'" } }).subscribe(val => {
+      this.api.get('table/transfer_order', { params: { limit: 30, filter: "status='RELEASE' AND from_location=" + "'" + this.rolecab + "'" } }).subscribe(val => {
         this.transferorderlist = val['data']
       });
       this.api.get('table/transfer_order', { params: { limit: 30, filter: "status='CLS1' AND to_location=" + "'" + this.rolecab + "'" } }).subscribe(val => {
@@ -226,7 +226,7 @@ export class TransferorderPage {
                   this.api.put("table/transfer_order",
                     {
                       "to_no": to.to_no,
-                      "status": 'INPG'
+                      "status": 'RELEASE'
                     },
                     { headers })
                     .subscribe(
@@ -569,7 +569,7 @@ export class TransferorderPage {
         this.halamantolist++;
         this.api.get('table/transfer_order', {
           params: {
-            limit: 30, offset: offsetprepare, filter: "status='INPG' AND (from_location=" + "'" + this.rolecab + "' OR to_location=" + "'" + this.rolecab + "')"
+            limit: 30, offset: offsetprepare, filter: "status='RELEASE' AND (from_location=" + "'" + this.rolecab + "' OR to_location=" + "'" + this.rolecab + "')"
           }
         })
           .subscribe(val => {
@@ -621,7 +621,7 @@ export class TransferorderPage {
     else {
       this.sortTOList = 'ASC'
     }
-    this.api.get("table/transfer_order", { params: { filter: "status='INPG' AND from_location=" + "'" + this.rolecab + "'", sort: filter + " " + this.sortTOList + " " } }).subscribe(val => {
+    this.api.get("table/transfer_order", { params: { filter: "status='RELEASE' AND from_location=" + "'" + this.rolecab + "'", sort: filter + " " + this.sortTOList + " " } }).subscribe(val => {
       this.transferorderlist = val['data'];
       this.totaldatatolist = val['count'];
       this.filter = filter
