@@ -47,6 +47,8 @@
   </ion-header>
   <ion-list style="margin-top:60px;background:#217481;color:#26262d;">
     <ion-input [(ngModel)]="po" placeholder="Masukan Nomor PO" style="color:#fff;font-size:20px;"></ion-input>
+    <ion-input [(ngModel)]="sjl" placeholder="Masukan Nomor Surat Jalan" style="color:#fff;font-size:20px;"></ion-input>
+    <ion-input [(ngModel)]="pl" placeholder="Masukan Nomor Packing List" style="color:#fff;font-size:20px;"></ion-input>
   </ion-list>
   <ion-footer>
     <ion-row>
@@ -56,6 +58,31 @@
       </ion-col>
       <ion-col col-12 style="background: transparent;">
         <button ion-button full color="danger" style="font-weight: bold;font-size:15px;" (click)="doClosePO()">
+          <ion-icon name="md-close"></ion-icon>&nbsp;&nbsp;&nbsp;Cancel</button>
+      </ion-col>
+    </ion-row>
+  </ion-footer>
+</div>
+
+<div *ngIf="poshowqc == true" class="qualitytipe" style="background:#217481;border:3px solid;border-color:#dedede;">
+  <ion-header>
+    <ion-toolbar color="darkgrey" style="border:1px solid;border-color:#fff;">
+      <ion-title>
+        Print BA QC
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-list style="margin-top:60px;background:#217481;color:#26262d;">
+    <ion-input [(ngModel)]="po" placeholder="Masukan Nomor PO" style="color:#fff;font-size:20px;"></ion-input>
+  </ion-list>
+  <ion-footer>
+    <ion-row>
+      <ion-col col-12 style="background: transparent;">
+        <button ion-button full color="primary" style="font-weight: bold;font-size:15px;" (click)="doPrintQC()">
+          <i class="fas fa-print"></i>&nbsp;&nbsp;&nbsp;Print</button>
+      </ion-col>
+      <ion-col col-12 style="background: transparent;">
+        <button ion-button full color="danger" style="font-weight: bold;font-size:15px;" (click)="doClosePOQC()">
           <ion-icon name="md-close"></ion-icon>&nbsp;&nbsp;&nbsp;Cancel</button>
       </ion-col>
     </ion-row>

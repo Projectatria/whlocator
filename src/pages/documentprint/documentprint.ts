@@ -27,7 +27,10 @@ export class DocumentprintPage {
   private width: number;
   private height: number;
   public poshow: boolean = false;
+  public poshowqc: boolean = false;
   public po = '';
+  public sjl = '';
+  public pl = '';
 
   constructor(
     public navCtrl: NavController,
@@ -49,6 +52,7 @@ export class DocumentprintPage {
     });
     this.loader.present();
     this.poshow = false;
+    this.poshowqc = false;
     platform.ready().then(() => {
       this.width = platform.width();
       this.height = platform.height();
@@ -90,6 +94,15 @@ export class DocumentprintPage {
   doClosePO() {
     this.poshow = false;
     this.po = '';
+    this.sjl = '';
+    this.pl = '';
+  }
+  doPrintBAQC() {
+    this.poshowqc = true;
+  }
+  doClosePOQC() {
+    this.poshowqc = false;
+    this.po = '';
   }
   doPrintReceiving() {
     this.api.get('table/purchasing_order', { params: { limit: 30, filter: "status='CLSD' AND order_no=" + "'" + this.po + "'" } })
@@ -105,11 +118,36 @@ export class DocumentprintPage {
         }
         else {
           this.navCtrl.push('BeritaacarareceivingPage', {
+            po: data[0],
+            sjl: this.sjl,
+            pl: this.pl
+          })
+          this.doClosePO()
+        }
+      });
+  }
+  doPrintQC() {
+    this.api.get('table/purchasing_order', { params: { limit: 30, filter: "status='CLSD' AND order_no=" + "'" + this.po + "'" } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data.length == 0) {
+          let alert = this.alertCtrl.create({
+            title: 'Perhatian',
+            subTitle: 'PO Tidak ada atau belum selesai di Receiving',
+            buttons: ['OK']
+          });
+          alert.present();
+        }
+        else {
+          this.navCtrl.push('BeritaacaraqcPage', {
             po: data[0]
           })
           this.doClosePO()
         }
       });
   }
-
+  doPrintSuratJalan() {
+    this.navCtrl.push('SuratjalanPage', {
+    })
+  }
 }

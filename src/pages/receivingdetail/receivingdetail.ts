@@ -721,7 +721,25 @@ export class ReceivingdetailPage {
                 });
                 alert.present();
                 this.getRCVChecked();
-                this.viewCtrl.dismiss()
+                this.api.get("table/receiving", { params: { filter: 'order_no=' + "'" + this.orderno + "'" + ' AND ' + "(status= 'OPEN' OR status='CHECKED')" } })
+                .subscribe(val => {
+                  let belumreceived = val['data'];
+                  if (belumreceived.length == 0) {
+                    const headers = new HttpHeaders()
+                      .set("Content-Type", "application/json");
+      
+                    this.api.put("table/purchasing_order",
+                      {
+                        "order_no": this.orderno,
+                        "status": 'CLSD'
+                      },
+                      { headers })
+                      .subscribe(val => {
+                        this.doPostReceiving(cek)
+                        this.viewCtrl.dismiss()
+                      });
+                  }
+                });
               },
               response => {
 
@@ -760,23 +778,6 @@ export class ReceivingdetailPage {
               }
 
             });
-          this.api.get("table/receiving", { params: { filter: 'order_no=' + "'" + this.orderno + "'" + ' AND ' + "status= 'OPEN'" } }).subscribe(val => {
-            let belumreceived = val['data'];
-            if (belumreceived.length == 0) {
-              const headers = new HttpHeaders()
-                .set("Content-Type", "application/json");
-
-              this.api.put("table/purchasing_order",
-                {
-                  "order_no": this.orderno,
-                  "status": 'CLSD'
-                },
-                { headers })
-                .subscribe(val => {
-                  this.doPostReceiving(cek)
-                });
-            }
-          });
         }
         else {
           let alert = this.alertCtrl.create({

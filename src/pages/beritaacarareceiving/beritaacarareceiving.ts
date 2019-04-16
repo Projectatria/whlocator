@@ -16,6 +16,8 @@ export class BeritaacarareceivingPage {
   public tipevendor = '';
   public receiving = [];
   public orderno = '';
+  public sjl = '';
+  public pl = '';
   public datereceived: any;
 
   constructor(
@@ -25,6 +27,8 @@ export class BeritaacarareceivingPage {
     public alertCtrl: AlertController,
     public viewCtrl: ViewController) {
     this.po = this.navParams.get('po')
+    this.sjl = this.navParams.get('sjl')
+    this.pl = this.navParams.get('pl')
     this.orderno = this.po['order_no']
     console.log(this.po, this.orderno)
     if (this.po['vendor_status'] == 'FOREIGN') {

@@ -1,18 +1,216 @@
-<!--
-  Generated template for the SuratjalanPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
-<ion-header>
-
-  <ion-navbar>
-    <ion-title>suratjalan</ion-title>
-  </ion-navbar>
-
+<ion-header class="header-menu">
+  <ion-toolbar class="header-navbar" style="width:100%;">
+    <div *ngIf="!toggled" class="logo-search" style="text-align:right;height:0px;">
+      <button ion-button clear color="light" (click)="doPrint()">
+        <ion-icon name="md-print" style="font-size:35px;"></ion-icon>
+      </button>
+    </div>
+    <button ion-button clear color="light" (click)="closeModal()">
+      Close
+    </button>
+    <ion-title class="side-title">
+    </ion-title>
+  </ion-toolbar>
 </ion-header>
 
-
-<ion-content padding>
-
+<ion-content padding class="content-pickingnote">
+  <div id="printarea">
+    <table style="width:100%;">
+      <tr>
+        <th style="background: transparent;width:15%;text-align: left;">
+          <img style="width:100px;" src="assets/imgs/ATRIA.png">
+          <div>PT CATUR SENTOSA BERHASIL</div>
+        </th>
+        <th style="text-align: center;margin:auto;font-weight: bold;font-size:20px;background: transparent;">
+          DELIVERY AND INSTALLATION ORDER
+          <div style="font-size:16px;">CSB Daan Mogot</div>
+          <div style="font-size:16px;">JL. Daan Mogot Jakarta Barat</div>
+          <div style="font-size:16px;">Tgl Cetak 16-04-2019</div>
+        </th>
+        <th style="background: transparent;width:15%;"></th>
+      </tr>
+    </table>
+    <table style="width:100%;margin-top:40px;margin-bottom:30px;">
+      <tr style="text-align: left;">
+        <th style="background: transparent;width:10%;">No. SJL</th>
+        <th style="background: transparent;width:35%;">:</th>
+        <th style="background: transparent;width:10%;">No. Telp</th>
+        <th style="background: transparent;width:45%;">:</th>
+      </tr>
+      <tr style="text-align: left;">
+        <th style="background: transparent;width:10%;">No. TO</th>
+        <th style="background: transparent;width:35%;">:</th>
+        <th style="background: transparent;width:10%;">Pengirim</th>
+        <th style="background: transparent;width:45%;">:</th>
+      </tr>
+      <tr style="text-align: left;">
+        <th style="background: transparent;width:10%;">Nomor Member</th>
+        <th style="background: transparent;width:35%;">:</th>
+        <th style="background: transparent;width:10%;">Estimasi Kirim</th>
+        <th style="background: transparent;width:45%;">:</th>
+      </tr>
+      <tr style="text-align: left;">
+        <th style="background: transparent;width:10%;">Tgl Invoice</th>
+        <th style="background: transparent;width:35%;">:</th>
+        <th style="background: transparent;width:10%;">Tgl Kirim</th>
+        <th style="background: transparent;width:45%;">:</th>
+      </tr>
+      <tr style="text-align: left;">
+        <th style="background: transparent;width:10%;">No. Receipt</th>
+        <th style="background: transparent;width:35%;">:</th>
+        <th style="background: transparent;width:10%;">Tgl Install</th>
+        <th style="background: transparent;width:45%;">:</th>
+      </tr>
+      <tr style="text-align: left;">
+        <th style="background: transparent;width:10%;">Nama Pelanggan</th>
+        <th style="background: transparent;width:35%;">:</th>
+        <th style="background: transparent;width:10%;">Keterangan Pengiriman</th>
+        <th style="background: transparent;width:45%;">:</th>
+      </tr>
+      <tr style="text-align: left;">
+        <th style="background: transparent;width:10%;">Alamat Kirim</th>
+        <th style="background: transparent;width:35%;">:</th>
+        <th style="background: transparent;width:10%;"></th>
+        <th style="background: transparent;width:45%;"></th>
+      </tr>
+    </table>
+    <table class="table-border" style="width:100%;">
+      <tr>
+        <th class="table-border" class="table-border" rowspan="4" style="text-align: center;">No.</th>
+        <th class="table-border" class="table-border" rowspan="4" style="text-align: center;">Barcode</th>
+        <th class="table-border" class="table-border" rowspan="4" style="text-align: center;">Nama Barang</th>
+        <th class="table-border" class="table-border" rowspan="4" style="text-align: center;">Qty Set</th>
+        <th class="table-border" class="table-border" rowspan="4" style="text-align: center;">Qty Part</th>
+        <th class="table-border" class="table-border" rowspan="4" style="text-align: center;">UOM</th>
+        <th class="table-border" class="table-border" colspan="6" style="width:20%;text-align: center;">*Pengiriman</th>
+        <th class="table-border" class="table-border" colspan="3" style="width:15%;text-align: center;">*Installasi</th>
+        <th class="table-border" class="table-border" rowspan="4" style="text-align: center;">Tanggal Follow Up</th>
+        <th class="table-border" class="table-border" rowspan="4" style="text-align: center;">Keterangan</th>
+      </tr>
+      <tr>
+        <th class="table-border" colspan="6" style="text-align: center;">*Kondisi Barang (B : Baik, C : Cacat, R : Rusak, TS : Tidak Sesuai, KB: Kurang Barang (Set/Part))
+        </th>
+        <th class="table-border" colspan="3" style="text-align: center;">(T:Terinstal, ST:Sebagian Terinstal, PI:Pending Instal)
+        </th>
+      </tr>
+      <tr>
+        <th class="table-border" rowspan="2" style="text-align: center;">B</th>
+        <th class="table-border" rowspan="2" style="text-align: center;">C</th>
+        <th class="table-border" rowspan="2" style="text-align: center;">R</th>
+        <th class="table-border" rowspan="2" style="text-align: center;">TS</th>
+        <th class="table-border" colspan="2" style="text-align: center;">KB</th>
+        <th class="table-border" rowspan="2" style="text-align: center;">T</th>
+        <th class="table-border" rowspan="2" style="text-align: center;">ST</th>
+        <th class="table-border" rowspan="2" style="text-align: center;">PI</th>
+      </tr>
+      <tr>
+        <th class="table-border" style="text-align: center;">SET</th>
+        <th class="table-border" style="text-align: center;">PART</th>
+      </tr>
+      <tr>
+        <td class="table-border" style="text-align: center;">1</td>
+        <td class="table-border" style="text-align: center;">123</td>
+        <td class="table-border" style="text-align: center;">TRAVIS DIN CH C-4057 PVC D.BROWN</td>
+        <td class="table-border" style="text-align: center;">4</td>
+        <td class="table-border" style="text-align: center;">4</td>
+        <td class="table-border" style="text-align: center;">SET</td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+      </tr>
+      <tr>
+        <td class="table-border" style="text-align: center;">1</td>
+        <td class="table-border" style="text-align: center;">123</td>
+        <td class="table-border" style="text-align: center;">TRAVIS DIN CH C-4057 PVC D.BROWN</td>
+        <td class="table-border" style="text-align: center;">4</td>
+        <td class="table-border" style="text-align: center;">4</td>
+        <td class="table-border" style="text-align: center;">SET</td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+      </tr>
+      <tr>
+        <td class="table-border" style="text-align: center;">1</td>
+        <td class="table-border" style="text-align: center;">123</td>
+        <td class="table-border" style="text-align: center;">TRAVIS DIN CH C-4057 PVC D.BROWN</td>
+        <td class="table-border" style="text-align: center;">4</td>
+        <td class="table-border" style="text-align: center;">4</td>
+        <td class="table-border" style="text-align: center;">SET</td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+        <td class="table-border" style="text-align: center;"></td>
+      </tr>
+      <tr>
+        <th class="table-border" colspan="3" style="text-align: center;">TOTAL</th>
+        <th class="table-border" style="text-align: center;">4</th>
+        <th class="table-border" style="text-align: center;">6</th>
+        <th class="table-border" style="text-align: center;"></th>
+        <th class="table-border" style="text-align: center;"></th>
+        <th class="table-border" style="text-align: center;"></th>
+        <th class="table-border" style="text-align: center;"></th>
+        <th class="table-border" style="text-align: center;"></th>
+        <th class="table-border" style="text-align: center;"></th>
+        <th class="table-border" style="text-align: center;"></th>
+        <th class="table-border" style="text-align: center;"></th>
+        <th class="table-border" style="text-align: center;"></th>
+        <th class="table-border" style="text-align: center;"></th>
+        <th class="table-border" style="text-align: center;"></th>
+        <th class="table-border" style="text-align: center;"></th>
+      </tr>
+      <tr>
+        <th class="table-border" colspan="100%;" style="text-decoration-line: underline;text-align: left">Komentar Pelanggan
+          <div style="padding:50px;"></div>
+        </th>
+      </tr>
+    </table>
+    <p style="text-align: left;">1. Yang bertanda tangan di bawah ini adalah wakil customer yang sah dan telah melakukan pemeriksaan terhadap hasil pengiriman
+      dan instalasi, segala resiko yang timbul setelah instalasi menjadi tanggung jawab penuh customer. Atria tidak menangani
+      komplain dan penggantian produk.
+    </p>
+    <p style="text-align: left;">
+      2. Pending Instalasi akan dikenakan biaya penundaan sesuai dengan ketentuan yang berlaku, biaya dihitung berdasarkan jumlah
+      hari pending instalasi.
+    </p>
+    <table style="width:100%;">
+      <tr>
+        <th style="text-align: center;width:20%;padding-bottom:50px;">Disiapkan Oleh,</th>
+        <th style="text-align: center;width:20%;padding-bottom:50px;">Disetujui Oleh,</th>
+        <th style="text-align: center;width:20%;padding-bottom:50px;">Installer</th>
+        <th style="text-align: center;width:20%;padding-bottom:50px;">Driver</th>
+        <th style="text-align: center;width:20%;padding-bottom:50px;">Customer</th>
+      </tr>
+      <tr>
+        <th style="text-align: center;width:20%;">(......................................)</th>
+        <th style="text-align: center;width:20%;">(......................................)</th>
+        <th style="text-align: center;width:20%;">(......................................)</th>
+        <th style="text-align: center;width:20%;">(......................................)</th>
+        <th style="text-align: center;width:20%;">(......................................)</th>
+      </tr>
+    </table>
+    <p style="text-align: left;">Catatan : Lembar 1 (putih) untuk Pemilik Barang, Lembar 2 (merah) untuk Customer, Lembar 3 (kuning) untuk Pengirim.</p>
+  </div>
 </ion-content>
