@@ -28,9 +28,11 @@ export class DocumentprintPage {
   private height: number;
   public poshow: boolean = false;
   public poshowqc: boolean = false;
+  public sjlshow: boolean = false;
   public po = '';
   public sjl = '';
   public pl = '';
+  public receiptno = ''
 
   constructor(
     public navCtrl: NavController,
@@ -53,6 +55,7 @@ export class DocumentprintPage {
     this.loader.present();
     this.poshow = false;
     this.poshowqc = false;
+    this.sjlshow = false;
     platform.ready().then(() => {
       this.width = platform.width();
       this.height = platform.height();
@@ -104,6 +107,13 @@ export class DocumentprintPage {
     this.poshowqc = false;
     this.po = '';
   }
+  doPrintSJL() {
+    this.sjlshow = true;
+  }
+  doCloseSJL() {
+    this.sjlshow = false;
+    this.receiptno = '';
+  }
   doPrintReceiving() {
     this.api.get('table/purchasing_order', { params: { limit: 30, filter: "status='CLSD' AND order_no=" + "'" + this.po + "'" } })
       .subscribe(val => {
@@ -147,7 +157,123 @@ export class DocumentprintPage {
       });
   }
   doPrintSuratJalan() {
-    this.navCtrl.push('SuratjalanPage', {
-    })
+    this.api.get('table/delivery_order_header', { params: { limit: 30, filter: "receipt_no=" + "'" + this.receiptno + "'" } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data[0].sjl_no == '') {
+          this.doGetSJLNo(data)
+        }
+        else {
+          this.doGetAlamat(data)
+        }
+      }, err => {
+        this.doPrintSuratJalan()
+      });
+  }
+  doGetSJLNo(data) {
+    this.api.get('table/surat_jalan_request', { params: { limit: 1, filter: 'location_code=' + "'" + data[0].store_from + "'" } }).subscribe(val => {
+      let datano = val['data'];
+      if (datano.length != 0) {
+        let nourut = datano[0].code + (datano[0].last_no_used + 1)
+        this.doUpdateSJLNo(datano, data)
+      }
+      else {
+        let alert = this.alertCtrl.create({
+          title: 'Error',
+          subTitle: 'Data tidak ada',
+          buttons: ['OK']
+        });
+        alert.present();
+      }
+    }, err => {
+      this.doGetSJLNo(data)
+    });
+  }
+  doUpdateSJLNo(datano, data) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    let date = moment().format('YYYY-MM-DD')
+    this.api.put("table/transfer_order_request",
+      {
+        "location_code": data[0].store_from,
+        "last_date_used": date,
+        "last_no_used": datano[0].last_no_used + 1
+      },
+      { headers })
+      .subscribe((val) => {
+        this.doUpdateDOD(datano, data)
+      }, err => {
+        this.doUpdateSJLNo(datano, data)
+      });
+  }
+  doUpdateDOD(datano, data) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    let date = moment().format('YYYY-MM-DD')
+    this.api.put("table/delivery_order_header",
+      {
+        "uuid": data[0].uuid,
+        "sjl_no": datano[0].code + (datano[0].last_no_used + 1)
+      },
+      { headers })
+      .subscribe((val) => {
+        this.doGetAlamat(data)
+      }, err => {
+        this.doUpdateDOD(datano, data)
+      });
+  }
+  doGetAlamat(data) {
+    this.api.get('table/delivery_order_header', { params: { limit: 30, filter: "receipt_no=" + "'" + data[0].receipt_no + "'" } })
+      .subscribe(val => {
+        let datadod = val['data']
+        if (data[0].type_doc == 'TO') {
+          this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Location", filter: "[Code]=" + "'" + data[0].store_no + "'" } })
+            .subscribe(val => {
+              let detailsales = val['data']
+              let sjlno = datadod[0].sjl_no
+              let name = detailsales[0]['Name']
+              let address = detailsales[0]['Address']
+              let address1 = detailsales[0]['Address 2']
+              let kota = detailsales[0]['City']
+              let telp = detailsales[0]['Phone No_']
+              let postcode = detailsales[0]['Post Code']
+              let addressfull = detailsales[0]['Address'] + " " + detailsales[0]['Address 2'] + " " + detailsales[0]['City']
+              this.navCtrl.push('SuratjalanPage', {
+                data: data,
+                name: name,
+                addressfull: addressfull,
+                kota: kota,
+                telp: telp,
+                sjlno: sjlno
+              })
+            }, err => {
+              this.doGetAlamat(data)
+            });
+        }
+        else {
+          this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Sales Header Archive", filter: "[No_]=" + "'" + data[0].so_no + "'" } })
+            .subscribe(val => {
+              let detailsales = val['data']
+              let sjlno = datadod[0].sjl_no
+              let name = detailsales[0]['Ship-to Name']
+              let address = detailsales[0]['Ship-to Address']
+              let address1 = detailsales[0]['Ship-to Address 2']
+              let kota = detailsales[0]['Ship-to City']
+              let telp = detailsales[0]['Ship-to Phone No_']
+              let postcode = detailsales[0]['Ship-to Post Code']
+              let addressfull = detailsales[0]['Ship-to Address'] + " " + detailsales[0]['Ship-to Address 2'] + " " + detailsales[0]['Ship-to City']
+              this.navCtrl.push('SuratjalanPage', {
+                data: data,
+                name: name,
+                addressfull: addressfull,
+                kota: kota,
+                telp: telp,
+                sjlno: sjlno
+              })
+            }, err => {
+              this.doGetAlamat(data)
+            });
+        }
+      });
   }
 }

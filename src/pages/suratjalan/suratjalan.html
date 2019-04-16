@@ -17,7 +17,7 @@
   <div id="printarea">
     <table style="width:100%;">
       <tr>
-        <th style="background: transparent;width:15%;text-align: left;">
+        <th style="background: transparent;width:20%;text-align: left;">
           <img style="width:100px;" src="assets/imgs/ATRIA.png">
           <div>PT CATUR SENTOSA BERHASIL</div>
         </th>
@@ -27,51 +27,51 @@
           <div style="font-size:16px;">JL. Daan Mogot Jakarta Barat</div>
           <div style="font-size:16px;">Tgl Cetak 16-04-2019</div>
         </th>
-        <th style="background: transparent;width:15%;"></th>
+        <th style="background: transparent;width:20%;"></th>
       </tr>
     </table>
     <table style="width:100%;margin-top:40px;margin-bottom:30px;">
       <tr style="text-align: left;">
-        <th style="background: transparent;width:10%;">No. SJL</th>
-        <th style="background: transparent;width:35%;">:</th>
-        <th style="background: transparent;width:10%;">No. Telp</th>
-        <th style="background: transparent;width:45%;">:</th>
+        <th style="background: transparent;width:15%;padding-bottom:5px;">No. SJL</th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{sjlno}}</th>
+        <th style="background: transparent;width:15%;padding-bottom:5px;">No. Telp</th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{telp}}</th>
       </tr>
       <tr style="text-align: left;">
-        <th style="background: transparent;width:10%;">No. TO</th>
-        <th style="background: transparent;width:35%;">:</th>
-        <th style="background: transparent;width:10%;">Pengirim</th>
-        <th style="background: transparent;width:45%;">:</th>
+        <th style="background: transparent;width:15%;padding-bottom:5px;">No. TO</th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{data[0].so_no | date:'dd-MM-yyyy'}}</th>
+        <th style="background: transparent;width:15%;padding-bottom:5px;">Pengirim</th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{data[0].store_from}}</th>
       </tr>
       <tr style="text-align: left;">
-        <th style="background: transparent;width:10%;">Nomor Member</th>
-        <th style="background: transparent;width:35%;">:</th>
-        <th style="background: transparent;width:10%;">Estimasi Kirim</th>
-        <th style="background: transparent;width:45%;">:</th>
+        <th style="background: transparent;width:15%;padding-bottom:5px;">Nomor Member</th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{data[0].customer_code}}</th>
+        <th style="background: transparent;width:15%;padding-bottom:5px;">Estimasi Kirim</th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{data[0].delivery_date | date:'dd-MM-yyyy'}}</th>
       </tr>
       <tr style="text-align: left;">
-        <th style="background: transparent;width:10%;">Tgl Invoice</th>
-        <th style="background: transparent;width:35%;">:</th>
-        <th style="background: transparent;width:10%;">Tgl Kirim</th>
-        <th style="background: transparent;width:45%;">:</th>
+        <th style="background: transparent;width:15%;padding-bottom:5px;">Tgl Invoice</th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{data[0].date | date:'dd-MM-yyyy'}}</th>
+        <th style="background: transparent;width:15%;padding-bottom:5px;">Tgl Kirim</th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{data[0].delivery_date | date:'dd-MM-yyyy'}}</th>
       </tr>
       <tr style="text-align: left;">
-        <th style="background: transparent;width:10%;">No. Receipt</th>
-        <th style="background: transparent;width:35%;">:</th>
-        <th style="background: transparent;width:10%;">Tgl Install</th>
-        <th style="background: transparent;width:45%;">:</th>
+        <th style="background: transparent;width:15%;padding-bottom:5px;">No. Receipt</th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{data[0].receipt_no}}</th>
+        <th style="background: transparent;width:15%;padding-bottom:5px;">Tgl Install</th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{data[0].installation_date | date:'dd-MM-yyyy'}}</th>
       </tr>
       <tr style="text-align: left;">
-        <th style="background: transparent;width:10%;">Nama Pelanggan</th>
-        <th style="background: transparent;width:35%;">:</th>
-        <th style="background: transparent;width:10%;">Keterangan Pengiriman</th>
-        <th style="background: transparent;width:45%;">:</th>
+        <th style="background: transparent;width:15%;padding-bottom:5px;">Nama Pelanggan</th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{name}}</th>
+        <th style="background: transparent;width:15%;padding-bottom:5px;">Keterangan Pengiriman</th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{data[0].description}}</th>
       </tr>
       <tr style="text-align: left;">
-        <th style="background: transparent;width:10%;">Alamat Kirim</th>
-        <th style="background: transparent;width:35%;">:</th>
-        <th style="background: transparent;width:10%;"></th>
-        <th style="background: transparent;width:45%;"></th>
+        <th style="background: transparent;width:15%;padding-bottom:5px;">Alamat Kirim</th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{addressfull}}</th>
+        <th style="background: transparent;width:15%;padding-bottom:5px;"></th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;"></th>
       </tr>
     </table>
     <table class="table-border" style="width:100%;">
@@ -107,51 +107,13 @@
         <th class="table-border" style="text-align: center;">SET</th>
         <th class="table-border" style="text-align: center;">PART</th>
       </tr>
-      <tr>
-        <td class="table-border" style="text-align: center;">1</td>
-        <td class="table-border" style="text-align: center;">123</td>
-        <td class="table-border" style="text-align: center;">TRAVIS DIN CH C-4057 PVC D.BROWN</td>
-        <td class="table-border" style="text-align: center;">4</td>
-        <td class="table-border" style="text-align: center;">4</td>
-        <td class="table-border" style="text-align: center;">SET</td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-      </tr>
-      <tr>
-        <td class="table-border" style="text-align: center;">1</td>
-        <td class="table-border" style="text-align: center;">123</td>
-        <td class="table-border" style="text-align: center;">TRAVIS DIN CH C-4057 PVC D.BROWN</td>
-        <td class="table-border" style="text-align: center;">4</td>
-        <td class="table-border" style="text-align: center;">4</td>
-        <td class="table-border" style="text-align: center;">SET</td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-      </tr>
-      <tr>
-        <td class="table-border" style="text-align: center;">1</td>
-        <td class="table-border" style="text-align: center;">123</td>
-        <td class="table-border" style="text-align: center;">TRAVIS DIN CH C-4057 PVC D.BROWN</td>
-        <td class="table-border" style="text-align: center;">4</td>
-        <td class="table-border" style="text-align: center;">4</td>
-        <td class="table-border" style="text-align: center;">SET</td>
+      <tr *ngFor="let item of itemsall">
+        <td class="table-border" style="text-align: center;">{{item.Row}}</td>
+        <td class="table-border" style="text-align: center;">{{item.part_no}}</td>
+        <td class="table-border" style="text-align: center;">{{item.part_description}}</td>
+        <td class="table-border" style="text-align: center;">{{item.item_qty}}</td>
+        <td class="table-border" style="text-align: center;">{{item.part_qty}}</td>
+        <td class="table-border" style="text-align: center;">{{item.UOM}}</td>
         <td class="table-border" style="text-align: center;"></td>
         <td class="table-border" style="text-align: center;"></td>
         <td class="table-border" style="text-align: center;"></td>
@@ -166,8 +128,8 @@
       </tr>
       <tr>
         <th class="table-border" colspan="3" style="text-align: center;">TOTAL</th>
-        <th class="table-border" style="text-align: center;">4</th>
-        <th class="table-border" style="text-align: center;">6</th>
+        <th class="table-border" style="text-align: center;">{{totalqtyitem}}</th>
+        <th class="table-border" style="text-align: center;">{{totalqtypart}}</th>
         <th class="table-border" style="text-align: center;"></th>
         <th class="table-border" style="text-align: center;"></th>
         <th class="table-border" style="text-align: center;"></th>
@@ -204,11 +166,11 @@
         <th style="text-align: center;width:20%;padding-bottom:50px;">Customer</th>
       </tr>
       <tr>
-        <th style="text-align: center;width:20%;">(......................................)</th>
-        <th style="text-align: center;width:20%;">(......................................)</th>
-        <th style="text-align: center;width:20%;">(......................................)</th>
-        <th style="text-align: center;width:20%;">(......................................)</th>
-        <th style="text-align: center;width:20%;">(......................................)</th>
+        <th style="text-align: center;width:20%;padding-bottom:50px;">(......................................)</th>
+        <th style="text-align: center;width:20%;padding-bottom:50px;">(......................................)</th>
+        <th style="text-align: center;width:20%;padding-bottom:50px;">(......................................)</th>
+        <th style="text-align: center;width:20%;padding-bottom:50px;">(......................................)</th>
+        <th style="text-align: center;width:20%;padding-bottom:50px;">(......................................)</th>
       </tr>
     </table>
     <p style="text-align: left;">Catatan : Lembar 1 (putih) untuk Pemilik Barang, Lembar 2 (merah) untuk Customer, Lembar 3 (kuning) untuk Pengirim.</p>
