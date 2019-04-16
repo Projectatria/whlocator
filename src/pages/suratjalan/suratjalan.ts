@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, AlertController } from 'ionic-angular';
 import { ApiProvider } from '../../providers/api/api';
 import moment from 'moment';
+import { Storage } from '@ionic/storage';
 
 @IonicPage()
 @Component({
@@ -16,16 +17,49 @@ export class SuratjalanPage {
   public kota = '';
   public telp = '';
   public sjlno = '';
+  public items = [];
   public itemsall = [];
   public totalqtyitem = 0;
   public totalqtypart = 0;
+  public column = 'title';
+  public descending: boolean = true;
+  public order = 0;
+  public userid = ''
+  public role = [];
+  public rolearea = '';
+  public rolegroup = '';
+  public rolecab = '';
+  public date: any;
+  public namepengirim = '';
+  public address = '';
+  public address1 = '';
+  public kotapengirim = '';
+  public telppengirim = '';
+  public postcode = '';
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public api: ApiProvider,
     public alertCtrl: AlertController,
+    public storage: Storage,
     public viewCtrl: ViewController) {
+    this.storage.get('userid').then((val) => {
+      this.userid = val;
+      this.api.get('table/user_role', { params: { filter: "id_user=" + "'" + this.userid + "'" } })
+        .subscribe(val => {
+          this.role = val['data']
+          if (this.role.length != 0) {
+            this.rolearea = this.role[0].id_area
+            this.rolegroup = this.role[0].id_group
+            this.rolecab = this.role[0].id_cab
+            this.doGetAlamatPengirim()
+          }
+        })
+    });
+    this.date = moment().format('DD-MM-YYYY')
+    this.column = 'item_no';
+    this.order = this.descending ? 1 : -1;
     this.data = this.navParams.get('data')
     this.name = this.navParams.get('name')
     this.addressfull = this.navParams.get('addressfull')
@@ -33,27 +67,49 @@ export class SuratjalanPage {
     this.telp = this.navParams.get('telp')
     this.sjlno = this.navParams.get('sjlno')
     this.doGetItem()
-    this.doGetTotalItem()
+    this.doGetPart()
     this.doGetTotalPart()
   }
+  doGetAlamatPengirim() {
+    this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Location", filter: "[Code]=" + "'" + this.rolecab + "'" } })
+      .subscribe(val => {
+        let detailsales = val['data']
+        this.namepengirim = detailsales[0]['Name']
+        this.address = detailsales[0]['Address']
+        this.address1 = detailsales[0]['Address 2']
+        this.kotapengirim = detailsales[0]['City']
+        this.telppengirim = detailsales[0]['Phone No_']
+        this.postcode = detailsales[0]['Post Code']
+        console.log(this.namepengirim)
+      }, err => {
+        this.doGetAlamatPengirim()
+      });
+  }
   doGetItem() {
+    this.api.get("table/delivery_order_line", { params: { limit: 100, filter: "receipt_no='" + this.data[0].receipt_no + "'", group: 'item_no' } })
+      .subscribe(val => {
+        let items = val['data']
+        for (let i = 0; i < items.length; i++) {
+          this.api.get("table/delivery_order_line", { params: { limit: 100, filter: "receipt_no='" + this.data[0].receipt_no + "' AND item_no=" + "'" + items[i].item_no + "'" } })
+            .subscribe(val => {
+              let data = val['data']
+              data[0].Row = i + 1
+              this.items.push(data[0])
+              this.totalqtyitem = this.totalqtyitem + data[0].item_qty
+            });
+        }
+      });
+  }
+  doGetPart() {
     this.api.get("table/delivery_order_line", { params: { limit: 100, filter: "receipt_no='" + this.data[0].receipt_no + "'", sort: "line_no ASC, part_no ASC" } })
       .subscribe(val => {
         this.itemsall = val['data']
       });
   }
-  doGetTotalItem() {
-    this.api.get("table/delivery_order_line", { params: { limit: 100, filter: "receipt_no='" + this.data[0].receipt_no + "'", group: 'item_no', groupSummary: "sum (item_qty) as qtysum" } })
-      .subscribe(val => {
-        this.totalqtyitem = val['data'][0].qtysum
-        console.log(this.totalqtyitem)
-      });
-  }
   doGetTotalPart() {
-    this.api.get("table/delivery_order_line", { params: { limit: 100, filter: "receipt_no='" + this.data[0].receipt_no + "'", group: 'part_no', groupSummary: "sum (part_qty) as qtysum" } })
+    this.api.get("table/delivery_order_line", { params: { limit: 100, filter: "receipt_no='" + this.data[0].receipt_no + "'", group: 'receipt_no', groupSummary: "sum (part_qty) as qtysum" } })
       .subscribe(val => {
         this.totalqtypart = val['data'][0].qtysum
-        console.log(this.totalqtypart)
       });
   }
   closeModal() {

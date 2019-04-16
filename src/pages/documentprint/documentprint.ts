@@ -193,7 +193,7 @@ export class DocumentprintPage {
     const headers = new HttpHeaders()
       .set("Content-Type", "application/json");
     let date = moment().format('YYYY-MM-DD')
-    this.api.put("table/transfer_order_request",
+    this.api.put("table/surat_jalan_request",
       {
         "location_code": data[0].store_from,
         "last_date_used": date,
@@ -246,6 +246,7 @@ export class DocumentprintPage {
                 telp: telp,
                 sjlno: sjlno
               })
+              this.doCloseSJL()
             }, err => {
               this.doGetAlamat(data)
             });
@@ -254,6 +255,7 @@ export class DocumentprintPage {
           this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Sales Header Archive", filter: "[No_]=" + "'" + data[0].so_no + "'" } })
             .subscribe(val => {
               let detailsales = val['data']
+              console.log(detailsales)
               let sjlno = datadod[0].sjl_no
               let name = detailsales[0]['Ship-to Name']
               let address = detailsales[0]['Ship-to Address']
@@ -270,6 +272,7 @@ export class DocumentprintPage {
                 telp: telp,
                 sjlno: sjlno
               })
+              this.doCloseSJL()
             }, err => {
               this.doGetAlamat(data)
             });

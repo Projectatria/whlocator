@@ -23,9 +23,11 @@
         </th>
         <th style="text-align: center;margin:auto;font-weight: bold;font-size:20px;background: transparent;">
           DELIVERY AND INSTALLATION ORDER
-          <div style="font-size:16px;">CSB Daan Mogot</div>
-          <div style="font-size:16px;">JL. Daan Mogot Jakarta Barat</div>
-          <div style="font-size:16px;">Tgl Cetak 16-04-2019</div>
+          <div style="font-size:16px;">{{namepengirim}}</div>
+          <div style="font-size:16px;">{{address}} {{address1}}</div>
+          <div style="font-size:16px;">{{kotapengirim}} {{postcode}}</div>
+          <div style="font-size:16px;">{{telppengirim}}</div>
+          <div style="font-size:16px;">Tgl Cetak {{date}}</div>
         </th>
         <th style="background: transparent;width:20%;"></th>
       </tr>
@@ -39,9 +41,9 @@
       </tr>
       <tr style="text-align: left;">
         <th style="background: transparent;width:15%;padding-bottom:5px;">No. TO</th>
-        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{data[0].so_no | date:'dd-MM-yyyy'}}</th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{data[0].so_no}}</th>
         <th style="background: transparent;width:15%;padding-bottom:5px;">Pengirim</th>
-        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{data[0].store_from}}</th>
+        <th style="background: transparent;width:35%;padding-bottom:5px;">:&nbsp;&nbsp;{{namepengirim}}</th>
       </tr>
       <tr style="text-align: left;">
         <th style="background: transparent;width:15%;padding-bottom:5px;">Nomor Member</th>
@@ -107,25 +109,46 @@
         <th class="table-border" style="text-align: center;">SET</th>
         <th class="table-border" style="text-align: center;">PART</th>
       </tr>
-      <tr *ngFor="let item of itemsall">
-        <td class="table-border" style="text-align: center;">{{item.Row}}</td>
-        <td class="table-border" style="text-align: center;">{{item.part_no}}</td>
-        <td class="table-border" style="text-align: center;">{{item.part_description}}</td>
-        <td class="table-border" style="text-align: center;">{{item.item_qty}}</td>
-        <td class="table-border" style="text-align: center;">{{item.part_qty}}</td>
-        <td class="table-border" style="text-align: center;">{{item.UOM}}</td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-        <td class="table-border" style="text-align: center;"></td>
-      </tr>
+      <tbody *ngFor="let it of items | sort: {property: column, order: order}">
+        <tr>
+          <td class="table-border" style="text-align: center;">{{it.Row}}</td>
+          <td class="table-border" style="text-align: center;">{{it.item_no}}</td>
+          <td class="table-border" style="text-align: left;">{{it.item_description}}</td>
+          <td class="table-border" style="text-align: center;">{{it.item_qty}}</td>
+          <td class="table-border" style="text-align: center;"></td>
+          <td class="table-border" style="text-align: center;">SET</td>
+          <td class="table-border" style="text-align: center;"></td>
+          <td class="table-border" style="text-align: center;"></td>
+          <td class="table-border" style="text-align: center;"></td>
+          <td class="table-border" style="text-align: center;"></td>
+          <td class="table-border" style="text-align: center;"></td>
+          <td class="table-border" style="text-align: center;"></td>
+          <td class="table-border" style="text-align: center;"></td>
+          <td class="table-border" style="text-align: center;"></td>
+          <td class="table-border" style="text-align: center;"></td>
+          <td class="table-border" style="text-align: center;"></td>
+          <td class="table-border" style="text-align: center;"></td>
+        </tr>
+        <tr *ngFor="let item of itemsall">
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;"></td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;">{{item.part_no}}</td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: left;">{{item.part_description}}</td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;"></td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;">{{item.part_qty}}</td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;">{{item.UOM}}</td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;"></td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;"></td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;"></td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;"></td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;"></td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;"></td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;"></td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;"></td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;"></td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;"></td>
+          <td *ngIf="item.item_no == it.item_no" class="table-border" style="text-align: center;"></td>
+        </tr>
+      </tbody>
       <tr>
         <th class="table-border" colspan="3" style="text-align: center;">TOTAL</th>
         <th class="table-border" style="text-align: center;">{{totalqtyitem}}</th>
