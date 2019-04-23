@@ -43,10 +43,12 @@ export class MyApp {
         this.rolearea = role[0].id_area;
         this.rolegroup = role[0].id_group;
         this.rolecab = role[0].id_cab;
+        this.userid = role[0].id_user;
         if (role.length != 0) {
           this.rolearea = role[0].id_area
           this.rolegroup = role[0].id_group
           this.rolecab = role[0].id_cab
+          this.userid = role[0].id_user;
           this.doGetTaskPO()
         }
       });
@@ -128,6 +130,8 @@ export class MyApp {
           alert.present();
           this.appCtrl.getRootNav().setRoot('TaskPage');
         }
+      }, err => {
+        this.doGetTaskPO()
       });
   }
   doGetTaskReceving() {
@@ -146,6 +150,8 @@ export class MyApp {
           alert.present();
           this.appCtrl.getRootNav().setRoot('TaskPage');
         }
+      }, err => {
+        this.doGetTaskReceving()
       });
   }
   doGetTaskQCIn() {
@@ -164,6 +170,8 @@ export class MyApp {
           alert.present();
           this.appCtrl.getRootNav().setRoot('TaskPage');
         }
+      }, err => {
+        this.doGetTaskQCIn()
       });
   }
   doGetTaskQCOut() {
@@ -182,6 +190,8 @@ export class MyApp {
           alert.present();
           this.appCtrl.getRootNav().setRoot('TaskPage');
         }
+      }, err => {
+        this.doGetTaskQCOut()
       });
   }
   doGetTaskPicking() {
@@ -200,6 +210,8 @@ export class MyApp {
           alert.present();
           this.appCtrl.getRootNav().setRoot('TaskPage');
         }
+      }, err => {
+        this.doGetTaskPicking()
       });
   }
   doGetTaskTransferOrder() {
@@ -218,6 +230,8 @@ export class MyApp {
           alert.present();
           this.appCtrl.getRootNav().setRoot('TaskPage');
         }
+      }, err => {
+        this.doGetTaskTransferOrder()
       });
   }
   open(pageName) {

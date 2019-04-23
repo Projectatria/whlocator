@@ -172,7 +172,7 @@ export class QcoutPage {
       }
       else {
         this.halaman++;
-        this.api.get("table/delivery_order_header", { params: { limit: 30, offset: offsetpicking, filter: "Status='OPEN' AND qc_get='0'", sort: "delivery_date DESC " } })
+        this.api.get("table/delivery_order_header", { params: { limit: 30, offset: offsetpicking, filter: "Status='OPEN' AND qc_get=''", sort: "delivery_date DESC " } })
           .subscribe(val => {
             let data = val['data'];
             for (let i = 0; i < data.length; i++) {
@@ -781,7 +781,7 @@ export class QcoutPage {
             this.receiptno = result.receipt_no;
             this.itemno = result.item_no;
             this.qcstatus = result.qc_status
-            if (result.qc_status != 'PASSED') {
+            if (result.qc_status == 'OPEN') {
               document.getElementById("myQCChecking").style.display = "block";
               document.getElementById("myBTNChecking").style.display = "block";
               // document.getElementById("button").style.display = "block";
@@ -827,7 +827,7 @@ export class QcoutPage {
         this.receiptno = result.receipt_no;
         this.itemno = result.item_no;
         this.qcstatus = result.qc_status
-        if (result.qc_status != 'PASSED') {
+        if (result.qc_status == 'OPEN') {
           document.getElementById("myQCChecking").style.display = "block";
           document.getElementById("myBTNChecking").style.display = "block";
           // document.getElementById("button").style.display = "block";
@@ -1063,6 +1063,31 @@ export class QcoutPage {
   getNextNoQCResult() {
     return this.api.get('nextno/qc_out_result/qc_result_no')
   }
+  doGetQCOut() {
+    this.api.get("table/qc_out", { params: { filter: 'qc_no=' + "'" + this.qcno + "'" } })
+      .subscribe(val => {
+        let data = val['data']
+        if (data[0].receipt_no.substring(0, 2) == 'TO') {
+          this.doUpdateTO(data)
+        }
+      }, err => {
+        this.doGetQCOut()
+      });
+  }
+  doUpdateTO(data) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    this.api.put("table/transfer_order",
+      {
+        "to_no": data[0].receipt_no,
+        "status": 'CLS1'
+      },
+      { headers })
+      .subscribe(val => {
+      }, err => {
+        this.doUpdateTO(data)
+      });
+  }
   doPassedQC() {
     if (this.photos[0].img_src == '' || this.photos[1].img_src == '' || this.photos[2].img_src == '' || this.photos[3].img_src == '') {
       let alert = this.alertCtrl.create({
@@ -1135,6 +1160,7 @@ export class QcoutPage {
                                   },
                                   { headers })
                                   .subscribe(val => {
+                                    this.doGetQCOut()
                                     this.api.get('table/qc_out', { params: { limit: 10, filter: "status='OPEN'   AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
                                       .subscribe(val => {
                                         this.quality_control = val['data'];
@@ -1240,7 +1266,7 @@ export class QcoutPage {
                                 "qc_result_no": datareject[0].qc_result_no,
                                 "qc_no": datareject[0].qc_no,
                                 "receipt_no": datareject[0].receipt_no,
-                                "batch_no": '',
+                                "batch_no": datareject[0].batch_no,
                                 "item_no": datareject[0].item_no,
                                 "date_start": datareject[0].date_start,
                                 "date_finish": datareject[0].date_finish,
@@ -1329,13 +1355,16 @@ export class QcoutPage {
   doUpdateDO(dm) {
     const headers = new HttpHeaders()
       .set("Content-Type", "application/json");
-    this.api.post("table/delivery_order_header",
+    this.api.put("table/delivery_order_header",
       {
         "uuid": dm.uuid,
         "qc_get": '1'
       },
       { headers })
       .subscribe(val => {
+        this.halaman = 0;
+        this.datadm = [];
+        this.getDataDM()
       }, err => {
         this.doUpdateDO(dm)
       });
@@ -1378,12 +1407,11 @@ export class QcoutPage {
                         for (let i = 0; i < data.length; i++) {
                           let datai = data[i]
                           let nextnoqc = this.nextnoqc
-                          this.doInsertQCResult(datai, nextnoqc);
+                          for (let j = 0; j < data[i].item_qty; j++) {
+                            this.doInsertQCResult(datai, nextnoqc);
+                          }
                         }
                       });
-                    this.halaman = 0;
-                    this.datadm = [];
-                    this.getDataDM()
                     this.api.get('table/qc_out', { params: { limit: 50, filter: "status='OPEN'   AND (pic = '" + this.userid + "' OR pic_admin='" + this.roleid + "')" } })
                       .subscribe(val => {
                         this.quality_control = val['data']
@@ -1411,10 +1439,10 @@ export class QcoutPage {
       .set("Content-Type", "application/json");
     this.api.post("table/qc_out_result",
       {
-        "qc_result_no": datai.receipt_no + datai.item_no + datetime,
+        "qc_result_no": datai.receipt_no + datai.item_no + UUID.UUID(),
         "qc_no": nextnoqc,
         "receipt_no": datai.receipt_no,
-        "batch_no": '',
+        "batch_no": datai.batch_no,
         "item_no": datai.item_no,
         "qc_pic": this.userid,
         "qty_receiving": datai.item_qty,

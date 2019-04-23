@@ -60,6 +60,7 @@
     "dff-cordova-plugin-common": "git+https://github.com/dff-solutions/dff.CordovaPlugin.Common.git",
     "dff-cordova-plugin-honeywell": "git+https://github.com/dff-solutions/dff-cordova-plugin-honeywell.git",
     "font-awesome": "^4.7.0",
+    "for-async": "^1.0.1",
     "ionic-angular": "3.9.2",
     "ionic-img-viewer": "^2.9.0",
     "ionic-plugin-keyboard": "^2.2.1",

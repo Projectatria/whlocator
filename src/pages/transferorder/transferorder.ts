@@ -294,12 +294,12 @@ export class TransferorderPage {
             this.api.get("tablenav", { params: { limit: 30, table: "CSB_LIVE$Production BOM Line", filter: "[Production BOM No_]=" + "'" + dataitem[0]["Production BOM No_"] + "'" } }).subscribe(val => {
               let datapart = val['data']
               if (datapart.length == 0) {
-                this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + data[i].item_no + "' AND location=" + "'" + data[i].location_previous_code + "'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
+                this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + data[i].item_no + "' AND location=" + "'" + data[i].location_previous_code + "' AND sub_location !='Staging Out' AND sub_location != 'STAGINGIN'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
                   .subscribe(val => {
                     let totalqty = val['data'][0].qtysum
                     if (data[i].qty <= totalqty) {
                       for (let k = 0; k < data[i].qty; k++) {
-                        this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + data[i].item_no + "' AND location=" + "'" + data[i].location_previous_code + "' AND qty >= " + 1, sort: 'batch_no ASC, sub_location ASC' } })
+                        this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + data[i].item_no + "' AND location=" + "'" + data[i].location_previous_code + "' AND sub_location !='Staging Out' AND sub_location != 'STAGINGIN' AND qty >= " + 1, sort: 'batch_no ASC, sub_location ASC' } })
                           .subscribe(val => {
                             let datapickingresult = val['data']
                             if (datapickingresult.length != 0) {
@@ -327,12 +327,12 @@ export class TransferorderPage {
               }
               else {
                 for (let j = 0; j < datapart.length; j++) {
-                  this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + datapart[j].No_ + "' AND location=" + "'" + data[i].location_previous_code + "'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
+                  this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + datapart[j].No_ + "' AND location=" + "'" + data[i].location_previous_code + "' AND sub_location !='Staging Out' AND sub_location != 'STAGINGIN'", group: 'item_no', groupSummary: "sum (qty) as qtysum" } })
                     .subscribe(val => {
                       let totalqty = val['data'][0].qtysum
                       if (data[i].qty <= totalqty) {
                         for (let k = 0; k < data[i].qty; k++) {
-                          this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + datapart[j].No_ + "' AND location=" + "'" + data[i].location_previous_code + "' AND qty >=" + datapart[j].Quantity, sort: 'batch_no ASC, sub_location ASC' } })
+                          this.api.get("table/stock", { params: { limit: 100, filter: "item_no=" + "'" + datapart[j].No_ + "' AND location=" + "'" + data[i].location_previous_code + "'  AND sub_location !='Staging Out' AND sub_location != 'STAGINGIN'AND qty >=" + datapart[j].Quantity, sort: 'batch_no ASC, sub_location ASC' } })
                             .subscribe(val => {
                               let datapickingresult = val['data']
                               if (datapickingresult.length != 0) {
@@ -367,6 +367,20 @@ export class TransferorderPage {
         this.doPostPickingListDetail(data, i)
       });
   }
+  doUpdateDOD(datai, datapicking) {
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/json");
+    this.api.put("table/transfer_order_detail",
+      {
+        "to_detail_no": datai.to_detail_no,
+        "batch_no": datapicking.batch_no
+      },
+      { headers })
+      .subscribe(val => {
+      }, err => {
+        this.doUpdateDOD(datai, datapicking)
+      });
+  }
   doPostPickingListDetailPartInsert(datai, dataj, datapicking) {
     const headers = new HttpHeaders()
       .set("Content-Type", "application/json");
@@ -391,6 +405,7 @@ export class TransferorderPage {
       },
       { headers })
       .subscribe(val => {
+        this.doUpdateDOD(datai, datapicking)
         let qtytotal = dataj.Quantity
         this.doGetStock(datai, dataj, datapicking, qtytotal)
       }, err => {
@@ -421,6 +436,7 @@ export class TransferorderPage {
       },
       { headers })
       .subscribe(val => {
+        this.doUpdateDOD(datai, datapicking)
         let qtytotal = dataj.Quantity
         this.doGetStock(datai, dataj, datapicking, qtytotal)
       }, err => {
@@ -470,6 +486,7 @@ export class TransferorderPage {
       },
       { headers })
       .subscribe(val => {
+        this.doUpdateDOD(datai, datapicking)
         let dataj = { 'Quantity': 1 }
         let qtytotal = 1
         this.doGetStock(datai, dataj, datapicking, qtytotal)
@@ -501,6 +518,7 @@ export class TransferorderPage {
       },
       { headers })
       .subscribe(val => {
+        this.doUpdateDOD(datai, datapicking)
         let dataj = { 'Quantity': 1 }
         let qtytotal = 1
         this.doGetStock(datai, dataj, datapicking, qtytotal)
@@ -639,8 +657,8 @@ export class TransferorderPage {
   }
   doPostingTOList(tolist) {
     let alert = this.alertCtrl.create({
-      title: 'Confirm Posting',
-      message: 'Do you want to posting  ' + tolist.to_no + ' ?',
+      title: 'Confirm QC',
+      message: 'Anda yakin ingin QC TO ini ' + tolist.to_no + ' ?',
       buttons: [
         {
           text: 'Cancel',
@@ -650,29 +668,29 @@ export class TransferorderPage {
           }
         },
         {
-          text: 'Posting',
+          text: 'OK',
           handler: () => {
-            this.doPostTOCLS1(tolist)
+            this.doPostTOQC(tolist)
           }
         }
       ]
     });
     alert.present();
   }
-  doPostTOCLS1(tolist) {
+  doPostTOQC(tolist) {
     const headers = new HttpHeaders()
       .set("Content-Type", "application/json");
     this.api.put("table/transfer_order",
       {
         "to_no": tolist.to_no,
-        "status": 'CLS1'
+        "status_qc": '0'
       },
       { headers })
       .subscribe(
         (val) => {
           this.doPostDeliveryOrderHeader(tolist)
         }, err => {
-          this.doPostTOCLS1(tolist)
+          this.doPostTOQC(tolist)
         });
   }
   doPostDeliveryOrderHeader(tolist) {
@@ -745,6 +763,7 @@ export class TransferorderPage {
         "item_no": data[i].item_no,
         "item_description": data[i].description,
         "item_qty": data[i].qty,
+        "batch_no": data[i].batch_no,
         "part_line_no": data[i].line_no,
         "part_no": data[i].item_no,
         "part_description": data[i].description,
@@ -770,7 +789,7 @@ export class TransferorderPage {
               buttons: ['OK']
             });
             alert.present();
-            this.doGoToSlotDelivery()
+            //this.doGoToSlotDelivery()
           }
         }, err => {
           this.doPostDeliveryOrderLinePartNull(data, i)
@@ -786,6 +805,7 @@ export class TransferorderPage {
         "item_no": data[i].item_no,
         "item_description": data[i].description,
         "item_qty": data[i].qty,
+        "batch_no": data[i].batch_no,
         "part_line_no": datapart[j]["Line No_"],
         "part_no": datapart[j].No_,
         "part_description": datapart[j].Description,
@@ -811,7 +831,7 @@ export class TransferorderPage {
               buttons: ['OK']
             });
             alert.present();
-            this.doGoToSlotDelivery()
+            //this.doGoToSlotDelivery()
           }
         }, err => {
           this.doPostDeliveryOrderLinePart(data, i, datapart, j)
@@ -1401,7 +1421,7 @@ export class TransferorderPage {
     locationModal.present();
   }
   doGoToSlotDelivery() {
-    this.navCtrl.push('ScheduledeliveryPage', {
+    this.navCtrl.push('QcoutPage', {
       rolecab: this.rolecab,
       userid: this.userid
     });

@@ -336,18 +336,26 @@ export class TaskPage {
     });
   }
   doDetailQC(myqc) {
-    this.qcresult = [];
+    /*this.qcresult = [];
     this.qclist = myqc.item_no;
     this.batchnolist = myqc.batch_no;
     this.qcqty = myqc.qty
     this.detailqc = this.detailqc ? false : true;
-    this.getQCResult(myqc);
+    this.getQCResult(myqc);*/
+    this.navCtrl.push('QcinPage', {
+      rolecab: this.rolecab,
+      userid: this.userid
+    });
   }
   doDetailQCOut(myqc) {
-    this.qcresult = [];
+    /*this.qcresult = [];
     this.qclist = myqc.receipt_no;
     this.detailqcout = this.detailqcout ? false : true;
-    this.getQCResultOut(myqc);
+    this.getQCResultOut(myqc);*/
+    this.navCtrl.push('QcoutPage', {
+      rolecab: this.rolecab,
+      userid: this.userid
+    });
   }
   doRefresh(refresher) {
     this.storage.get('userid').then((val) => {

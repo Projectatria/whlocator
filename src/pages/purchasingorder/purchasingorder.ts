@@ -209,10 +209,11 @@ export class PurchasingorderPage {
           // January 4 is always in week 1.
           let week1 = new Date(date.getFullYear(), 0, 4);
           // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-          let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-            - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+          // let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+          //   - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+          let batch = moment(data[i]["Order Date"]).format('MM')
           let batchfix = '';
-          if (batch < 10) {
+          if (batch.length == 1) {
             batchfix = '0' + batch.toString()
           }
           else {
@@ -235,10 +236,11 @@ export class PurchasingorderPage {
             // January 4 is always in week 1.
             let week1 = new Date(date.getFullYear(), 0, 4);
             // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-            let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-              - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+            // let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+            //   - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+            let batch = moment(data[i]["Order Date"]).format('MM')
             let batchfix = '';
-            if (batch < 10) {
+            if (batch.length == 1) {
               batchfix = '0' + batch.toString()
             }
             else {
@@ -306,10 +308,11 @@ export class PurchasingorderPage {
                     // January 4 is always in week 1.
                     let week1 = new Date(date.getFullYear(), 0, 4);
                     // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                    let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                      - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                    // let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                    //   - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                    let batch = moment(data[i]["Order Date"]).format('MM')
                     let batchfix = '';
-                    if (batch < 10) {
+                    if (batch.length == 1) {
                       batchfix = '0' + batch.toString()
                     }
                     else {
@@ -332,10 +335,11 @@ export class PurchasingorderPage {
                       // January 4 is always in week 1.
                       let week1 = new Date(date.getFullYear(), 0, 4);
                       // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                      let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                        - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                      // let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                      //   - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                      let batch = moment(data[i]["Order Date"]).format('MM')
                       let batchfix = '';
-                      if (batch < 10) {
+                      if (batch.length == 1) {
                         batchfix = '0' + batch.toString()
                       }
                       else {
@@ -571,10 +575,11 @@ export class PurchasingorderPage {
                 // January 4 is always in week 1.
                 let week1 = new Date(date.getFullYear(), 0, 4);
                 // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                  - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                // let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                //   - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                let batch = moment(data[i]["Order Date"]).format('MM')
                 let batchfix = '';
-                if (batch < 10) {
+                if (batch.length == 1) {
                   batchfix = '0' + batch.toString()
                 }
                 else {
@@ -597,10 +602,11 @@ export class PurchasingorderPage {
                   // January 4 is always in week 1.
                   let week1 = new Date(date.getFullYear(), 0, 4);
                   // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                  let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                    - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                  // let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                  //   - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                  let batch = moment(data[i]["Order Date"]).format('MM')
                   let batchfix = '';
-                  if (batch < 10) {
+                  if (batch.length == 1) {
                     batchfix = '0' + batch.toString()
                   }
                   else {
@@ -742,10 +748,11 @@ export class PurchasingorderPage {
                     // January 4 is always in week 1.
                     let week1 = new Date(date.getFullYear(), 0, 4);
                     // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                    let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                      - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                    //let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                    //  - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                    let batch = moment(info["Order Date"]).format('MM')
                     let batchfix = '';
-                    if (batch < 10) {
+                    if (batch.length == 1) {
                       batchfix = '0' + batch.toString()
                     }
                     else {
@@ -789,10 +796,11 @@ export class PurchasingorderPage {
                                           // January 4 is always in week 1.
                                           let week1 = new Date(date.getFullYear(), 0, 4);
                                           // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                                          let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                                            - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                                          // let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                                          //   - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                                          let batch = moment(data[i]["Order Date"]).format('MM')
                                           let batchfix = '';
-                                          if (batch < 10) {
+                                          if (batch.length == 1) {
                                             batchfix = '0' + batch.toString()
                                           }
                                           else {
@@ -815,10 +823,11 @@ export class PurchasingorderPage {
                                             // January 4 is always in week 1.
                                             let week1 = new Date(date.getFullYear(), 0, 4);
                                             // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-                                            let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-                                              - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                                            // let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+                                            //   - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+                                            let batch = moment(data[i]["Order Date"]).format('MM')
                                             let batchfix = '';
-                                            if (batch < 10) {
+                                            if (batch.length == 1) {
                                               batchfix = '0' + batch.toString()
                                             }
                                             else {
@@ -1200,10 +1209,11 @@ export class PurchasingorderPage {
           // January 4 is always in week 1.
           let week1 = new Date(date.getFullYear(), 0, 4);
           // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-          let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-            - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+          // let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+          //   - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+          let batch = moment(data[i]["Order Date"]).format('MM')
           let batchfix = '';
-          if (batch < 10) {
+          if (batch.length == 1) {
             batchfix = '0' + batch.toString()
           }
           else {
@@ -1226,10 +1236,11 @@ export class PurchasingorderPage {
             // January 4 is always in week 1.
             let week1 = new Date(date.getFullYear(), 0, 4);
             // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-            let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-              - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+            // let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+            //   - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+            let batch = moment(data[i]["Order Date"]).format('MM')
             let batchfix = '';
-            if (batch < 10) {
+            if (batch.length == 1) {
               batchfix = '0' + batch.toString()
             }
             else {
@@ -1594,10 +1605,11 @@ export class PurchasingorderPage {
     // January 4 is always in week 1.
     let week1 = new Date(date.getFullYear(), 0, 4);
     // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-    let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
-      - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+    // let batch = (Math.round(((date.getTime() - week1.getTime()) / 86400000
+    //   - 3 + (week1.getDay() + 6) % 7) / 7) + 1)
+    let batch = moment(data[i]["Expected Receipt Date"]).format('MM')
     let batchfix = '';
-    if (batch < 10) {
+    if (batch.length == 1) {
       batchfix = '0' + batch.toString()
     }
     else {

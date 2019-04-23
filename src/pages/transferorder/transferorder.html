@@ -191,9 +191,12 @@
             <ion-col padding class="col-content" col-xl-1 (click)="viewDetailTOList(tolist)">
               {{tolist.transfer_date}}
             </ion-col>
-            <ion-col padding class="col-content" col-xl-2 (click)="viewDetailTOList(tolist)">
+            <ion-col *ngIf="tolist.status_qc != '0'" padding class="col-content" col-xl-2 (click)="viewDetailTOList(tolist)">
               {{tolist.status}}
             </ion-col>
+            <ion-col *ngIf="tolist.status_qc == '0'" padding class="col-content" col-xl-2 (click)="viewDetailTOList(tolist)">
+                WAITING QC
+              </ion-col>
             <ion-col col-xl-1 class="col-content">
               <button [disabled]="tolist.from_location != rolecab || (tolist.from_location == rolecab && tolist.status_picking != '')"
                 item-end ion-button clear color="greenlake" (click)="doOpenToPIC(tolist)">
@@ -207,8 +210,8 @@
               </button>
             </ion-col>
             <ion-col class="col-content" col-xl-1>
-              <button [disabled]="tolist.from_location != rolecab || tolist.status_picking == ''" item-end ion-button clear color="greenlake"
-                (click)="doPostingTOList(tolist)">
+              <button [disabled]="tolist.from_location != rolecab || tolist.status_picking == '' || tolist.status_qc == '0'" item-end ion-button
+                clear color="greenlake" (click)="doPostingTOList(tolist)">
                 <ion-icon name="md-checkmark-circle-outline" style="font-size:30px;"></ion-icon>
               </button>
             </ion-col>
